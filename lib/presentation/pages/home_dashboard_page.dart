@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../core/auth/auth_controller.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../data/mock_catalog.dart';
@@ -28,6 +29,7 @@ class HomeDashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final pos = context.watch<PosController>();
+    final user = context.watch<AuthController>().user;
     final report = MockCatalog.todayReport;
 
     return Scaffold(
@@ -36,14 +38,14 @@ class HomeDashboardPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'SUCURSAL CENTRO',
+              (user?.sucursalNombre ?? 'Sin sucursal').toUpperCase(),
               style: AppTextStyles.h2.copyWith(
                 color: AppColors.primary,
                 fontWeight: FontWeight.w800,
               ),
             ),
             Text(
-              'Lewis Guerrero',
+              user?.fullName ?? '',
               style: AppTextStyles.bodySmall.copyWith(
                 color: AppColors.textSecondary,
                 fontWeight: FontWeight.w500,

@@ -2,7 +2,10 @@ import 'dart:math' as math;
 import 'dart:ui' show lerpDouble;
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../core/auth/auth_controller.dart';
+import '../../core/auth/auth_service.dart';
 import 'by_optimun_label.dart';
 
 /// Opción 3 — el logo ZOE es el origen del ripple (no un punto).
@@ -459,21 +462,40 @@ class _RippleLoginFormState extends State<_RippleLoginForm> {
   }
 
   Future<void> _submit() async {
+    final correo = _email.text.trim();
+    final clave = _password.text;
+
+    if (correo.isEmpty || clave.length < 4) {
+      setState(() => _error = 'Email y password (4+ caracteres) requeridos');
+      return;
+    }
+
     setState(() {
       _error = null;
       _loading = true;
     });
-    await Future<void>.delayed(const Duration(milliseconds: 350));
-    if (!mounted) return;
-    if (_email.text.trim().isEmpty || _password.text.length < 4) {
+
+    try {
+      // POST ${API_BASE_URL}/auth/login-app
+      final result = await AuthService().login(
+        correo: correo,
+        clave: clave,
+      );
+
+      if (!mounted) return;
+
+      context.read<AuthController>().setSession(result);
+      setState(() => _loading = false);
+      widget.onLogin?.call();
+    } catch (e) {
+      if (!mounted) return;
+      final message = e.toString().replaceFirst('Exception: ', '');
+      context.read<AuthController>().setError(message);
       setState(() {
         _loading = false;
-        _error = 'Email y password (4+ caracteres) requeridos';
+        _error = message;
       });
-      return;
     }
-    setState(() => _loading = false);
-    widget.onLogin?.call();
   }
 
   @override
@@ -555,7 +577,16 @@ class _RippleLoginFormState extends State<_RippleLoginForm> {
                   fontSize: 15,
                 ),
               ),
-              child: Text(_loading ? '…' : 'LOGIN'),
+              child: _loading
+                  ? const SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.4,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Text('LOGIN'),
             ),
           ),
         ),

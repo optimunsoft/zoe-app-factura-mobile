@@ -50,8 +50,8 @@ class _PosCatalogPageState extends State<PosCatalogPage> {
   }
 
   double _appBarHeight(Customer? customer) {
-    // Fila cliente compacta + fila título catálogo
-    var h = kToolbarHeight + 36;
+    // Fila cliente compacta + fila título catálogo + holgura anti-overflow
+    var h = kToolbarHeight + 44;
     if (customer != null && _customerExpanded) {
       h += 210;
     }
@@ -75,6 +75,7 @@ class _PosCatalogPageState extends State<PosCatalogPage> {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(12, 4, 8, 4),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   if (customer != null)
@@ -85,17 +86,25 @@ class _PosCatalogPageState extends State<PosCatalogPage> {
                         setState(() => _customerExpanded = expanded);
                       },
                     ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text('Catálogo POS', style: AppTextStyles.h2),
-                      ),
-                      CartIconButton(
-                        itemCount: pos.itemCount,
-                        onPressed:
-                            pos.itemCount > 0 ? widget.onReviewPay : null,
-                      ),
-                    ],
+                  SizedBox(
+                    height: kToolbarHeight - 8,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'Catálogo POS',
+                            style: AppTextStyles.h2,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        CartIconButton(
+                          itemCount: pos.itemCount,
+                          onPressed:
+                              pos.itemCount > 0 ? widget.onReviewPay : null,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
