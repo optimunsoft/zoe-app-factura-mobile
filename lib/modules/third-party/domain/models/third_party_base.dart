@@ -73,8 +73,8 @@ class ThirdPartyBase {
       'middleName': middleName ?? '',
       'lastName': lastName ?? '',
       'secondLastName': secondLastName ?? '',
-      'contactPerson': contactPerson,
-      'observations': observations,
+      'contactPerson': contactPerson?.trim() ?? '',
+      'observations': _observationsOrDefault(observations),
       'municipalityId': municipalityId,
       'countryId': countryId,
       'address': address,
@@ -84,5 +84,10 @@ class ThirdPartyBase {
       'vatRegimeCode': vatRegimeCode,
       'fiscalRespCode': fiscalRespCode,
     };
+  }
+
+  static String _observationsOrDefault(String? value) {
+    final trimmed = value?.trim() ?? '';
+    return trimmed.isEmpty ? 'sin observaciones' : trimmed;
   }
 }

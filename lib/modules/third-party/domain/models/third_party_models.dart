@@ -35,11 +35,7 @@ class ThirdPartyQuery {
 }
 
 class DocumentTypeInfo {
-  DocumentTypeInfo({
-    required this.id,
-    required this.code,
-    required this.type,
-  });
+  DocumentTypeInfo({required this.id, required this.code, required this.type});
 
   final int id;
   final int code;
@@ -171,10 +167,7 @@ class ThirdPartyPayload extends ThirdPartyBase {
   final int documentTypeId;
 
   Map<String, dynamic> toJson() {
-    return {
-      ...baseToJson(),
-      'documentTypeId': documentTypeId,
-    };
+    return {...baseToJson(), 'documentTypeId': documentTypeId};
   }
 }
 
@@ -203,9 +196,9 @@ class ThirdPartyListResult {
     final raw = response['data'];
     final list = raw is List
         ? raw
-            .whereType<Map<String, dynamic>>()
-            .map(ThirdParty.fromJson)
-            .toList()
+              .whereType<Map<String, dynamic>>()
+              .map(ThirdParty.fromJson)
+              .toList()
         : <ThirdParty>[];
 
     return ThirdPartyListResult(

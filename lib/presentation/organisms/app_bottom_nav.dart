@@ -29,7 +29,7 @@ class AppBottomNav extends StatelessWidget {
         NavigationDestination(
           icon: Icon(Icons.point_of_sale_outlined),
           selectedIcon: Icon(Icons.point_of_sale_rounded, color: AppColors.primary),
-          label: 'POS',
+          label: 'Venta',
         ),
         NavigationDestination(
           icon: Icon(Icons.receipt_long_outlined),

@@ -26,7 +26,7 @@ class AuthService {
       );
 
       final data = response.data as Map<String, dynamic>;
-      checkApiStatus(data, fallback: 'No se pudo iniciar sesión');
+      checkApiStatus(data, showToast: false);
 
       final user = data['user'];
       final manejaInventario =
@@ -39,6 +39,17 @@ class AuthService {
       }
 
       return LoginResult.fromJson(data);
+    } on DioException catch (e) {
+      throwFromDio(e, showToast: false);
+    }
+  }
+
+  /// POST /auth/logout
+  Future<void> logout() async {
+    try {
+      final response = await _dio.post('/auth/logout');
+      final data = response.data as Map<String, dynamic>;
+      checkApiStatus(data);
     } on DioException catch (e) {
       throwFromDio(e);
     }

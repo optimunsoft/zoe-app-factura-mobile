@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../../../core/api_helpers.dart';
 import '../../../core/auth/api_client.dart';
-import '../domain/models/thirdparties.common.dart';
+import '../domain/models/third_party.common.dart';
 
 /// Catálogos comunes (solo GET).
 class CommonService {
@@ -16,7 +16,7 @@ class CommonService {
       final response = await _dio.get('/terceros/tipo-documento');
 
       final data = response.data as Map<String, dynamic>;
-      checkApiStatus(data, fallback: 'Error al consultar tipos de documento');
+      checkApiStatus(data);
 
       return DocumentTypeItem.listFromResponse(data['response']);
     } on DioException catch (e) {
@@ -30,7 +30,7 @@ class CommonService {
       final response = await _dio.get('/terceros/tipo-persona');
 
       final data = response.data as Map<String, dynamic>;
-      checkApiStatus(data, fallback: 'Error al consultar tipos de persona');
+      checkApiStatus(data);
 
       return PersonType.listFromResponse(data['response']);
     } on DioException catch (e) {
@@ -44,7 +44,7 @@ class CommonService {
       final response = await _dio.get('/terceros/regimen-iva');
 
       final data = response.data as Map<String, dynamic>;
-      checkApiStatus(data, fallback: 'Error al consultar regímenes de IVA');
+      checkApiStatus(data);
 
       return RegimeIva.listFromResponse(data['response']);
     } on DioException catch (e) {
@@ -58,10 +58,7 @@ class CommonService {
       final response = await _dio.get('/terceros/resp-fiscal');
 
       final data = response.data as Map<String, dynamic>;
-      checkApiStatus(
-        data,
-        fallback: 'Error al consultar responsabilidades fiscales',
-      );
+      checkApiStatus(data);
 
       return FiscalResponsibility.listFromResponse(data['response']);
     } on DioException catch (e) {
@@ -77,7 +74,7 @@ class CommonService {
       final response = await _dio.get('/terceros/municipio/$encoded');
 
       final data = response.data as Map<String, dynamic>;
-      checkApiStatus(data, fallback: 'Error al consultar municipios');
+      checkApiStatus(data);
 
       return Municipality.listFromResponse(data['response']);
     } on DioException catch (e) {

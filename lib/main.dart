@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hello_flutter/modules/third-party/store/common.store.dart';
 import 'package:hello_flutter/modules/third-party/store/thirdparty.store.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 
+import 'core/app_navigator.dart';
 import 'core/auth/auth_controller.dart';
 import 'core/config/app_env.dart';
 import 'core/theme/app_theme.dart';
 import 'data/pos_controller.dart';
-import 'presentation/pages/login_page.dart';
-import 'presentation/pages/main_shell.dart';
+import 'modules/categories/store/categories.store.dart';
+import 'modules/method_payments/store/method_payments.store.dart';
+import 'modules/products/store/products.store.dart';
+import 'presentation/pages/login/login_page.dart';
+import 'presentation/pages/main_shell/main_shell.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,11 +40,16 @@ class TiendaATiendaApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => PosController()),
         ChangeNotifierProvider(create: (_) => ThirdPartyStore()),
         ChangeNotifierProvider(create: (_) => CommonStore()),
+        ChangeNotifierProvider(create: (_) => CategoriesStore()),
+        ChangeNotifierProvider(create: (_) => ProductsStore()),
+        ChangeNotifierProvider(create: (_) => MethodPaymentsStore()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Tienda a Tienda POS',
         theme: AppTheme.light,
+        navigatorKey: appNavigatorKey,
+        builder: FToastBuilder(),
         locale: const Locale('es', 'MX'),
         supportedLocales: const [
           Locale('es', 'MX'),

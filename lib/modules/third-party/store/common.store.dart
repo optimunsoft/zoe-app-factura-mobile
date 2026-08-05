@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 
-import '../domain/models/thirdparties.common.dart';
+import '../../../core/api_helpers.dart';
+
+import '../domain/models/third_party.common.dart';
 import '../services/common.services.dart';
 
 /// Store de catálogos common (doc, persona, IVA, fiscal, municipios).
@@ -45,7 +47,7 @@ class CommonStore extends ChangeNotifier {
       fiscalResponsibilities = results[3] as List<FiscalResponsibility>;
       loaded = true;
     } catch (e) {
-      error = e.toString().replaceFirst('Exception: ', '');
+      error = cleanErrorMessage(e);
       loaded = false;
     }
 
@@ -70,7 +72,7 @@ class CommonStore extends ChangeNotifier {
     try {
       municipalities = await _service.getMunicipalities(query);
     } catch (e) {
-      municipalityError = e.toString().replaceFirst('Exception: ', '');
+      municipalityError = cleanErrorMessage(e);
       municipalities = [];
     }
 

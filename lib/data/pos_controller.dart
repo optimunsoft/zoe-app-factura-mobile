@@ -4,7 +4,6 @@ import '../domain/models/customer.dart';
 import '../domain/models/payment_method.dart';
 import '../domain/models/product.dart';
 import '../domain/models/sale_receipt.dart';
-import 'mock_catalog.dart';
 
 class PosController extends ChangeNotifier {
   final List<CartItem> _cart = [];
@@ -13,19 +12,98 @@ class PosController extends ChangeNotifier {
   bool printerConnected = true;
   String printerMode = 'Bluetooth';
 
+  /// Viene del login (`iva_incluido`).
+  bool ivaIncluido = false;
+
   List<CartItem> get cart => List.unmodifiable(_cart);
 
   bool get hasCustomer => activeCustomer != null;
 
   int get itemCount => _cart.fold(0, (sum, i) => sum + i.quantity);
 
-  double get subtotal => _cart.fold(0.0, (sum, i) => sum + i.lineTotal);
+  /// Suma de precios de venta × cantidad (tal cual en catálogo).
+  double get goodsTotal => _cart.fold(0.0, (sum, i) => sum + i.lineTotal);
 
-  double get tax => subtotal * MockCatalog.taxRate;
+  /// Impuestos de línea + los de base `total_factura`.
+  List<TaxBreakdownLine> get taxBreakdown {
+    final map = <String, TaxBreakdownLine>{};
+
+    for (final item in _cart) {
+      for (final lineTax in item.lineTaxes(ivaIncluido: ivaIncluido)) {
+        _mergeTax(map, lineTax);
+      }
+    }
+
+    // Segunda pasada: bases sobre el total de factura.
+    final provisionalTotal = _provisionalTotal(map);
+    for (final item in _cart) {
+      for (final tax in item.product.taxes) {
+        if (tax.percentage <= 0) continue;
+        if (tax.base != TaxCalculationBase.totalFactura) continue;
+
+        _mergeTax(
+          map,
+          TaxBreakdownLine(
+            code: tax.code,
+            name: tax.name,
+            percentage: tax.percentage,
+            amount: provisionalTotal * (tax.percentage / 100),
+            includedInPrice: false,
+            base: tax.base,
+          ),
+        );
+      }
+    }
+
+    return map.values.toList();
+  }
+
+  void _mergeTax(Map<String, TaxBreakdownLine> map, TaxBreakdownLine line) {
+    final existing = map[line.code];
+    if (existing == null) {
+      map[line.code] = line;
+    } else {
+      map[line.code] = existing.copyWith(
+        amount: existing.amount + line.amount,
+      );
+    }
+  }
+
+  /// Total provisional (precios + cargos de línea no incluidos en el precio).
+  double _provisionalTotal(Map<String, TaxBreakdownLine> lineTaxes) {
+    final additional = lineTaxes.values
+        .where((t) => !t.includedInPrice)
+        .fold(0.0, (sum, t) => sum + t.amount);
+    return goodsTotal + additional;
+  }
+
+  double get tax => taxBreakdown.fold(0.0, (sum, t) => sum + t.amount);
+
+  double get _ivaAmount => taxBreakdown
+      .where((t) => t.isIva)
+      .fold(0.0, (sum, t) => sum + t.amount);
+
+  double get _additionalTaxAmount => taxBreakdown
+      .where((t) => !t.includedInPrice)
+      .fold(0.0, (sum, t) => sum + t.amount);
+
+  /// Base imponible mostrada en resumen.
+  double get subtotal {
+    if (ivaIncluido) {
+      return goodsTotal - _ivaAmount;
+    }
+    return goodsTotal;
+  }
 
   double get discount => 0;
 
-  double get total => subtotal + tax - discount;
+  /// Total a cobrar = precios + impuestos/cargos que no vienen incluidos.
+  double get total => goodsTotal + _additionalTaxAmount - discount;
+
+  void setIvaIncluido(bool value) {
+    ivaIncluido = value;
+    notifyListeners();
+  }
 
   void selectCustomer(Customer customer) {
     activeCustomer = customer;
@@ -37,7 +115,6 @@ class PosController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Reinicia el flujo de venta (cliente + carrito).
   void startNewSale() {
     activeCustomer = null;
     _cart.clear();
@@ -103,20 +180,21 @@ class PosController extends ChangeNotifier {
     final now = DateTime.now();
     final id =
         'INV-${1000 + now.millisecond + now.second + (_cart.length * 7)}';
+    final saleTotal = goodsTotal + _additionalTaxAmount - discountAmount;
     final receipt = SaleReceipt(
       orderId: id,
       timestamp: now,
       items: List.from(_cart),
       subtotal: subtotal,
       tax: tax,
+      taxBreakdown: List.from(taxBreakdown),
       discount: discountAmount,
-      total: subtotal + tax - discountAmount,
+      total: saleTotal,
       paymentMethod: method,
       status: InvoiceStatus.paid,
       cashReceived: cashReceived,
-      changeDue: cashReceived != null
-          ? cashReceived - (subtotal + tax - discountAmount)
-          : null,
+      changeDue:
+          cashReceived != null ? cashReceived - saleTotal : null,
     );
     lastReceipt = receipt;
     _cart.clear();

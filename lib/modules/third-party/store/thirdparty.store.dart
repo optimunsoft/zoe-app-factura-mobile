@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import '../../../core/api_helpers.dart';
+
 import '../domain/models/third_party_models.dart';
 import '../services/thirdparty.service.dart';
 
@@ -30,7 +32,60 @@ class ThirdPartyStore extends ChangeNotifier {
       totalPage = result.totalPage;
       totalRecords = result.totalRecords;
     } catch (e) {
-      error = e.toString().replaceFirst('Exception: ', '');
+      error = cleanErrorMessage(e);
+      items = [];
+    }
+
+    isLoading = false;
+    notifyListeners();
+  }
+
+  /// Busca por NIT/documento, razón social o persona de contacto (OR).
+  Future<void> searchByAny(String raw) async {
+    final text = raw.trim();
+    if (text.isEmpty) {
+      await loadThirdParties(
+        query: ThirdPartyQuery(page: '1', amount: '15'),
+      );
+      return;
+    }
+
+    isLoading = true;
+    error = null;
+    notifyListeners();
+
+    final digits = text.replaceAll(RegExp(r'[\s.\-]'), '');
+    final isDocument = digits.isNotEmpty && RegExp(r'^\d+$').hasMatch(digits);
+
+    final queries = <ThirdPartyQuery>[
+      ThirdPartyQuery(page: '1', amount: '15', companyName: text),
+      ThirdPartyQuery(page: '1', amount: '15', contactPerson: text),
+      if (isDocument)
+        ThirdPartyQuery(
+          page: '1',
+          amount: '15',
+          identificationNumber: digits,
+        ),
+    ];
+
+    try {
+      final results = await Future.wait(
+        queries.map((q) => _service.getThirdParties(query: q)),
+      );
+
+      final byId = <int, ThirdParty>{};
+      for (final result in results) {
+        for (final item in result.data) {
+          byId[item.id] = item;
+        }
+      }
+
+      items = byId.values.toList();
+      currentPage = 1;
+      totalPage = 1;
+      totalRecords = items.length;
+    } catch (e) {
+      error = cleanErrorMessage(e);
       items = [];
     }
 
@@ -46,7 +101,7 @@ class ThirdPartyStore extends ChangeNotifier {
     try {
       selected = await _service.getById(id);
     } catch (e) {
-      error = e.toString().replaceFirst('Exception: ', '');
+      error = cleanErrorMessage(e);
       selected = null;
     }
 
@@ -66,7 +121,7 @@ class ThirdPartyStore extends ChangeNotifier {
       notifyListeners();
       return selected;
     } catch (e) {
-      error = e.toString().replaceFirst('Exception: ', '');
+      error = cleanErrorMessage(e);
       selected = null;
       isLoading = false;
       notifyListeners();

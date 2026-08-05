@@ -1,5 +1,6 @@
 import 'cart_item.dart';
 import 'payment_method.dart';
+import 'product.dart';
 
 enum InvoiceStatus { paid, voided }
 
@@ -21,6 +22,7 @@ class SaleReceipt {
     required this.total,
     required this.paymentMethod,
     required this.status,
+    this.taxBreakdown = const [],
     this.cashReceived,
     this.changeDue,
   });
@@ -30,6 +32,7 @@ class SaleReceipt {
   final List<CartItem> items;
   final double subtotal;
   final double tax;
+  final List<TaxBreakdownLine> taxBreakdown;
   final double discount;
   final double total;
   final PaymentMethod paymentMethod;

@@ -1,3 +1,4 @@
+import 'line_tax_calculator.dart';
 import 'product.dart';
 
 class CartItem {
@@ -10,6 +11,15 @@ class CartItem {
   final int quantity;
 
   double get lineTotal => product.price * quantity;
+
+  /// Impuestos de la línea según `taxes`, `iva_incluido` y la base de cada uno.
+  List<TaxBreakdownLine> lineTaxes({required bool ivaIncluido}) {
+    return LineTaxCalculator.compute(
+      linePrice: lineTotal,
+      taxes: product.taxes,
+      ivaIncluido: ivaIncluido,
+    ).taxes;
+  }
 
   CartItem copyWith({Product? product, int? quantity}) {
     return CartItem(

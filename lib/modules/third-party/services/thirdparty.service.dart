@@ -20,7 +20,7 @@ class ThirdPartyService {
       );
 
       final data = response.data as Map<String, dynamic>;
-      checkApiStatus(data, fallback: 'Error al consultar terceros');
+      checkApiStatus(data);
 
       return ThirdPartyListResult.fromJson(data);
     } on DioException catch (e) {
@@ -36,7 +36,7 @@ class ThirdPartyService {
       final response = await _dio.get('/terceros/$id');
 
       final data = response.data as Map<String, dynamic>;
-      checkApiStatus(data, fallback: 'Error al consultar el tercero');
+      checkApiStatus(data);
 
       final item = data['response'] as Map<String, dynamic>;
       return ThirdParty.fromJson(item);
@@ -54,7 +54,7 @@ class ThirdPartyService {
       );
 
       final data = response.data as Map<String, dynamic>;
-      checkApiStatus(data, fallback: 'Error al crear el tercero');
+      checkApiStatus(data);
 
       final item = data['response'] as Map<String, dynamic>;
       return ThirdParty.fromJson(item);
