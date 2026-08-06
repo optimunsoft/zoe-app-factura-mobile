@@ -34,7 +34,7 @@ class AppBottomNav extends StatelessWidget {
         NavigationDestination(
           icon: Icon(Icons.receipt_long_outlined),
           selectedIcon: Icon(Icons.receipt_long_rounded, color: AppColors.primary),
-          label: 'Tickets',
+          label: 'Facturas',
         ),
         NavigationDestination(
           icon: Icon(Icons.analytics_outlined),

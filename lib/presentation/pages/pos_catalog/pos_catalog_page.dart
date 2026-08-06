@@ -102,6 +102,7 @@ class _PosCatalogPageState extends State<PosCatalogPage> {
 
     return pos.Product(
       id: useCustomPrice ? '${product.id}_${option.key}' : product.id.toString(),
+      baseId: product.id.toString(),
       name: useCustomPrice ? '${product.name} (${option.label})' : product.name,
       price: option.price,
       stock: product.quantity,
@@ -121,7 +122,7 @@ class _PosCatalogPageState extends State<PosCatalogPage> {
   double _appBarHeight(Customer? customer) {
     var h = kToolbarHeight;
     if (customer != null) {
-      h += _customerExpanded ? 230 : 56;
+      h += _customerExpanded ? 300 : 56;
     }
     return h;
   }
@@ -161,7 +162,7 @@ class _PosCatalogPageState extends State<PosCatalogPage> {
                       children: [
                         Expanded(
                           child: Text(
-                            'Catálogo POS',
+                            'Catálogo de productos',
                             style: AppTextStyles.h2,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -296,6 +297,7 @@ class _PosCatalogPageState extends State<PosCatalogPage> {
         return ProductCard(
           product: product,
           quantity: qty,
+          maxQuantity: posCtrl.maxQuantityFor(product),
           onTap: () => ProductDetailSheet.show(
             context,
             product: apiProduct,

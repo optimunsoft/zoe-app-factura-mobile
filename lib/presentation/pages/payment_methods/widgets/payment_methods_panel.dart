@@ -5,7 +5,7 @@ import '../../../../modules/method_payments/domain/models/method_payments.models
 import 'cash_amount_field.dart';
 import 'change_due_banner.dart';
 import 'payment_option_tile.dart';
-import 'transfer_qr_panel.dart';
+// import 'transfer_qr_panel.dart';
 
 /// Listado de medios de pago (API) + paneles contextuales.
 class PaymentMethodsPanel extends StatelessWidget {
@@ -37,7 +37,8 @@ class PaymentMethodsPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final showCash = selected?.isCash == true;
-    final showQr = selected?.isTransfer == true;
+    // QR de transferencia oculto por ahora.
+    // final showQr = selected?.isTransfer == true;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -65,10 +66,10 @@ class PaymentMethodsPanel extends StatelessWidget {
           const SizedBox(height: 10),
           ChangeDueBanner(change: cashReceived - total),
         ],
-        if (showQr) ...[
-          const SizedBox(height: 8),
-          TransferQrPanel(amount: total),
-        ],
+        // if (showQr) ...[
+        //   const SizedBox(height: 8),
+        //   TransferQrPanel(amount: total),
+        // ],
       ],
     );
   }

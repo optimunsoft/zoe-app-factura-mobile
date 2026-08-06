@@ -12,7 +12,7 @@ class CartItem {
 
   double get lineTotal => product.price * quantity;
 
-  /// Impuestos de la línea según `taxes`, `iva_incluido` y la base de cada uno.
+  /// Impuestos de la línea (descuento = 0; ver [LineTaxCalculator]).
   List<TaxBreakdownLine> lineTaxes({required bool ivaIncluido}) {
     return LineTaxCalculator.compute(
       linePrice: lineTotal,

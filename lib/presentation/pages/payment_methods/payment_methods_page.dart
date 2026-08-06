@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/utils/currency_format.dart';
 import '../../../data/pos_controller.dart';
 import '../../../domain/models/payment_method.dart';
 import '../../../modules/method_payments/domain/models/method_payments.models.dart';
@@ -128,7 +129,7 @@ class _PaymentMethodsPageState extends State<PaymentMethodsPage> {
       cashReceived: _cashReceived,
       onCashChanged: (v) {
         setState(() {
-          _cashReceived = double.tryParse(v.replaceAll(',', '')) ?? 0;
+          _cashReceived = CurrencyFormat.parseInput(v);
         });
       },
     );

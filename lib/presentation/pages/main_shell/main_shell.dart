@@ -27,6 +27,48 @@ class _MainShellState extends State<MainShell> {
     _goTab(1);
   }
 
+  Future<bool> _confirmLeaveSale() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('¿Estás seguro?'),
+        content: const Text(
+          'Se perderá la venta en curso. El cliente y los productos seleccionados se borrarán.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Sí, salir'),
+          ),
+        ],
+      ),
+    );
+    return confirmed == true;
+  }
+
+  Future<void> _onTabChanged(int i) async {
+    final pos = context.read<PosController>();
+    final hasSaleInProgress =
+        pos.itemCount > 0 || pos.activeCustomer != null;
+
+    // Venta → Inicio con cliente y/o productos seleccionados.
+    if (_tab == 1 && i == 0 && hasSaleInProgress) {
+      final ok = await _confirmLeaveSale();
+      if (!ok || !mounted) return;
+      pos.startNewSale();
+    }
+
+    if (i == 1 && _tab != 1) {
+      // Entrar al módulo POS desde otra pestaña → flujo desde cliente
+      pos.startNewSale();
+    }
+    _goTab(i);
+  }
+
   Future<void> _openCheckout() async {
     final pos = context.read<PosController>();
     if (pos.itemCount == 0) return;
@@ -80,13 +122,7 @@ class _MainShellState extends State<MainShell> {
       body: IndexedStack(index: _tab, children: pages),
       bottomNavigationBar: AppBottomNav(
         index: _tab,
-        onChanged: (i) {
-          if (i == 1 && _tab != 1) {
-            // Entrar al módulo POS desde otra pestaña → flujo desde cliente
-            context.read<PosController>().startNewSale();
-          }
-          _goTab(i);
-        },
+        onChanged: _onTabChanged,
       ),
       floatingActionButton: _tab == 0
           ? FloatingActionButton.extended(

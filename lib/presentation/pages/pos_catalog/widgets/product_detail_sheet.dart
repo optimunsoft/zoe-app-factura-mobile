@@ -58,6 +58,7 @@ class _ProductDetailSheetState extends State<ProductDetailSheet> {
     final bottom = MediaQuery.paddingOf(context).bottom;
     final maxHeight = MediaQuery.sizeOf(context).height * 0.88;
     final priceOptions = product.sellingPrices.options;
+    final canAdd = widget.onAdd != null;
 
     return Align(
       alignment: Alignment.bottomCenter,
@@ -95,7 +96,7 @@ class _ProductDetailSheetState extends State<ProductDetailSheet> {
             ),
             Flexible(
               child: SingleChildScrollView(
-                padding: EdgeInsets.fromLTRB(20, 0, 20, 16 + bottom),
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -109,8 +110,12 @@ class _ProductDetailSheetState extends State<ProductDetailSheet> {
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        AppBadge.stock(stock: product.quantity),
+                        AppBadge.stock(
+                          stock: product.quantity,
+                          fontSize: 15,
+                        ),
                         if (product.category.name.isNotEmpty)
                           AppBadge(
                             label: product.category.name,
@@ -221,10 +226,34 @@ class _ProductDetailSheetState extends State<ProductDetailSheet> {
                           ? '—'
                           : product.branch.name,
                     ),
-                    DetailInfoRow(
-                      icon: Icons.inventory_2_outlined,
-                      label: 'Cantidad',
-                      value: '${product.quantity}',
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 5),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(
+                            Icons.inventory_2_outlined,
+                            size: 16,
+                            color: AppColors.primary,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Cantidad', style: AppTextStyles.caption),
+                                Text(
+                                  '${product.quantity}',
+                                  style: AppTextStyles.h2.copyWith(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     if (product.taxes.isNotEmpty) ...[
                       const SizedBox(height: 16),
@@ -263,38 +292,51 @@ class _ProductDetailSheetState extends State<ProductDetailSheet> {
                         ),
                       ),
                     ],
-                    if (widget.onAdd != null) ...[
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        height: 48,
-                        child: ElevatedButton(
-                          onPressed: product.inStock
-                              ? () {
-                                  widget.onAdd!(_selectedPrice);
-                                  Navigator.of(context).pop();
-                                }
-                              : null,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            disabledBackgroundColor: AppColors.surfaceAlt,
-                          ),
-                          child: Text(
-                            product.inStock
-                                ? '+ Agregar al carrito'
-                                : 'Agotado',
-                            style: AppTextStyles.button.copyWith(
-                              color: product.inStock
-                                  ? Colors.white
-                                  : AppColors.textMuted,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
                   ],
                 ),
               ),
             ),
+            if (canAdd)
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.fromLTRB(20, 12, 20, 12 + bottom),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  border: Border(
+                    top: BorderSide(color: AppColors.border.withValues(alpha: 0.8)),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.06),
+                      blurRadius: 12,
+                      offset: const Offset(0, -4),
+                    ),
+                  ],
+                ),
+                child: SizedBox(
+                  height: 48,
+                  child: ElevatedButton(
+                    onPressed: product.inStock
+                        ? () {
+                            widget.onAdd!(_selectedPrice);
+                            Navigator.of(context).pop();
+                          }
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      disabledBackgroundColor: AppColors.surfaceAlt,
+                    ),
+                    child: Text(
+                      product.inStock ? '+ Agregar al carrito' : 'Agotado',
+                      style: AppTextStyles.button.copyWith(
+                        color: product.inStock
+                            ? Colors.white
+                            : AppColors.textMuted,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),

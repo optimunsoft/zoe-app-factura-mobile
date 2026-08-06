@@ -77,13 +77,21 @@ class Product {
     required this.price,
     required this.stock,
     this.taxes = const [],
+    this.baseId,
   });
 
   final String id;
+
+  /// ID del producto base (sin sufijo de precio). Comparte stock entre variantes.
+  final String? baseId;
+
   final String name;
   final double price;
   final int stock;
   final List<ProductTax> taxes;
+
+  /// Clave de inventario compartida entre precios del mismo producto.
+  String get stockKey => baseId ?? id;
 
   bool get inStock => stock > 0;
   bool get lowStock => stock > 0 && stock <= 8;

@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/utils/nit_verification_digit.dart';
 import '../../../../domain/models/customer.dart';
 import '../../../atoms/detail_info_row.dart';
 
@@ -15,6 +18,8 @@ class CustomerAccordionHeader extends StatefulWidget {
     this.onExpandedChanged,
   });
 
+  static const animDuration = Duration(milliseconds: 220);
+
   final Customer customer;
   final VoidCallback? onChangeCustomer;
   final ValueChanged<bool>? onExpandedChanged;
@@ -26,6 +31,7 @@ class CustomerAccordionHeader extends StatefulWidget {
 
 class _CustomerAccordionHeaderState extends State<CustomerAccordionHeader> {
   bool _expanded = false;
+  Timer? _collapseNotifyTimer;
 
   String get _todayLabel {
     final formatted =
@@ -34,9 +40,35 @@ class _CustomerAccordionHeaderState extends State<CustomerAccordionHeader> {
     return '${formatted[0].toUpperCase()}${formatted.substring(1)}';
   }
 
+  @override
+  void dispose() {
+    _collapseNotifyTimer?.cancel();
+    super.dispose();
+  }
+
   void _toggle() {
-    setState(() => _expanded = !_expanded);
-    widget.onExpandedChanged?.call(_expanded);
+    final next = !_expanded;
+    setState(() => _expanded = next);
+    _collapseNotifyTimer?.cancel();
+    if (next) {
+      widget.onExpandedChanged?.call(true);
+    } else {
+      // Mantener altura del AppBar hasta que termine el colapso.
+      _collapseNotifyTimer = Timer(CustomerAccordionHeader.animDuration, () {
+        if (!mounted) return;
+        widget.onExpandedChanged?.call(false);
+      });
+    }
+  }
+
+  String get _nitLabel {
+    final c = widget.customer;
+    final stored = c.taxId?.trim();
+    final dv = (stored != null && stored.isNotEmpty)
+        ? stored
+        : NitVerificationDigit.calculateAsString(c.documentNumber);
+    if (dv == null || dv.isEmpty) return c.documentNumber;
+    return '${c.documentNumber} - $dv';
   }
 
   @override
@@ -114,8 +146,8 @@ class _CustomerAccordionHeaderState extends State<CustomerAccordionHeader> {
               children: [
                 DetailInfoRow(
                   icon: Icons.badge_outlined,
-                  label: 'Documento',
-                  value: c.documentLabel,
+                  label: 'Nit',
+                  value: _nitLabel,
                 ),
                 DetailInfoRow(
                   icon: Icons.email_outlined,
@@ -154,7 +186,7 @@ class _CustomerAccordionHeaderState extends State<CustomerAccordionHeader> {
           crossFadeState: _expanded
               ? CrossFadeState.showSecond
               : CrossFadeState.showFirst,
-          duration: const Duration(milliseconds: 220),
+          duration: CustomerAccordionHeader.animDuration,
         ),
       ],
     );

@@ -14,6 +14,13 @@ class CategoryPill extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
+  static String _sentenceCase(String value) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) return trimmed;
+    final lower = trimmed.toLowerCase();
+    return '${lower[0].toUpperCase()}${lower.substring(1)}';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -33,7 +40,7 @@ class CategoryPill extends StatelessWidget {
               ),
             ),
             child: Text(
-              label,
+              _sentenceCase(label),
               style: AppTextStyles.label.copyWith(
                 color: selected ? Colors.white : AppColors.textSecondary,
                 fontWeight: FontWeight.w700,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/utils/currency_format.dart';
 
 class CashAmountField extends StatelessWidget {
   const CashAmountField({
@@ -20,8 +21,9 @@ class CashAmountField extends StatelessWidget {
         const SizedBox(height: 8),
         TextField(
           controller: controller,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          keyboardType: TextInputType.number,
           style: AppTextStyles.moneyLg,
+          inputFormatters: [CurrencyInputFormatter()],
           onChanged: onChanged,
           decoration: const InputDecoration(
             prefixText: '\$ ',

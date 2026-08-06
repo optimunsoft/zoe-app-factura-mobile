@@ -79,8 +79,8 @@ class PosController extends ChangeNotifier {
 
   double get tax => taxBreakdown.fold(0.0, (sum, t) => sum + t.amount);
 
-  double get _ivaAmount => taxBreakdown
-      .where((t) => t.isIva)
+  double get _includedTaxAmount => taxBreakdown
+      .where((t) => t.includedInPrice)
       .fold(0.0, (sum, t) => sum + t.amount);
 
   double get _additionalTaxAmount => taxBreakdown
@@ -90,7 +90,7 @@ class PosController extends ChangeNotifier {
   /// Base imponible mostrada en resumen.
   double get subtotal {
     if (ivaIncluido) {
-      return goodsTotal - _ivaAmount;
+      return goodsTotal - _includedTaxAmount;
     }
     return goodsTotal;
   }
@@ -126,12 +126,28 @@ class PosController extends ChangeNotifier {
     return match.isEmpty ? 0 : match.first.quantity;
   }
 
+  /// Cantidad total en carrito del mismo producto (todas las variantes de precio).
+  int quantityOfBase(String stockKey) {
+    return _cart
+        .where((i) => i.product.stockKey == stockKey)
+        .fold(0, (sum, i) => sum + i.quantity);
+  }
+
+  /// Máximo permitido para esta línea respetando el stock compartido.
+  int maxQuantityFor(Product product) {
+    final others =
+        quantityOfBase(product.stockKey) - quantityOf(product.id);
+    final max = product.stock - others;
+    return max < 0 ? 0 : max;
+  }
+
   void addProduct(Product product) {
     if (!product.inStock) return;
+    if (quantityOfBase(product.stockKey) >= product.stock) return;
+
     final index = _cart.indexWhere((i) => i.product.id == product.id);
     if (index >= 0) {
       final current = _cart[index];
-      if (current.quantity >= product.stock) return;
       _cart[index] = current.copyWith(quantity: current.quantity + 1);
     } else {
       _cart.add(CartItem(product: product, quantity: 1));
@@ -148,7 +164,17 @@ class PosController extends ChangeNotifier {
       }
       return;
     }
-    final capped = qty > product.stock ? product.stock : qty;
+
+    final maxForLine = maxQuantityFor(product);
+    final capped = qty > maxForLine ? maxForLine : qty;
+    if (capped <= 0) {
+      if (index >= 0) {
+        _cart.removeAt(index);
+        notifyListeners();
+      }
+      return;
+    }
+
     if (index >= 0) {
       _cart[index] = _cart[index].copyWith(quantity: capped);
     } else {

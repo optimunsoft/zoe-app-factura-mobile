@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../../data/pos_controller.dart';
 import '../../../../domain/models/cart_item.dart';
 import 'cart_line_item.dart';
 
@@ -25,6 +27,8 @@ class CartItemsList extends StatelessWidget {
       );
     }
 
+    final pos = context.watch<PosController>();
+
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
       itemCount: items.length,
@@ -32,6 +36,7 @@ class CartItemsList extends StatelessWidget {
         final item = items[index];
         return CartLineItem(
           item: item,
+          maxQuantity: pos.maxQuantityFor(item.product),
           onQuantityChanged: (qty) => onQuantityChanged(item, qty),
           onRemove: () => onRemove(item),
         );

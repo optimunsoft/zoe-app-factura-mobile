@@ -13,11 +13,13 @@ class CartLineItem extends StatelessWidget {
     required this.item,
     required this.onQuantityChanged,
     required this.onRemove,
+    this.maxQuantity,
   });
 
   final CartItem item;
   final ValueChanged<int> onQuantityChanged;
   final VoidCallback onRemove;
+  final int? maxQuantity;
 
   @override
   Widget build(BuildContext context) {
@@ -29,36 +31,36 @@ class CartLineItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.border),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const SizedBox(
-            width: 48,
-            height: 48,
-            child: ProductImagePlaceholder(compact: true),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(item.product.name, style: AppTextStyles.label),
-                const SizedBox(height: 2),
-                MoneyText(item.product.price, color: AppColors.textSecondary),
-                const SizedBox(height: 10),
-                QuantityStepper(
-                  value: item.quantity,
-                  min: 1,
-                  max: item.product.stock,
-                  onChanged: onQuantityChanged,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const SizedBox(
+                width: 48,
+                height: 48,
+                child: ProductImagePlaceholder(compact: true),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.product.name,
+                      style: AppTextStyles.label,
+                      softWrap: true,
+                    ),
+                    const SizedBox(height: 2),
+                    MoneyText(
+                      item.product.price,
+                      color: AppColors.textSecondary,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
               IconActionButton(
                 icon: Icons.delete_outline_rounded,
                 color: AppColors.danger,
@@ -66,7 +68,23 @@ class CartLineItem extends StatelessWidget {
                 tooltip: 'Eliminar',
                 onPressed: onRemove,
               ),
-              const SizedBox(height: 12),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Flexible(
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: QuantityStepper(
+                    value: item.quantity,
+                    min: 1,
+                    max: maxQuantity ?? item.product.stock,
+                    onChanged: onQuantityChanged,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
               MoneyText(item.lineTotal, large: true),
             ],
           ),

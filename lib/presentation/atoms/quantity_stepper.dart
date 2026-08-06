@@ -41,11 +41,14 @@ class QuantityStepper extends StatelessWidget {
               style: AppTextStyles.label.copyWith(fontWeight: FontWeight.w700),
             ),
           ),
-          _StepBtn(
-            icon: Icons.add,
-            onTap: value < max ? () => onChanged(value + 1) : null,
-            emphasize: true,
-          ),
+          if (value < max)
+            _StepBtn(
+              icon: Icons.add,
+              onTap: () => onChanged(value + 1),
+              emphasize: true,
+            )
+          else
+            const SizedBox(width: 40),
         ],
       ),
     );
