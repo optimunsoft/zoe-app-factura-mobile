@@ -67,8 +67,8 @@ class _PosCatalogPageState extends State<PosCatalogPage> {
     }
 
     await context.read<ProductsStore>().loadProducts(
-          query: ProductQuery(idSucursal: sucursalId),
-        );
+      query: ProductQuery(idSucursal: sucursalId),
+    );
   }
 
   void _onSearchChanged(String value) {
@@ -89,7 +89,8 @@ class _PosCatalogPageState extends State<PosCatalogPage> {
     SellingPriceOption? priceOption,
   }) {
     final options = product.sellingPrices.options;
-    final option = priceOption ??
+    final option =
+        priceOption ??
         (options.isNotEmpty
             ? options.first
             : SellingPriceOption(
@@ -101,7 +102,9 @@ class _PosCatalogPageState extends State<PosCatalogPage> {
     final useCustomPrice = priceOption != null && priceOption.key != 'default';
 
     return pos.Product(
-      id: useCustomPrice ? '${product.id}_${option.key}' : product.id.toString(),
+      id: useCustomPrice
+          ? '${product.id}_${option.key}'
+          : product.id.toString(),
       baseId: product.id.toString(),
       name: useCustomPrice ? '${product.name} (${option.label})' : product.name,
       price: option.price,
@@ -137,7 +140,8 @@ class _PosCatalogPageState extends State<PosCatalogPage> {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(_appBarHeight(customer)),
         child: Material(
-          color: Theme.of(context).appBarTheme.backgroundColor ??
+          color:
+              Theme.of(context).appBarTheme.backgroundColor ??
               AppColors.surface,
           elevation: 0,
           child: SafeArea(
@@ -231,9 +235,7 @@ class _PosCatalogPageState extends State<PosCatalogPage> {
             },
           ),
           const SizedBox(height: 12),
-          Expanded(
-            child: _buildProductsGrid(posCtrl, productsStore),
-          ),
+          Expanded(child: _buildProductsGrid(posCtrl, productsStore)),
         ],
       ),
       bottomNavigationBar: OrderSummaryBar(
@@ -281,36 +283,52 @@ class _PosCatalogPageState extends State<PosCatalogPage> {
       );
     }
 
-    return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: 12,
-        crossAxisSpacing: 12,
-        childAspectRatio: 0.62,
-      ),
-      itemCount: store.items.length,
-      itemBuilder: (context, index) {
-        final apiProduct = store.items[index];
-        final product = _toPosProduct(apiProduct);
-        final qty = posCtrl.quantityOf(product.id);
-        return ProductCard(
-          product: product,
-          quantity: qty,
-          maxQuantity: posCtrl.maxQuantityFor(product),
-          onTap: () => ProductDetailSheet.show(
-            context,
-            product: apiProduct,
-            onAdd: product.inStock
-                ? (priceOption) {
-                    posCtrl.addProduct(
-                      _toPosProduct(apiProduct, priceOption: priceOption),
-                    );
-                  }
-                : null,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const crossCount = 2;
+        const crossSpacing = 12.0;
+        const horizontalPad = 32.0; // 16 + 16
+        final cardWidth =
+            (constraints.maxWidth - horizontalPad - crossSpacing) / crossCount;
+
+        // Altura exacta del contenido (sin huecos artificiales).
+        final cardHeight =
+            (cardWidth / ProductCard.imageAspectRatio) +
+            ProductCard.fixedBelowImageHeight;
+        final aspectRatio = cardWidth / cardHeight;
+
+        return GridView.builder(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossCount,
+            mainAxisSpacing: 12,
+            crossAxisSpacing: crossSpacing,
+            childAspectRatio: aspectRatio,
           ),
-          onAdd: () => posCtrl.addProduct(product),
-          onQuantityChanged: (v) => posCtrl.setQuantity(product, v),
+          itemCount: store.items.length,
+          itemBuilder: (context, index) {
+            final apiProduct = store.items[index];
+            final product = _toPosProduct(apiProduct);
+            final qty = posCtrl.quantityOf(product.id);
+            return ProductCard(
+              product: product,
+              quantity: qty,
+              maxQuantity: posCtrl.maxQuantityFor(product),
+              onTap: () => ProductDetailSheet.show(
+                context,
+                product: apiProduct,
+                onAdd: product.inStock
+                    ? (priceOption) {
+                        posCtrl.addProduct(
+                          _toPosProduct(apiProduct, priceOption: priceOption),
+                        );
+                      }
+                    : null,
+              ),
+              onAdd: () => posCtrl.addProduct(product),
+              onQuantityChanged: (v) => posCtrl.setQuantity(product, v),
+            );
+          },
         );
       },
     );

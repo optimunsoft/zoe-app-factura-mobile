@@ -4,6 +4,7 @@ import '../domain/models/customer.dart';
 import '../domain/models/payment_method.dart';
 import '../domain/models/product.dart';
 import '../domain/models/sale_receipt.dart';
+import '../modules/taxes/domain/models/taxes.models.dart';
 
 class PosController extends ChangeNotifier {
   final List<CartItem> _cart = [];
@@ -99,6 +100,63 @@ class PosController extends ChangeNotifier {
 
   /// Total a cobrar = precios + impuestos/cargos que no vienen incluidos.
   double get total => goodsTotal + _additionalTaxAmount - discount;
+
+  TaxRetention? _findRetention(List<TaxRetention> options, int? id) {
+    if (id == null) return null;
+    for (final item in options) {
+      if (item.id == id) return item;
+    }
+    return null;
+  }
+
+  /// Importe de retefuente de una línea (0 si no aplica).
+  double reteFuenteAmountFor(
+    CartItem item,
+    List<TaxRetention> reteFuenteOptions,
+  ) {
+    final retention = _findRetention(reteFuenteOptions, item.reteFuenteId);
+    if (retention == null) return 0;
+    return retention.amountOn(
+      item.withholdingBase(ivaIncluido: ivaIncluido),
+    );
+  }
+
+  /// Suma de retefuente de todas las líneas del carrito.
+  double reteFuenteTotal(List<TaxRetention> reteFuenteOptions) {
+    return _cart.fold<double>(
+      0,
+      (sum, item) => sum + reteFuenteAmountFor(item, reteFuenteOptions),
+    );
+  }
+
+  void setReteFuente(String productId, int? retentionId) {
+    final index = _cart.indexWhere((i) => i.product.id == productId);
+    if (index < 0) return;
+    final current = _cart[index];
+    _cart[index] = retentionId == null
+        ? current.copyWith(clearReteFuente: true)
+        : current.copyWith(reteFuenteId: retentionId);
+    notifyListeners();
+  }
+
+  void clearAllReteFuente() {
+    var changed = false;
+    for (var i = 0; i < _cart.length; i++) {
+      if (_cart[i].reteFuenteId != null) {
+        _cart[i] = _cart[i].copyWith(clearReteFuente: true);
+        changed = true;
+      }
+    }
+    if (changed) notifyListeners();
+  }
+
+  void applyReteFuenteToAll(int retentionId) {
+    if (_cart.isEmpty) return;
+    for (var i = 0; i < _cart.length; i++) {
+      _cart[i] = _cart[i].copyWith(reteFuenteId: retentionId);
+    }
+    notifyListeners();
+  }
 
   void setIvaIncluido(bool value) {
     ivaIncluido = value;

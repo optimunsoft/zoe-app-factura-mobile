@@ -29,14 +29,14 @@ class AppBadge extends StatelessWidget {
     }
     if (stock <= 8) {
       return AppBadge(
-        label: 'cantidad: $stock',
+        label: 'Cantidad: $stock',
         background: AppColors.warningBg,
         foreground: AppColors.warning,
         fontSize: fontSize,
       );
     }
     return AppBadge(
-      label: 'cantidad: $stock',
+      label: 'Cantidad: $stock',
       background: AppColors.successBg,
       foreground: AppColors.success,
       fontSize: fontSize,

@@ -10,6 +10,7 @@ class MoneyText extends StatelessWidget {
     this.color,
     this.large = false,
     this.xl = false,
+    this.hideZeroDecimals = false,
   });
 
   final num value;
@@ -17,6 +18,7 @@ class MoneyText extends StatelessWidget {
   final Color? color;
   final bool large;
   final bool xl;
+  final bool hideZeroDecimals;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +28,7 @@ class MoneyText extends StatelessWidget {
             ? AppTextStyles.moneyLg
             : AppTextStyles.money;
     return Text(
-      CurrencyFormat.money(value),
+      CurrencyFormat.money(value, hideZeroDecimals: hideZeroDecimals),
       style: (style ?? base).copyWith(color: color ?? base.color),
     );
   }

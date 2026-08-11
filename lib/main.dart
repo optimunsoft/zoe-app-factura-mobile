@@ -15,6 +15,8 @@ import 'data/pos_controller.dart';
 import 'modules/categories/store/categories.store.dart';
 import 'modules/method_payments/store/method_payments.store.dart';
 import 'modules/products/store/products.store.dart';
+import 'modules/sales/store/sales.store.dart';
+import 'modules/taxes/store/taxes.store.dart';
 import 'presentation/pages/login/login_page.dart';
 import 'presentation/pages/main_shell/main_shell.dart';
 
@@ -43,6 +45,8 @@ class TiendaATiendaApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CategoriesStore()),
         ChangeNotifierProvider(create: (_) => ProductsStore()),
         ChangeNotifierProvider(create: (_) => MethodPaymentsStore()),
+        ChangeNotifierProvider(create: (_) => SalesStore()),
+        ChangeNotifierProvider(create: (_) => TaxesStore()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

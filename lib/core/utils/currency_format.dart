@@ -14,7 +14,19 @@ abstract final class CurrencyFormat {
     decimalDigits: 2,
   );
 
-  static String money(num value) => _fmt.format(value);
+  static String money(num value, {bool hideZeroDecimals = false}) {
+    if (hideZeroDecimals) {
+      final d = value.toDouble();
+      if (d == d.roundToDouble()) {
+        return NumberFormat.currency(
+          locale: 'es_MX',
+          symbol: '\$',
+          decimalDigits: 0,
+        ).format(d);
+      }
+    }
+    return _fmt.format(value);
+  }
 
   static String compact(num value) {
     if (value >= 1000) {

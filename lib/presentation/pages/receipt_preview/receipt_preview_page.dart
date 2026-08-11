@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/utils/currency_format.dart';
 import '../../../domain/models/sale_receipt.dart';
 import '../../atoms/app_button.dart';
+import '../../atoms/whatsapp_share_button.dart';
 import '../../organisms/app_bottom_nav.dart';
 import 'widgets/thermal_receipt_ticket.dart';
 
@@ -67,11 +69,11 @@ class _ReceiptPreviewPageState extends State<ReceiptPreviewPage> {
             icon: Icons.print_rounded,
             onPressed: () => _snack('Enviado a impresora térmica ($_widthMm mm)'),
           ),
-          AppButton(
+          BotonWhatsAppShare(
             label: 'Enviar por WhatsApp',
-            icon: Icons.chat_rounded,
-            variant: AppButtonVariant.secondary,
-            onPressed: () => _snack('Compartir recibo por WhatsApp…'),
+            nombreArchivo: 'ticket_${widget.receipt.orderId}.txt',
+            mensaje:
+                'Ticket ${widget.receipt.orderId} — Total: ${CurrencyFormat.money(widget.receipt.total)}',
           ),
           AppButton(
             label: 'Nueva venta',

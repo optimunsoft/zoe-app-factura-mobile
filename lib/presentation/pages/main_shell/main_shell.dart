@@ -51,12 +51,14 @@ class _MainShellState extends State<MainShell> {
   }
 
   Future<void> _onTabChanged(int i) async {
+    if (i == _tab) return;
+
     final pos = context.read<PosController>();
     final hasSaleInProgress =
         pos.itemCount > 0 || pos.activeCustomer != null;
 
-    // Venta → Inicio con cliente y/o productos seleccionados.
-    if (_tab == 1 && i == 0 && hasSaleInProgress) {
+    // Saliendo de Venta (Inicio / Facturas / Reportes) con proceso en curso.
+    if (_tab == 1 && i != 1 && hasSaleInProgress) {
       final ok = await _confirmLeaveSale();
       if (!ok || !mounted) return;
       pos.startNewSale();

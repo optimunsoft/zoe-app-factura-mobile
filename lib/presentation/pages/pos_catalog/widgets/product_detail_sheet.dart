@@ -121,6 +121,7 @@ class _ProductDetailSheetState extends State<ProductDetailSheet> {
                             label: product.category.name,
                             background: AppColors.primaryLight,
                             foreground: AppColors.primaryDark,
+                            fontSize: 15,
                           ),
                         if (product.productTaxType.isNotEmpty)
                           AppBadge(

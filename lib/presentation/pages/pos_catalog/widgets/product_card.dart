@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../domain/models/product.dart';
-import '../../../atoms/app_badge.dart';
 import '../../../atoms/money_text.dart';
 import '../../../atoms/product_image_placeholder.dart';
 import '../../../atoms/quantity_stepper.dart';
@@ -27,13 +26,23 @@ class ProductCard extends StatelessWidget {
   /// Tope de esta línea (stock compartido entre precios). Por defecto [product.stock].
   final int? maxQuantity;
 
-  static final TextStyle _nameStyle =
-      AppTextStyles.label.copyWith(height: 1.25);
+  /// Relación ancho/alto del bloque de imagen.
+  static const imageAspectRatio = 1.15;
 
-  static double get _nameLineHeight =>
-      (_nameStyle.fontSize ?? 13) * (_nameStyle.height ?? 1.25);
+  /// Altura fija del contenido bajo la imagen (padding + textos + precio + CTA).
+  static const fixedBelowImageHeight = 178.0;
 
-  /// Si el nombre cabe en una línea, fuerza salto para ocupar dos renglones.
+  static final TextStyle _nameStyle = AppTextStyles.label.copyWith(
+    fontSize: 14,
+    fontWeight: FontWeight.w700,
+    height: 1.25,
+  );
+
+  /// Altura fija de 2 renglones (directriz original).
+  static double get _nameBlockHeight =>
+      (_nameStyle.fontSize ?? 14) * (_nameStyle.height ?? 1.25) * 2;
+
+  /// Si cabe en 1 línea, fuerza 2 renglones; si es largo, wrap natural (máx. 2 + …).
   static String _twoLineName(String name, double maxWidth) {
     final trimmed = name.trim();
     if (trimmed.isEmpty) return trimmed;
@@ -55,104 +64,139 @@ class ProductCard extends StatelessWidget {
     return '$trimmed\n';
   }
 
+  Color get _stockFg {
+    if (product.stock <= 0) return AppColors.danger;
+    if (product.stock <= 8) return AppColors.warning;
+    return AppColors.success;
+  }
+
+  Color get _stockBg {
+    if (product.stock <= 0) return AppColors.dangerBg;
+    if (product.stock <= 8) return AppColors.warningBg;
+    return AppColors.successBg;
+  }
+
   @override
   Widget build(BuildContext context) {
     final disabled = !product.inStock;
+    final maxQty = maxQuantity ?? product.stock;
 
     return Material(
       color: AppColors.surface,
-      borderRadius: BorderRadius.circular(14),
+      elevation: 1.5,
+      shadowColor: Colors.black.withValues(alpha: 0.08),
+      borderRadius: BorderRadius.circular(16),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(color: AppColors.border),
         ),
         padding: const EdgeInsets.all(12),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Solo esta zona abre el detalle; el botón/stepper queda fuera.
-            Expanded(
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: onTap,
-                  borderRadius: BorderRadius.circular(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const AspectRatio(
-                        aspectRatio: 1.55,
-                        child: ProductImagePlaceholder(),
-                      ),
-                      const SizedBox(height: 10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            AppBadge.stock(stock: product.stock),
-                            const SizedBox(height: 8),
-                            SizedBox(
-                              width: double.infinity,
-                              height: _nameLineHeight * 2,
-                              child: LayoutBuilder(
-                                builder: (context, constraints) {
-                                  return Text(
-                                    _twoLineName(
-                                      product.name,
-                                      constraints.maxWidth,
-                                    ),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: _nameStyle,
-                                  );
-                                },
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            MoneyText(
-                              product.price,
-                              color: AppColors.textPrimary,
-                            ),
-                            const Spacer(),
-                          ],
-                        ),
-                      ),
-                    ],
+            GestureDetector(
+              onTap: onTap,
+              behavior: HitTestBehavior.opaque,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const AspectRatio(
+                    aspectRatio: imageAspectRatio,
+                    child: ProductImagePlaceholder(),
                   ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            if (quantity == 0)
-              SizedBox(
-                width: double.infinity,
-                height: 42,
-                child: ElevatedButton(
-                  onPressed: disabled ? null : onAdd,
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    backgroundColor: AppColors.primary,
-                    disabledBackgroundColor: AppColors.surfaceAlt,
-                  ),
-                  child: Text(
-                    '+ Agregar',
-                    style: AppTextStyles.button.copyWith(
-                      color: disabled ? AppColors.textMuted : Colors.white,
-                      fontSize: 13,
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    height: _nameBlockHeight,
+                    width: double.infinity,
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        return Text(
+                          _twoLineName(product.name, constraints.maxWidth),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: _nameStyle,
+                        );
+                      },
                     ),
                   ),
-                ),
-              )
-            else
-              Align(
-                alignment: Alignment.center,
-                child: QuantityStepper(
-                  value: quantity,
-                  max: maxQuantity ?? product.stock,
-                  onChanged: onQuantityChanged,
-                ),
+                  const SizedBox(height: 8),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _stockBg,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: _stockFg.withValues(alpha: 0.25),
+                        ),
+                      ),
+                      child: Text(
+                        product.stock <= 0
+                            ? 'Agotado'
+                            : 'Cantidad: ${product.stock}',
+                        style: AppTextStyles.label.copyWith(
+                          color: _stockFg,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: MoneyText(
+                      product.price,
+                      color: AppColors.textPrimary,
+                      hideZeroDecimals: true,
+                      style: AppTextStyles.money.copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ],
               ),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 42,
+              child: quantity == 0
+                  ? ElevatedButton(
+                      onPressed: disabled ? null : onAdd,
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        backgroundColor: AppColors.primary,
+                        disabledBackgroundColor: AppColors.surfaceAlt,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: Text(
+                        '+ Agregar',
+                        style: AppTextStyles.button.copyWith(
+                          color: disabled ? AppColors.textMuted : Colors.white,
+                          fontSize: 14,
+                        ),
+                      ),
+                    )
+                  : Center(
+                      child: QuantityStepper(
+                        value: quantity,
+                        max: maxQty,
+                        onChanged: onQuantityChanged,
+                      ),
+                    ),
+            ),
           ],
         ),
       ),
