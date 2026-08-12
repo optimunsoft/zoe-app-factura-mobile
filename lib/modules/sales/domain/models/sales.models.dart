@@ -1,4 +1,4 @@
-/// Modelos del dominio de ventas (payload de creación de factura / venta).
+// Modelos del dominio de ventas (payload de creación de factura / venta).
 
 /// Cuerpo POST para crear una venta.
 class CreateSaleRequest {
@@ -59,7 +59,7 @@ class CreateSaleRequest {
   final String dispatchOrder;
   final String receptionOrder;
 
-  /// `total_factura` — restando retención si aplica.
+  /// `total_factura` — total bruto de la venta (sin restar retenciones).
   final double invoiceTotal;
 
   Map<String, dynamic> toJson() {
@@ -204,6 +204,79 @@ class SaleSummary {
       id: json['id']?.toString() ?? '',
       total: (json['total'] as num?)?.toDouble() ?? 0,
       status: json['status']?.toString(),
+    );
+  }
+}
+
+/// Totales básicos dentro de `json_doc.totales`.
+class CreateSaleTotals {
+  CreateSaleTotals({
+    required this.gross,
+    required this.taxableBase,
+    required this.grossWithTax,
+    required this.discounts,
+    required this.total,
+  });
+
+  final double gross;
+  final double taxableBase;
+  final double grossWithTax;
+  final double discounts;
+  final double total;
+
+  factory CreateSaleTotals.fromJson(Map<String, dynamic> json) {
+    return CreateSaleTotals(
+      gross: (json['valor_bruto'] as num?)?.toDouble() ?? 0,
+      taxableBase: (json['base_imponible'] as num?)?.toDouble() ?? 0,
+      grossWithTax: (json['valor_bruto_impuestos'] as num?)?.toDouble() ?? 0,
+      discounts: (json['descuentos'] as num?)?.toDouble() ?? 0,
+      total: (json['total'] as num?)?.toDouble() ?? 0,
+    );
+  }
+}
+
+/// Respuesta tipada de POST emitir-documento (`data.response`).
+class CreateSaleResult {
+  CreateSaleResult({
+    required this.id,
+    required this.documentNumber,
+    this.cufe = '',
+    this.qr = '',
+    this.signature = '',
+    this.dianMessage = '',
+    this.totals,
+    this.rawJsonDoc,
+  });
+
+  final int id;
+  final String documentNumber;
+  final String cufe;
+  final String qr;
+  final String signature;
+  final String dianMessage;
+  final CreateSaleTotals? totals;
+  final Map<String, dynamic>? rawJsonDoc;
+
+  factory CreateSaleResult.fromJson(Map<String, dynamic> json) {
+    final jsonDocRaw = json['json_doc'];
+    final jsonDoc = jsonDocRaw is Map
+        ? Map<String, dynamic>.from(jsonDocRaw)
+        : null;
+    final totalsRaw = jsonDoc?['totales'];
+
+    return CreateSaleResult(
+      id: (json['id'] as num?)?.toInt() ?? 0,
+      documentNumber: json['nro_doc']?.toString() ??
+          jsonDoc?['numero']?.toString() ??
+          '',
+      cufe: json['cufe']?.toString() ?? '',
+      qr: json['qr']?.toString() ?? '',
+      signature: json['firma']?.toString() ?? '',
+      dianMessage: json['dian_message']?.toString() ?? '',
+      totals: totalsRaw is Map
+          ? CreateSaleTotals.fromJson(Map<String, dynamic>.from(totalsRaw))
+          : null,
+      rawJsonDoc: jsonDoc,
     );
   }
 }

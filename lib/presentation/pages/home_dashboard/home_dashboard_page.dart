@@ -5,10 +5,8 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/mock_catalog.dart';
 import '../../../data/pos_controller.dart';
-import '../../../domain/models/sale_receipt.dart';
 import 'widgets/dashboard_card.dart';
 import 'widgets/printer_status_badge.dart';
-import '../../organisms/transaction_list.dart';
 
 class HomeDashboardPage extends StatelessWidget {
   const HomeDashboardPage({
@@ -17,14 +15,12 @@ class HomeDashboardPage extends StatelessWidget {
     required this.onDailySummary,
     required this.onInventory,
     required this.onReceipts,
-    required this.onOpenReceipt,
   });
 
   final VoidCallback onNewSale;
   final VoidCallback onDailySummary;
   final VoidCallback onInventory;
   final VoidCallback onReceipts;
-  final ValueChanged<SaleReceipt> onOpenReceipt;
 
   @override
   Widget build(BuildContext context) {
@@ -140,28 +136,13 @@ class HomeDashboardPage extends StatelessWidget {
                 onTap: onInventory,
               ),
               DashboardCard(
-                title: 'Tickets recientes',
+                title: 'Historial de ventas',
                 subtitle: 'Últimas facturas',
                 icon: Icons.receipt_long_rounded,
                 accent: AppColors.primaryDark,
                 onTap: onReceipts,
               ),
             ],
-          ),
-          const SizedBox(height: 22),
-          Row(
-            children: [
-              Expanded(child: Text('Recibos recientes', style: AppTextStyles.h3)),
-              TextButton(
-                onPressed: onReceipts,
-                child: Text('Ver todos', style: AppTextStyles.label.copyWith(color: AppColors.primary)),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          TransactionList(
-            transactions: MockCatalog.recentSales.take(3).toList(),
-            onTap: onOpenReceipt,
           ),
         ],
       ),

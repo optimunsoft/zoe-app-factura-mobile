@@ -113,11 +113,10 @@ class _MainShellState extends State<MainShell> {
         onDailySummary: () => _goTab(3),
         onInventory: () => _goTab(3),
         onReceipts: () => _goTab(2),
-        onOpenReceipt: _openReceipt,
       ),
       PosSaleFlowPage(onReviewPay: _openCheckout),
-      ReceiptsListPage(onOpenReceipt: _openReceipt),
-      ReportsPage(onOpenReceipt: _openReceipt),
+      const ReceiptsListPage(),
+      const ReportsPage(),
     ];
 
     return Scaffold(

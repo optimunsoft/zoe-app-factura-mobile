@@ -260,11 +260,15 @@ class PosController extends ChangeNotifier {
     required PaymentMethod method,
     double? cashReceived,
     double discountAmount = 0,
+    String? orderId,
+    double? totalOverride,
   }) {
     final now = DateTime.now();
-    final id =
-        'INV-${1000 + now.millisecond + now.second + (_cart.length * 7)}';
-    final saleTotal = goodsTotal + _additionalTaxAmount - discountAmount;
+    final id = (orderId != null && orderId.isNotEmpty)
+        ? orderId
+        : 'INV-${1000 + now.millisecond + now.second + (_cart.length * 7)}';
+    final saleTotal = totalOverride ??
+        (goodsTotal + _additionalTaxAmount - discountAmount);
     final receipt = SaleReceipt(
       orderId: id,
       timestamp: now,

@@ -4,22 +4,22 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../data/pos_controller.dart';
 import 'widgets/cart_items_list.dart';
 import 'widgets/checkout_pay_bar.dart';
-import '../payment_methods/payment_methods_page.dart';
+import '../payment_methods/checkout_summary_page.dart';
 
 /// Pantalla 1 — Carrito / Checkout inicial.
-/// Lista de productos con +/− y eliminar; CTA "Pagar" → formas de pago.
+/// Lista de productos con +/− y eliminar; CTA "Pagar" → resumen → formas de pago.
 class CheckoutPage extends StatelessWidget {
   const CheckoutPage({super.key, required this.onCompleted});
 
   final VoidCallback onCompleted;
 
-  Future<void> _openPaymentMethods(BuildContext context) async {
+  Future<void> _openCheckoutSummary(BuildContext context) async {
     final pos = context.read<PosController>();
     if (pos.itemCount == 0) return;
 
     final completed = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
-        builder: (_) => const PaymentMethodsPage(),
+        builder: (_) => const CheckoutSummaryPage(),
       ),
     );
 
@@ -46,7 +46,7 @@ class CheckoutPage extends StatelessWidget {
       bottomNavigationBar: CheckoutPayBar(
         total: pos.total,
         itemCount: pos.itemCount,
-        onPay: pos.itemCount > 0 ? () => _openPaymentMethods(context) : null,
+        onPay: pos.itemCount > 0 ? () => _openCheckoutSummary(context) : null,
       ),
     );
   }

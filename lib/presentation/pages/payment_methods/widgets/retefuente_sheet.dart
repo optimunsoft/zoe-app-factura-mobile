@@ -11,8 +11,8 @@ import '../../../atoms/app_button.dart';
 import '../../../atoms/money_text.dart';
 import '../../../atoms/pct_retention_dropdown.dart';
 
-/// Slide-over para aplicar retefuente (código 06) por producto del carrito.
-class ReteFuenteSheet extends StatelessWidget {
+/// Slide-over para elegir retefuente (código 06) por producto y confirmar con Añadir.
+class ReteFuenteSheet extends StatefulWidget {
   const ReteFuenteSheet({super.key});
 
   static Future<void> show(BuildContext context) {
@@ -30,13 +30,67 @@ class ReteFuenteSheet extends StatelessWidget {
   }
 
   @override
+  State<ReteFuenteSheet> createState() => _ReteFuenteSheetState();
+}
+
+class _ReteFuenteSheetState extends State<ReteFuenteSheet> {
+  /// productId → retención id (null = sin retefuente).
+  late Map<String, int?> _draft;
+  var _draftReady = false;
+
+  void _ensureDraft(PosController pos) {
+    if (_draftReady) return;
+    _draft = {
+      for (final item in pos.cart) item.product.id: item.reteFuenteId,
+    };
+    _draftReady = true;
+  }
+
+  TaxRetention? _findById(List<TaxRetention> options, int? id) {
+    if (id == null) return null;
+    for (final option in options) {
+      if (option.id == id) return option;
+    }
+    return null;
+  }
+
+  double _draftAmountFor(
+    CartItem item,
+    List<TaxRetention> options,
+    PosController pos,
+  ) {
+    final selected = _findById(options, _draft[item.product.id]);
+    if (selected == null) return 0;
+    return selected.amountOn(
+      item.withholdingBase(ivaIncluido: pos.ivaIncluido),
+    );
+  }
+
+  double _draftTotal(PosController pos, List<TaxRetention> options) {
+    return pos.cart.fold<double>(
+      0,
+      (sum, item) => sum + _draftAmountFor(item, options, pos),
+    );
+  }
+
+  void _addAndClose(PosController pos) {
+    for (final entry in _draft.entries) {
+      pos.setReteFuente(entry.key, entry.value);
+    }
+    Navigator.of(context).pop();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final pos = context.watch<PosController>();
     final taxesStore = context.watch<TaxesStore>();
+    _ensureDraft(pos);
+
     final options = taxesStore.reteFuenteOptions;
     final bottom = MediaQuery.paddingOf(context).bottom;
     final maxHeight = MediaQuery.sizeOf(context).height * 0.88;
-    final totalRete = pos.reteFuenteTotal(options);
+    final totalRete = _draftTotal(pos, options);
+    final canAdd = options.isNotEmpty && pos.cart.isNotEmpty;
 
     return Align(
       alignment: Alignment.bottomCenter,
@@ -74,27 +128,13 @@ class ReteFuenteSheet extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
-                'Elige el porcentaje por producto. Código 06.',
+                'Elige el porcentaje por producto y pulsa Añadir.',
                 style: AppTextStyles.bodySmall,
               ),
             ),
-            if (options.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: AppButton(
-                  label: 'Quitar todas',
-                  variant: AppButtonVariant.secondary,
-                  height: 42,
-                  onPressed: pos.cart.any((e) => e.reteFuenteId != null)
-                      ? () => pos.clearAllReteFuente()
-                      : null,
-                ),
-              ),
-            ],
             const SizedBox(height: 8),
             Expanded(
-              child: _buildBody(context, pos, taxesStore, options),
+              child: _buildBody(pos, taxesStore, options),
             ),
             Container(
               width: double.infinity,
@@ -102,20 +142,30 @@ class ReteFuenteSheet extends StatelessWidget {
               decoration: const BoxDecoration(
                 border: Border(top: BorderSide(color: AppColors.border)),
               ),
-              child: Row(
+              child: Column(
                 children: [
-                  Expanded(
-                    child: Text(
-                      'Total ReteFuente',
-                      style: AppTextStyles.h3,
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Total ReteFuente',
+                          style: AppTextStyles.h3,
+                        ),
+                      ),
+                      MoneyText(
+                        totalRete > 0 ? -totalRete : 0,
+                        large: true,
+                        color: totalRete > 0
+                            ? AppColors.danger
+                            : AppColors.textMuted,
+                      ),
+                    ],
                   ),
-                  MoneyText(
-                    totalRete > 0 ? -totalRete : 0,
-                    large: true,
-                    color: totalRete > 0
-                        ? AppColors.danger
-                        : AppColors.textMuted,
+                  const SizedBox(height: 12),
+                  AppButton(
+                    label: 'Añadir',
+                    icon: Icons.add_rounded,
+                    onPressed: canAdd ? () => _addAndClose(pos) : null,
                   ),
                 ],
               ),
@@ -127,7 +177,6 @@ class ReteFuenteSheet extends StatelessWidget {
   }
 
   Widget _buildBody(
-    BuildContext context,
     PosController pos,
     TaxesStore taxesStore,
     List<TaxRetention> options,
@@ -188,14 +237,17 @@ class ReteFuenteSheet extends StatelessWidget {
       separatorBuilder: (_, _) => const SizedBox(height: 10),
       itemBuilder: (context, index) {
         final item = pos.cart[index];
+        final selected = _findById(options, _draft[item.product.id]);
         return _ReteFuenteLineCard(
           item: item,
           options: options,
-          amount: pos.reteFuenteAmountFor(item, options),
-          onChanged: (value) => pos.setReteFuente(
-            item.product.id,
-            value?.id,
-          ),
+          selected: selected,
+          amount: _draftAmountFor(item, options, pos),
+          onChanged: (value) {
+            setState(() {
+              _draft[item.product.id] = value?.id;
+            });
+          },
         );
       },
     );
@@ -206,23 +258,16 @@ class _ReteFuenteLineCard extends StatelessWidget {
   const _ReteFuenteLineCard({
     required this.item,
     required this.options,
+    required this.selected,
     required this.amount,
     required this.onChanged,
   });
 
   final CartItem item;
   final List<TaxRetention> options;
+  final TaxRetention? selected;
   final double amount;
   final ValueChanged<TaxRetention?> onChanged;
-
-  TaxRetention? get _selected {
-    final id = item.reteFuenteId;
-    if (id == null) return null;
-    for (final option in options) {
-      if (option.id == id) return option;
-    }
-    return null;
-  }
 
   String _formatPct(double value) {
     if (value % 1 == 0) return value.toStringAsFixed(0);
@@ -231,10 +276,9 @@ class _ReteFuenteLineCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final selected = _selected;
     final pctLabel = selected == null
         ? 'ReteFuente (0%)'
-        : 'ReteFuente (${_formatPct(selected.percentageValue)}%)';
+        : 'ReteFuente (${_formatPct(selected!.percentageValue)}%)';
 
     return Container(
       padding: const EdgeInsets.all(14),

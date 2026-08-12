@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/auth/auth_controller.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/currency_format.dart';
@@ -8,15 +9,25 @@ import '../../../data/pos_controller.dart';
 import '../../../domain/models/payment_method.dart';
 import '../../../modules/method_payments/domain/models/method_payments.models.dart';
 import '../../../modules/method_payments/store/method_payments.store.dart';
+import '../../../modules/sales/domain/sale_request_builder.models.dart';
+import '../../../modules/sales/store/sales.store.dart';
 import '../../../modules/taxes/domain/models/taxes.models.dart';
 import '../../../modules/taxes/store/taxes.store.dart';
+import '../../atoms/money_text.dart';
 import 'widgets/payment_methods_panel.dart';
 import 'widgets/payment_summary_footer.dart';
-import 'widgets/retefuente_sheet.dart';
+import 'widgets/sale_notes_dialog.dart';
 
-/// Pantalla 2 — Formas de pago (API medios de pago).
+/// Pantalla — Formas de pago (retenciones ya definidas en el resumen).
 class PaymentMethodsPage extends StatefulWidget {
-  const PaymentMethodsPage({super.key});
+  const PaymentMethodsPage({
+    super.key,
+    this.selectedReteIvaId,
+    this.selectedReteIcaId,
+  });
+
+  final int? selectedReteIvaId;
+  final int? selectedReteIcaId;
 
   @override
   State<PaymentMethodsPage> createState() => _PaymentMethodsPageState();
@@ -27,8 +38,7 @@ class _PaymentMethodsPageState extends State<PaymentMethodsPage> {
   final Set<int> _lockedIds = {};
   final Map<int, double> _confirmedAmounts = {};
 
-  int? _selectedReteIvaId;
-  int? _selectedReteIcaId;
+  bool _isSubmitting = false;
 
   @override
   void initState() {
@@ -38,9 +48,10 @@ class _PaymentMethodsPageState extends State<PaymentMethodsPage> {
         if (!mounted) return;
         _syncControllers(context.read<MethodPaymentsStore>().items);
       });
-      context.read<TaxesStore>().loadAll(
-            query: TaxesQuery(page: '1', amount: '100'),
-          );
+      final taxes = context.read<TaxesStore>();
+      if (taxes.items.isEmpty) {
+        taxes.loadAll(query: TaxesQuery(page: '1', amount: '100'));
+      }
     });
   }
 
@@ -59,8 +70,9 @@ class _PaymentMethodsPageState extends State<PaymentMethodsPage> {
     setState(() {});
   }
 
-  double get _paid =>
-      _confirmedAmounts.values.fold(0.0, (sum, a) => sum + a);
+  double get _paid => CurrencyFormat.roundMoney(
+        _confirmedAmounts.values.fold(0.0, (sum, a) => sum + a),
+      );
 
   TaxRetention? _findById(List<TaxRetention> options, int? id) {
     if (id == null) return null;
@@ -70,35 +82,33 @@ class _PaymentMethodsPageState extends State<PaymentMethodsPage> {
     return null;
   }
 
-  /// Base ReteIVA: monto de IVA del carrito.
   double _ivaBase(PosController pos) {
     return pos.taxBreakdown
         .where((t) => t.isIva)
         .fold(0.0, (sum, t) => sum + t.amount);
   }
 
-  /// Base ReteICA: subtotal (base imponible).
-  double _icaBase(PosController pos) => pos.subtotal;
-
   double _reteIvaAmount(PosController pos, TaxRetention? selected) {
     return selected?.amountOn(_ivaBase(pos)) ?? 0;
   }
 
   double _reteIcaAmount(PosController pos, TaxRetention? selected) {
-    return selected?.amountOn(_icaBase(pos)) ?? 0;
+    return selected?.amountOn(pos.subtotal) ?? 0;
   }
 
-  /// Total a cobrar restando retenciones opcionales.
-  double _payableTotal(
+  /// Total a cubrir con medios de pago (después de retenciones).
+  double _amountDue(
     PosController pos, {
     required TaxRetention? reteIva,
     required TaxRetention? reteIca,
     required double reteFuente,
   }) {
-    final net = pos.total -
-        _reteIvaAmount(pos, reteIva) -
-        _reteIcaAmount(pos, reteIca) -
-        reteFuente;
+    final net = CurrencyFormat.roundMoney(
+      pos.total -
+          _reteIvaAmount(pos, reteIva) -
+          _reteIcaAmount(pos, reteIca) -
+          reteFuente,
+    );
     return net < 0 ? 0 : net;
   }
 
@@ -129,24 +139,33 @@ class _PaymentMethodsPageState extends State<PaymentMethodsPage> {
     return PaymentMethod.mixed;
   }
 
-  void _onAdd(
+  List<int> get _generalWithholdingIds {
+    return <int>[
+      ?widget.selectedReteIvaId,
+      ?widget.selectedReteIcaId,
+    ];
+  }
+
+  bool _onAdd(
     MethodPayment method, {
-    required double payable,
+    required double amountDue,
   }) {
     final ctrl = _controllers[method.id];
-    if (ctrl == null) return;
+    if (ctrl == null) return false;
 
     final amount = CurrencyFormat.parseInput(ctrl.text);
     if (amount <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Ingresa un monto válido')),
       );
-      return;
+      return false;
     }
 
     final othersPaid = _paid - (_confirmedAmounts[method.id] ?? 0);
-    final remaining = payable - othersPaid;
-    if (amount > remaining + 0.001) {
+    final remaining = CurrencyFormat.roundMoney(amountDue - othersPaid);
+    final amountCents = CurrencyFormat.toCents(amount);
+    final remainingCents = CurrencyFormat.toCents(remaining < 0 ? 0 : remaining);
+    if (amountCents > remainingCents) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -154,13 +173,14 @@ class _PaymentMethodsPageState extends State<PaymentMethodsPage> {
           ),
         ),
       );
-      return;
+      return false;
     }
 
     setState(() {
-      _confirmedAmounts[method.id] = amount;
+      _confirmedAmounts[method.id] = CurrencyFormat.roundMoney(amount);
       _lockedIds.add(method.id);
     });
+    return true;
   }
 
   void _onEdit(MethodPayment method) {
@@ -170,22 +190,97 @@ class _PaymentMethodsPageState extends State<PaymentMethodsPage> {
     });
   }
 
-  void _completeSale(PosController pos, double payable) {
+  Future<void> _completeSale(
+    PosController pos, {
+    required double amountDue,
+  }) async {
+    if (_isSubmitting) return;
     if (pos.itemCount == 0 || _confirmedAmounts.isEmpty) return;
 
-    if (_paid < payable) {
+    if (CurrencyFormat.toCents(_paid) < CurrencyFormat.toCents(amountDue)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('El monto pagado es insuficiente')),
       );
       return;
     }
 
-    final cash = _cashReceived;
-    pos.completeSale(
-      method: _toPosMethod(),
-      cashReceived: cash > 0 ? cash : null,
-    );
-    Navigator.of(context).pop(true);
+    final customer = pos.activeCustomer;
+    if (customer == null || int.tryParse(customer.id) == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Selecciona un cliente válido')),
+      );
+      return;
+    }
+
+    final branchId = context.read<AuthController>().user?.sucursalId;
+    if (branchId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No se encontró la sucursal de la sesión')),
+      );
+      return;
+    }
+
+    final notes = await showSaleNotesDialog(context);
+    if (!mounted || notes == null) return;
+
+    setState(() => _isSubmitting = true);
+
+    final navigator = Navigator.of(context);
+    final salesStore = context.read<SalesStore>();
+    final messenger = ScaffoldMessenger.of(context);
+    var leftPage = false;
+
+    try {
+      // total_factura del endpoint = pos.total (sin restar retenciones).
+      final request = SaleRequestBuilder.build(
+        pos: pos,
+        customer: customer,
+        branchId: branchId,
+        notes: notes,
+        generalWithholdingIds: _generalWithholdingIds,
+        confirmedPayments: Map<int, double>.from(_confirmedAmounts),
+      );
+
+      final result = await salesStore.createSale(request);
+      if (!mounted) return;
+
+      if (result == null) {
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(
+              salesStore.error ?? 'No se pudo emitir el documento',
+            ),
+          ),
+        );
+        return;
+      }
+
+      final cash = _cashReceived;
+      final orderId = result.documentNumber.isNotEmpty
+          ? result.documentNumber
+          : (result.id > 0 ? '${result.id}' : null);
+      final totalOverride = result.totals?.total ?? pos.total;
+
+      pos.completeSale(
+        method: _toPosMethod(),
+        cashReceived: cash > 0 ? cash : null,
+        orderId: orderId,
+        totalOverride: totalOverride,
+      );
+
+      if (!mounted) return;
+      leftPage = true;
+      navigator.pop(true);
+    } catch (e) {
+      if (!mounted) return;
+      messenger.showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    } finally {
+      if (!leftPage && mounted) {
+        setState(() => _isSubmitting = false);
+      }
+    }
   }
 
   @override
@@ -194,16 +289,13 @@ class _PaymentMethodsPageState extends State<PaymentMethodsPage> {
     final store = context.watch<MethodPaymentsStore>();
     final taxesStore = context.watch<TaxesStore>();
 
-    final reteIvaOptions = taxesStore.reteIvaOptions;
-    final reteIcaOptions = taxesStore.reteIcaOptions;
-    final reteFuenteOptions = taxesStore.reteFuenteOptions;
-    final selectedReteIva = _findById(reteIvaOptions, _selectedReteIvaId);
-    final selectedReteIca = _findById(reteIcaOptions, _selectedReteIcaId);
-
-    final reteIvaAmount = _reteIvaAmount(pos, selectedReteIva);
-    final reteIcaAmount = _reteIcaAmount(pos, selectedReteIca);
-    final reteFuenteAmount = pos.reteFuenteTotal(reteFuenteOptions);
-    final payable = _payableTotal(
+    final selectedReteIva =
+        _findById(taxesStore.reteIvaOptions, widget.selectedReteIvaId);
+    final selectedReteIca =
+        _findById(taxesStore.reteIcaOptions, widget.selectedReteIcaId);
+    final reteFuenteAmount =
+        pos.reteFuenteTotal(taxesStore.reteFuenteOptions);
+    final amountDue = _amountDue(
       pos,
       reteIva: selectedReteIva,
       reteIca: selectedReteIca,
@@ -221,39 +313,26 @@ class _PaymentMethodsPageState extends State<PaymentMethodsPage> {
       appBar: AppBar(
         title: Text('Formas de pago', style: AppTextStyles.h2),
       ),
-      body: _buildBody(store, pos, payable),
+      body: _buildBody(
+        store: store,
+        pos: pos,
+        amountDue: amountDue,
+      ),
       bottomNavigationBar: PaymentSummaryFooter(
-        subtotal: pos.subtotal,
-        taxBreakdown: pos.taxBreakdown,
-        total: pos.total,
-        payableTotal: payable,
-        reteIvaOptions: reteIvaOptions,
-        reteIcaOptions: reteIcaOptions,
-        selectedReteIva: selectedReteIva,
-        selectedReteIca: selectedReteIca,
-        reteIvaAmount: reteIvaAmount,
-        reteIcaAmount: reteIcaAmount,
-        reteFuenteAmount: reteFuenteAmount,
-        onReteIvaChanged: (value) => setState(() {
-          _selectedReteIvaId = value?.id;
-        }),
-        onReteIcaChanged: (value) => setState(() {
-          _selectedReteIcaId = value?.id;
-        }),
-        onOpenReteFuente: () => ReteFuenteSheet.show(context),
+        isSubmitting: _isSubmitting,
         canComplete: pos.itemCount > 0 &&
             _confirmedAmounts.isNotEmpty &&
-            _paid >= payable,
-        onComplete: () => _completeSale(pos, payable),
+            CurrencyFormat.toCents(_paid) >= CurrencyFormat.toCents(amountDue),
+        onComplete: () => _completeSale(pos, amountDue: amountDue),
       ),
     );
   }
 
-  Widget _buildBody(
-    MethodPaymentsStore store,
-    PosController pos,
-    double payable,
-  ) {
+  Widget _buildBody({
+    required MethodPaymentsStore store,
+    required PosController pos,
+    required double amountDue,
+  }) {
     if (store.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -294,14 +373,58 @@ class _PaymentMethodsPageState extends State<PaymentMethodsPage> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    return PaymentMethodsPanel(
-      items: store.items,
-      controllers: _controllers,
-      lockedIds: _lockedIds,
-      confirmedAmounts: _confirmedAmounts,
-      total: payable,
-      onAdd: (method) => _onAdd(method, payable: payable),
-      onEdit: _onEdit,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+          child: _AmountDueBanner(amountDue: amountDue),
+        ),
+        Expanded(
+          child: PaymentMethodsPanel(
+            items: store.items,
+            controllers: _controllers,
+            lockedIds: _lockedIds,
+            confirmedAmounts: _confirmedAmounts,
+            total: amountDue,
+            onAdd: (method) => _onAdd(method, amountDue: amountDue),
+            onEdit: _onEdit,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _AmountDueBanner extends StatelessWidget {
+  const _AmountDueBanner({required this.amountDue});
+
+  final double amountDue;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: AppColors.primaryLight,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              'Total a pagar',
+              style: AppTextStyles.h3.copyWith(color: AppColors.primaryDark),
+            ),
+          ),
+          MoneyText(
+            amountDue,
+            large: true,
+            color: AppColors.primary,
+          ),
+        ],
+      ),
     );
   }
 }

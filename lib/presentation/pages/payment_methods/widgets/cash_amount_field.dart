@@ -21,7 +21,7 @@ class CashAmountField extends StatelessWidget {
         const SizedBox(height: 8),
         TextField(
           controller: controller,
-          keyboardType: TextInputType.number,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
           style: AppTextStyles.moneyLg,
           inputFormatters: [CurrencyInputFormatter()],
           onChanged: onChanged,

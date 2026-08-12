@@ -9,31 +9,45 @@ class SummaryRow extends StatelessWidget {
     required this.label,
     required this.value,
     this.emphasize = false,
+    this.compact = false,
+    this.large = false,
     this.valueColor,
   });
 
   final String label;
   final num value;
   final bool emphasize;
+  final bool compact;
+  final bool large;
   final Color? valueColor;
 
   @override
   Widget build(BuildContext context) {
+    final labelStyle = emphasize
+        ? AppTextStyles.h3
+        : large
+            ? AppTextStyles.h3.copyWith(
+                color: AppColors.textSecondary,
+                fontWeight: FontWeight.w500,
+              )
+            : (compact ? AppTextStyles.bodySmall : AppTextStyles.body)
+                .copyWith(color: AppColors.textSecondary);
+
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: EdgeInsets.symmetric(vertical: compact ? 3 : large ? 8 : 6),
       child: Row(
         children: [
           Expanded(
-            child: Text(
-              label,
-              style: emphasize
-                  ? AppTextStyles.h3
-                  : AppTextStyles.body.copyWith(color: AppColors.textSecondary),
-            ),
+            child: Text(label, style: labelStyle),
           ),
           MoneyText(
             value,
-            large: emphasize,
+            large: emphasize || large,
+            style: compact && !emphasize && !large
+                ? AppTextStyles.money.copyWith(fontSize: 13)
+                : large && !emphasize
+                    ? AppTextStyles.moneyLg.copyWith(fontSize: 18)
+                    : null,
             color: valueColor ?? (emphasize ? AppColors.textPrimary : null),
           ),
         ],

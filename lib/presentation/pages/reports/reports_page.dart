@@ -3,18 +3,11 @@ import 'package:intl/intl.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/mock_catalog.dart';
-import '../../../domain/models/sale_receipt.dart';
 import '../../atoms/app_button.dart';
 import 'widgets/reports_summary_cards.dart';
-import '../../organisms/transaction_list.dart';
 
 class ReportsPage extends StatefulWidget {
-  const ReportsPage({
-    super.key,
-    required this.onOpenReceipt,
-  });
-
-  final ValueChanged<SaleReceipt> onOpenReceipt;
+  const ReportsPage({super.key});
 
   @override
   State<ReportsPage> createState() => _ReportsPageState();
@@ -97,13 +90,6 @@ class _ReportsPageState extends State<ReportsPage> {
             icon: Icons.inventory_2_rounded,
             variant: AppButtonVariant.secondary,
             onPressed: () => _snack('Imprimiendo reporte de inventario…'),
-          ),
-          const SizedBox(height: 22),
-          Text('Transacciones recientes', style: AppTextStyles.h3),
-          const SizedBox(height: 10),
-          TransactionList(
-            transactions: MockCatalog.recentSales,
-            onTap: widget.onOpenReceipt,
           ),
         ],
       ),

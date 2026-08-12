@@ -12,12 +12,14 @@ class PctRetentionDropdown extends StatelessWidget {
     required this.options,
     required this.onChanged,
     this.enabled = true,
+    this.width = 80,
   });
 
   final TaxRetention? selected;
   final List<TaxRetention> options;
   final ValueChanged<TaxRetention?>? onChanged;
   final bool enabled;
+  final double width;
 
   String _formatPct(double value) {
     if (value % 1 == 0) return value.toStringAsFixed(0);
@@ -33,10 +35,9 @@ class PctRetentionDropdown extends StatelessWidget {
     return '${_formatPct(item.percentageValue)}%';
   }
 
-  TextStyle get _valueStyle => AppTextStyles.body.copyWith(
+  TextStyle get _valueStyle => AppTextStyles.h3.copyWith(
         color: AppColors.textPrimary,
         fontWeight: FontWeight.w600,
-        fontSize: 15,
       );
 
   @override
@@ -92,6 +93,7 @@ class PctRetentionDropdown extends StatelessWidget {
               }
             : null,
         child: Container(
+          width: width,
           height: 36,
           padding: const EdgeInsets.symmetric(horizontal: 8),
           decoration: BoxDecoration(
@@ -99,10 +101,14 @@ class PctRetentionDropdown extends StatelessWidget {
             border: Border.all(color: AppColors.border),
           ),
           child: Row(
-            mainAxisSize: MainAxisSize.min,
             children: [
-              Text(_closedLabel(selected), style: _valueStyle),
-              const SizedBox(width: 2),
+              Expanded(
+                child: Text(
+                  _closedLabel(selected),
+                  style: _valueStyle,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
               const Icon(
                 Icons.keyboard_arrow_down_rounded,
                 size: 18,
