@@ -16,9 +16,10 @@ import 'modules/categories/store/categories.store.dart';
 import 'modules/method_payments/store/method_payments.store.dart';
 import 'modules/products/store/products.store.dart';
 import 'modules/sales/store/sales.store.dart';
+import 'modules/sales/store/sales_history.store.dart';
 import 'modules/taxes/store/taxes.store.dart';
-import 'presentation/pages/login/login_page.dart';
-import 'presentation/pages/main_shell/main_shell.dart';
+import 'presentation/pages/inicio_sesion/inicio_sesion_page.dart';
+import 'presentation/pages/navegacion_principal/navegacion_principal.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,6 +47,7 @@ class TiendaATiendaApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ProductsStore()),
         ChangeNotifierProvider(create: (_) => MethodPaymentsStore()),
         ChangeNotifierProvider(create: (_) => SalesStore()),
+        ChangeNotifierProvider(create: (_) => SalesHistoryStore()),
         ChangeNotifierProvider(create: (_) => TaxesStore()),
       ],
       child: MaterialApp(
@@ -78,8 +80,8 @@ class _AuthGate extends StatelessWidget {
   Widget build(BuildContext context) {
     final isLoggedIn = context.watch<AuthController>().isLoggedIn;
     if (!isLoggedIn) {
-      return const ZoeRippleLoginPage();
+      return const InicioSesionPage();
     }
-    return const MainShell();
+    return const NavegacionPrincipal();
   }
 }

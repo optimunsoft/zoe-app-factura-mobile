@@ -9,6 +9,8 @@ class Customer {
     required this.address,
     this.city = '',
     this.taxId,
+    this.freeZone = false,
+    this.foreign = false,
   });
 
   final String id;
@@ -20,6 +22,12 @@ class Customer {
   final String address;
   final String city;
   final String? taxId;
+
+  /// Cliente en zona franca: subtotal sin IVA; IVA en totales = 0.
+  final bool freeZone;
+
+  /// Cliente extranjero (factura tipo 02 en ERP).
+  final bool foreign;
 
   String get documentLabel => '$documentType $documentNumber';
 
@@ -33,6 +41,8 @@ class Customer {
     String? address,
     String? city,
     String? taxId,
+    bool? freeZone,
+    bool? foreign,
   }) {
     return Customer(
       id: id ?? this.id,
@@ -44,6 +54,8 @@ class Customer {
       address: address ?? this.address,
       city: city ?? this.city,
       taxId: taxId ?? this.taxId,
+      freeZone: freeZone ?? this.freeZone,
+      foreign: foreign ?? this.foreign,
     );
   }
 }

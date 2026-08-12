@@ -19,9 +19,14 @@ String? apiMessageFrom(dynamic data) {
   }
 
   if (data is Map) {
-    for (final key in ['error', 'message']) {
+    for (final key in ['error', 'message', 'msg', 'detalle']) {
       final value = data[key]?.toString().trim();
       if (value != null && value.isNotEmpty) return value;
+    }
+    // Algunas respuestas anidan el texto en `response` como String.
+    final response = data['response'];
+    if (response is String && response.trim().isNotEmpty) {
+      return response.trim();
     }
   }
   return null;
@@ -77,4 +82,29 @@ String cleanErrorMessage(Object error) {
   if (text.startsWith('DioException')) return '';
 
   return text;
+}
+
+/// Parseo seguro de enteros (acepta `num` o `String`).
+int? asInt(dynamic value) {
+  if (value == null) return null;
+  if (value is int) return value;
+  if (value is num) return value.toInt();
+  if (value is String) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) return null;
+    return int.tryParse(trimmed) ?? double.tryParse(trimmed)?.toInt();
+  }
+  return null;
+}
+
+/// Parseo seguro de doubles (acepta `num` o `String`).
+double? asDouble(dynamic value) {
+  if (value == null) return null;
+  if (value is num) return value.toDouble();
+  if (value is String) {
+    final trimmed = value.trim().replaceAll(',', '');
+    if (trimmed.isEmpty) return null;
+    return double.tryParse(trimmed);
+  }
+  return null;
 }

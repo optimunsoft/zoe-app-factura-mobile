@@ -153,9 +153,7 @@ class ListSalesPageResult {
           .whereType<Map>()
           .map((e) => ListSales.fromJson(Map<String, dynamic>.from(e)))
           .toList();
-      // totalRecords desconocido en lista cruda (no usar list.length:
-      // eso apaga "Cargar más" al comparar items == total).
-      final hasMore = list.isNotEmpty;
+      final hasMore = list.length >= pageSize;
       return ListSalesPageResult(
         data: list,
         currentPage: requestedPage,

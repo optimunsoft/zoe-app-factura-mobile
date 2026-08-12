@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import '../domain/models/cart_item.dart';
 import '../domain/models/customer.dart';
+import '../domain/models/line_tax_calculator.dart';
 import '../domain/models/payment_method.dart';
 import '../domain/models/product.dart';
 import '../domain/models/sale_receipt.dart';
@@ -20,18 +21,47 @@ class PosController extends ChangeNotifier {
 
   bool get hasCustomer => activeCustomer != null;
 
+  /// Zona franca del cliente activo (`client.freeZone`).
+  bool get freeZone => activeCustomer?.freeZone ?? false;
+
   int get itemCount => _cart.fold(0, (sum, i) => sum + i.quantity);
 
-  /// Suma de precios de venta × cantidad (tal cual en catálogo).
+  /// Σ (precio × cantidad) — total bruto de mercancía.
   double get goodsTotal => _cart.fold(0.0, (sum, i) => sum + i.lineTotal);
 
+  /// Σ valueDiscount de líneas.
+  double get discount => _cart.fold(
+        0.0,
+        (sum, i) =>
+            sum + i.lineComputation(ivaIncluido: ivaIncluido).valueDiscount,
+      );
+
+  LineTaxComputation _lineOf(CartItem item) =>
+      item.lineComputation(ivaIncluido: ivaIncluido);
+
+  /// Σ base_imponible de todas las líneas (base de ReteICA / retefuente).
+  double get taxableBaseTotal =>
+      _cart.fold(0.0, (sum, i) => sum + _lineOf(i).baseImponible);
+
+  /// Σ valorNeto de líneas.
+  double get linesValorNeto =>
+      _cart.fold(0.0, (sum, i) => sum + _lineOf(i).valorNeto);
+
+  /// Σ valorNetoSinIVA de líneas (zona franca).
+  double get linesValorNetoSinIva =>
+      _cart.fold(0.0, (sum, i) => sum + _lineOf(i).valorNetoSinIva);
+
   /// Impuestos de línea + los de base `total_factura`.
+  /// Si [freeZone], IVA (código "01") se fuerza a 0.
   List<TaxBreakdownLine> get taxBreakdown {
     final map = <String, TaxBreakdownLine>{};
 
     for (final item in _cart) {
       for (final lineTax in item.lineTaxes(ivaIncluido: ivaIncluido)) {
-        _mergeTax(map, lineTax);
+        final adjusted = freeZone && lineTax.isIva
+            ? lineTax.copyWith(amount: 0)
+            : lineTax;
+        _mergeTax(map, adjusted);
       }
     }
 
@@ -42,13 +72,18 @@ class PosController extends ChangeNotifier {
         if (tax.percentage <= 0) continue;
         if (tax.base != TaxCalculationBase.totalFactura) continue;
 
+        final isIva = tax.isIva;
+        final amount = (freeZone && isIva)
+            ? 0.0
+            : provisionalTotal * (tax.percentage / 100);
+
         _mergeTax(
           map,
           TaxBreakdownLine(
             code: tax.code,
             name: tax.name,
             percentage: tax.percentage,
-            amount: provisionalTotal * (tax.percentage / 100),
+            amount: amount,
             includedInPrice: false,
             base: tax.base,
           ),
@@ -75,7 +110,7 @@ class PosController extends ChangeNotifier {
     final additional = lineTaxes.values
         .where((t) => !t.includedInPrice)
         .fold(0.0, (sum, t) => sum + t.amount);
-    return goodsTotal + additional;
+    return goodsTotal - discount + additional;
   }
 
   double get tax => taxBreakdown.fold(0.0, (sum, t) => sum + t.amount);
@@ -84,22 +119,41 @@ class PosController extends ChangeNotifier {
       .where((t) => t.includedInPrice)
       .fold(0.0, (sum, t) => sum + t.amount);
 
-  double get _additionalTaxAmount => taxBreakdown
-      .where((t) => !t.includedInPrice)
-      .fold(0.0, (sum, t) => sum + t.amount);
-
-  /// Base imponible mostrada en resumen.
+  /// Base mostrada en resumen (antes de impuestos de desglose).
+  /// Con zona franca e IVA incluido equivale a valorNetoSinIVA.
   double get subtotal {
-    if (ivaIncluido) {
-      return goodsTotal - _includedTaxAmount;
+    if (freeZone) {
+      // En UI: base sin IVA (valorNetoSinIVA ya descuenta IVA o suma no-IVA).
+      if (ivaIncluido) return linesValorNetoSinIva;
+      return goodsTotal - discount;
     }
-    return goodsTotal;
+    if (ivaIncluido) {
+      return goodsTotal - discount - _includedTaxAmount;
+    }
+    return goodsTotal - discount;
   }
 
-  double get discount => 0;
-
-  /// Total a cobrar = precios + impuestos/cargos que no vienen incluidos.
-  double get total => goodsTotal + _additionalTaxAmount - discount;
+  /// Total bruto del documento (antes de retenciones).
+  /// DIAN: freeZone ? Σ valorNetoSinIVA : Σ valorNeto (+ cargos total_factura).
+  double get total {
+    if (freeZone) {
+      final totalFacturaExtra = taxBreakdown
+          .where(
+            (t) =>
+                t.base == TaxCalculationBase.totalFactura && !t.includedInPrice,
+          )
+          .fold(0.0, (sum, t) => sum + t.amount);
+      return linesValorNetoSinIva + totalFacturaExtra;
+    }
+    return linesValorNeto +
+        taxBreakdown
+            .where(
+              (t) =>
+                  t.base == TaxCalculationBase.totalFactura &&
+                  !t.includedInPrice,
+            )
+            .fold(0.0, (sum, t) => sum + t.amount);
+  }
 
   TaxRetention? _findRetention(List<TaxRetention> options, int? id) {
     if (id == null) return null;
@@ -110,6 +164,7 @@ class PosController extends ChangeNotifier {
   }
 
   /// Importe de retefuente de una línea (0 si no aplica).
+  /// retentionValue = base_imponible × (porcentaje / factor).
   double reteFuenteAmountFor(
     CartItem item,
     List<TaxRetention> reteFuenteOptions,
@@ -267,8 +322,7 @@ class PosController extends ChangeNotifier {
     final id = (orderId != null && orderId.isNotEmpty)
         ? orderId
         : 'INV-${1000 + now.millisecond + now.second + (_cart.length * 7)}';
-    final saleTotal = totalOverride ??
-        (goodsTotal + _additionalTaxAmount - discountAmount);
+    final saleTotal = totalOverride ?? (total - discountAmount);
     final receipt = SaleReceipt(
       orderId: id,
       timestamp: now,
@@ -276,7 +330,7 @@ class PosController extends ChangeNotifier {
       subtotal: subtotal,
       tax: tax,
       taxBreakdown: List.from(taxBreakdown),
-      discount: discountAmount,
+      discount: discountAmount > 0 ? discountAmount : discount,
       total: saleTotal,
       paymentMethod: method,
       status: InvoiceStatus.paid,

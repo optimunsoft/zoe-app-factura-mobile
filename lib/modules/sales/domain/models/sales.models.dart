@@ -1,3 +1,5 @@
+import '../../../../core/api_helpers.dart';
+
 // Modelos del dominio de ventas (payload de creación de factura / venta).
 
 /// Cuerpo POST para crear una venta.
@@ -202,7 +204,7 @@ class SaleSummary {
   factory SaleSummary.fromJson(Map<String, dynamic> json) {
     return SaleSummary(
       id: json['id']?.toString() ?? '',
-      total: (json['total'] as num?)?.toDouble() ?? 0,
+      total: asDouble(json['total']) ?? 0,
       status: json['status']?.toString(),
     );
   }
@@ -226,11 +228,11 @@ class CreateSaleTotals {
 
   factory CreateSaleTotals.fromJson(Map<String, dynamic> json) {
     return CreateSaleTotals(
-      gross: (json['valor_bruto'] as num?)?.toDouble() ?? 0,
-      taxableBase: (json['base_imponible'] as num?)?.toDouble() ?? 0,
-      grossWithTax: (json['valor_bruto_impuestos'] as num?)?.toDouble() ?? 0,
-      discounts: (json['descuentos'] as num?)?.toDouble() ?? 0,
-      total: (json['total'] as num?)?.toDouble() ?? 0,
+      gross: asDouble(json['valor_bruto']) ?? 0,
+      taxableBase: asDouble(json['base_imponible']) ?? 0,
+      grossWithTax: asDouble(json['valor_bruto_impuestos']) ?? 0,
+      discounts: asDouble(json['descuentos']) ?? 0,
+      total: asDouble(json['total']) ?? 0,
     );
   }
 }
@@ -265,7 +267,7 @@ class CreateSaleResult {
     final totalsRaw = jsonDoc?['totales'];
 
     return CreateSaleResult(
-      id: (json['id'] as num?)?.toInt() ?? 0,
+      id: asInt(json['id']) ?? 0,
       documentNumber: json['nro_doc']?.toString() ??
           jsonDoc?['numero']?.toString() ??
           '',

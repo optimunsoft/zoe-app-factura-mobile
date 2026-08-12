@@ -88,10 +88,16 @@ class TaxRetention {
 
   double get percentageValue => double.tryParse(percentage) ?? 0;
 
-  /// Importe = base × percentage / factor (factor por defecto 100).
+  /// Factor efectivo: API si viene; si no, 1000 (ReteICA) o 100 (resto).
+  int get effectiveFactor {
+    if (retention.factor > 0) return retention.factor;
+    if (retention.isReteIca) return 1000;
+    return 100;
+  }
+
+  /// Importe = base × percentage / factor.
   double amountOn(double base) {
     if (base <= 0 || percentageValue <= 0) return 0;
-    final factor = retention.factor > 0 ? retention.factor : 100;
-    return base * percentageValue / factor;
+    return base * percentageValue / effectiveFactor;
   }
 }

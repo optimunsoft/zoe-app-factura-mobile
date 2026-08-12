@@ -43,7 +43,7 @@ class SalesService {
       debugPrint(_prettyJson.convert(data));
       debugPrint('───────────────────────────────────');
 
-      checkApiStatus(data);
+      checkApiStatus(data, showToast: false);
 
       final raw = data['response'];
       if (raw is Map) {
@@ -68,7 +68,7 @@ class SalesService {
         }
       }
       debugPrint('────────────────────────────────');
-      throwFromDio(e);
+      throwFromDio(e, showToast: false);
     }
   }
 
@@ -110,6 +110,35 @@ class SalesService {
         return ListSales.fromJson(Map<String, dynamic>.from(raw));
       }
       return ListSales.fromJson(data);
+    } on DioException catch (e) {
+      throwFromDio(e);
+    }
+  }
+
+  /// GET /ventas/descargar-pdf/{nroDocumento}
+  ///
+  /// Descarga el PDF de la venta. Devuelve los bytes del archivo.
+  Future<Uint8List> downloadSalePdf(String nroDocumento) async {
+    final encoded = Uri.encodeComponent(nroDocumento.trim());
+    final path = '/ventas/descargar-pdf/$encoded';
+
+    try {
+      final response = await _dio.get<List<int>>(
+        path,
+        options: Options(
+          responseType: ResponseType.bytes,
+          headers: const {
+            'Accept': 'application/pdf',
+          },
+        ),
+      );
+
+      final raw = response.data;
+      if (raw == null || raw.isEmpty) {
+        throw StateError('El servidor no devolvió el PDF de la venta');
+      }
+
+      return Uint8List.fromList(raw);
     } on DioException catch (e) {
       throwFromDio(e);
     }
