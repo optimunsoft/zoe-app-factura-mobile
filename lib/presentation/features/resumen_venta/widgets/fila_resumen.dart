@@ -42,12 +42,10 @@ class FilaResumen extends StatelessWidget {
           ),
           MoneyText(
             value,
-            large: emphasize || large,
-            style: compact && !emphasize && !large
-                ? AppTextStyles.money.copyWith(fontSize: 13)
-                : large && !emphasize
-                    ? AppTextStyles.moneyLg.copyWith(fontSize: 18)
-                    : null,
+            style: AppTextStyles.money.copyWith(
+              fontSize: 16,
+              fontWeight: emphasize ? FontWeight.w700 : FontWeight.w600,
+            ),
             color: valueColor ?? (emphasize ? AppColors.textPrimary : null),
           ),
         ],

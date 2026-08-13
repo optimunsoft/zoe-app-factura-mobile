@@ -34,19 +34,20 @@ class TarjetaAcceso extends StatelessWidget {
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: 44,
-                height: 44,
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
                   color: accent.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, color: accent, size: 24),
+                child: Icon(icon, color: accent, size: 22),
               ),
-              const Spacer(),
+              const SizedBox(height: 10),
               Text(title, style: AppTextStyles.h3),
-              const SizedBox(height: 4),
+              const SizedBox(height: 2),
               Text(subtitle, style: AppTextStyles.bodySmall),
             ],
           ),

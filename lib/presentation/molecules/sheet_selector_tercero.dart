@@ -80,7 +80,6 @@ class _SheetSelectorTerceroState extends State<SheetSelectorTercero> {
             child: BarraBusquedaEscaner(
               controller: _searchCtrl,
               onChanged: _onSearchChanged,
-              onScan: () {},
               hint: 'Buscar por nombre o NIT…',
             ),
           ),

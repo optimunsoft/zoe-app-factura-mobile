@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../modules/sales/domain/mappers/sales_history_mapper.dart';
@@ -22,6 +23,63 @@ class SeccionInfoVenta extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final notes = sale.notes?.trim() ?? '';
+    final purchaseOrder = sale.purchaseOrder?.trim() ?? '';
+    final dueDate = SalesHistoryMapper.formatLongDate(sale.dueDate);
+    final paymentForm =
+        sale.paymentForm.isNotEmpty ? sale.paymentForm : '—';
+
+    final infoRows = <Widget>[
+      DetailInfoRow(
+        icon: Icons.storefront_outlined,
+        label: 'Sucursal',
+        value: sale.branchName.isNotEmpty ? sale.branchName : '—',
+        iconInCircle: true,
+        showDivider: true,
+      ),
+      DetailInfoRow(
+        icon: Icons.badge_outlined,
+        label: 'NIT / Documento',
+        value: sale.thirdPartyNit.isNotEmpty ? sale.thirdPartyNit : '—',
+        iconInCircle: true,
+        showDivider: true,
+      ),
+      DetailInfoRow(
+        icon: Icons.event_available_outlined,
+        label: 'Fecha de vencimiento',
+        value: dueDate,
+        iconInCircle: true,
+        showDivider: true,
+      ),
+      DetailInfoRow(
+        icon: Icons.payments_outlined,
+        label: 'Forma de pago',
+        value: paymentForm,
+        iconInCircle: true,
+        valueWidget: AppBadge(
+          label: paymentForm,
+          background: AppColors.primaryLight,
+          foreground: AppColors.primaryDark,
+        ),
+        showDivider: notes.isNotEmpty || purchaseOrder.isNotEmpty,
+      ),
+      if (notes.isNotEmpty)
+        DetailInfoRow(
+          icon: Icons.notes_outlined,
+          label: 'Observaciones',
+          value: notes,
+          iconInCircle: true,
+          showDivider: purchaseOrder.isNotEmpty,
+        ),
+      if (purchaseOrder.isNotEmpty)
+        DetailInfoRow(
+          icon: Icons.shopping_bag_outlined,
+          label: 'Orden de compra',
+          value: purchaseOrder,
+          iconInCircle: true,
+        ),
+    ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -67,7 +125,7 @@ class SeccionInfoVenta extends StatelessWidget {
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: AppColors.surfaceAlt,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.mdAll,
           ),
           child: Row(
             children: [
@@ -78,47 +136,24 @@ class SeccionInfoVenta extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 18),
+        const SizedBox(height: AppSpacing.lg),
         Text('Información', style: AppTextStyles.h3),
         const SizedBox(height: AppSpacing.sm),
-        DetailInfoRow(
-          icon: Icons.storefront_outlined,
-          label: 'Sucursal',
-          value: sale.branchName.isNotEmpty ? sale.branchName : '—',
-        ),
-        DetailInfoRow(
-          icon: Icons.badge_outlined,
-          label: 'NIT / Documento',
-          value: sale.thirdPartyNit.isNotEmpty ? sale.thirdPartyNit : '—',
-        ),
-        DetailInfoRow(
-          icon: Icons.event_outlined,
-          label: 'Fecha de venta',
-          value: SalesHistoryMapper.formatDateTime(sale.saleDate),
-        ),
-        DetailInfoRow(
-          icon: Icons.event_available_outlined,
-          label: 'Fecha de vencimiento',
-          value: SalesHistoryMapper.formatDateTime(sale.dueDate),
-        ),
-        DetailInfoRow(
-          icon: Icons.payments_outlined,
-          label: 'Forma de pago',
-          value: sale.paymentForm.isNotEmpty ? sale.paymentForm : '—',
-        ),
-        if (sale.notes != null && sale.notes!.trim().isNotEmpty)
-          DetailInfoRow(
-            icon: Icons.notes_outlined,
-            label: 'Observaciones',
-            value: sale.notes!,
+        Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.xs,
           ),
-        if (sale.purchaseOrder != null &&
-            sale.purchaseOrder!.trim().isNotEmpty)
-          DetailInfoRow(
-            icon: Icons.shopping_bag_outlined,
-            label: 'Orden de compra',
-            value: sale.purchaseOrder!,
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: AppRadius.mdAll,
+            border: Border.all(color: AppColors.border),
           ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: infoRows,
+          ),
+        ),
       ],
     );
   }

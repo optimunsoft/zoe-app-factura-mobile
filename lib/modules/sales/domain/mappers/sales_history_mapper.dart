@@ -62,4 +62,27 @@ abstract final class SalesHistoryMapper {
     if (parsed == null) return raw.isEmpty ? '—' : raw;
     return DateFormat('dd/MM/yyyy HH:mm').format(parsed.toLocal());
   }
+
+  static const _mesesEs = <String>[
+    '',
+    'ENERO',
+    'FEBRERO',
+    'MARZO',
+    'ABRIL',
+    'MAYO',
+    'JUNIO',
+    'JULIO',
+    'AGOSTO',
+    'SEPTIEMBRE',
+    'OCTUBRE',
+    'NOVIEMBRE',
+    'DICIEMBRE',
+  ];
+
+  /// Ej: `25 DE AGOSTO DEL 2026`.
+  static String formatLongDate(String raw) {
+    final parsed = DateTime.tryParse(raw)?.toLocal();
+    if (parsed == null) return raw.isEmpty ? '—' : raw;
+    return '${parsed.day} DE ${_mesesEs[parsed.month]} DEL ${parsed.year}';
+  }
 }

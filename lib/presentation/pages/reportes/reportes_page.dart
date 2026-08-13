@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
-import '../../../data/mock_catalog.dart';
 import '../../atoms/app_button.dart';
-import '../../features/reportes/widgets/tarjetas_resumen_reportes.dart';
 
 class ReportesPage extends StatefulWidget {
   const ReportesPage({super.key});
@@ -37,7 +35,7 @@ class _ReportesPageState extends State<ReportesPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Ventas e inventario', style: AppTextStyles.h2),
+        title: Text('Reportes', style: AppTextStyles.h2),
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -76,8 +74,6 @@ class _ReportesPageState extends State<ReportesPage> {
               ),
             ),
           ),
-          const SizedBox(height: 16),
-          TarjetasResumenReportes(report: MockCatalog.todayReport),
           const SizedBox(height: 18),
           AppButton(
             label: 'Imprimir resumen Z-Report',

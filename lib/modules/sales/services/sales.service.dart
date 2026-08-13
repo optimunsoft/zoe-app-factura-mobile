@@ -7,6 +7,7 @@ import '../../../core/api_helpers.dart';
 import '../../../core/auth/api_client.dart';
 import '../domain/models/list_sales.models.dart';
 import '../domain/models/sales.models.dart';
+import '../domain/models/ventas_resumen.models.dart';
 
 /// Tipo de documento por defecto para ventas de inventario.
 const String kSaleDocumentTypeInventory = '01-INVENTARIO';
@@ -110,6 +111,29 @@ class SalesService {
         return ListSales.fromJson(Map<String, dynamic>.from(raw));
       }
       return ListSales.fromJson(data);
+    } on DioException catch (e) {
+      throwFromDio(e);
+    }
+  }
+
+  /// GET /ventas/resumen
+  ///
+  /// Params requeridos: `fecha_inicio`, `fecha_fin`, `id_sucursal` (YYYY-MM-DD).
+  Future<VentasResumen> getVentasResumen(VentasResumenQuery query) async {
+    try {
+      final response = await _dio.get(
+        '/ventas/resumen',
+        queryParameters: query.toQueryMap(),
+      );
+
+      final data = response.data as Map<String, dynamic>;
+      checkApiStatus(data);
+
+      final raw = data['response'];
+      if (raw is Map) {
+        return VentasResumen.fromJson(Map<String, dynamic>.from(raw));
+      }
+      return VentasResumen.fromJson(data);
     } on DioException catch (e) {
       throwFromDio(e);
     }

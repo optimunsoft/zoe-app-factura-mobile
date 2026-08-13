@@ -110,9 +110,8 @@ class _NavegacionPrincipalState extends State<NavegacionPrincipal> {
     final pages = [
       InicioPage(
         onNewSale: _startSaleFlow,
-        onDailySummary: () => _goTab(3),
-        onInventory: () => _goTab(3),
         onReceipts: () => _goTab(2),
+        onReports: () => _goTab(3),
       ),
       VentaPage(onReviewPay: _openCheckout),
       const HistorialVentasPage(),

@@ -47,6 +47,15 @@ class AppButton extends StatelessWidget {
       _ => null,
     };
 
+    final labelWidget = Text(
+      label,
+      textAlign: TextAlign.center,
+      style: (compact ? AppTextStyles.caption : AppTextStyles.button).copyWith(
+        color: enabled ? fg : AppColors.textMuted,
+        fontWeight: FontWeight.w600,
+      ),
+    );
+
     final child = Row(
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: expanded ? MainAxisSize.max : MainAxisSize.min,
@@ -59,42 +68,38 @@ class AppButton extends StatelessWidget {
           ),
           SizedBox(width: compact ? 6 : 8),
         ],
-        Flexible(
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: (compact ? AppTextStyles.caption : AppTextStyles.button)
-                .copyWith(
-              color: enabled ? fg : AppColors.textMuted,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
+        // Flexible solo con expanded: si no, Wrap lo estira a todo el ancho.
+        if (expanded) Flexible(child: labelWidget) else labelWidget,
       ],
     );
 
     final radius = compact ? 8.0 : 12.0;
 
-    return SizedBox(
-      width: expanded ? double.infinity : null,
-      height: height,
-      child: Material(
-        color: enabled ? bg : AppColors.surfaceAlt,
+    final button = Material(
+      color: enabled ? bg : AppColors.surfaceAlt,
+      borderRadius: BorderRadius.circular(radius),
+      child: InkWell(
+        onTap: onPressed,
         borderRadius: BorderRadius.circular(radius),
-        child: InkWell(
-          onTap: onPressed,
-          borderRadius: BorderRadius.circular(radius),
-          child: Container(
-            alignment: Alignment.center,
-            padding: EdgeInsets.symmetric(horizontal: compact ? 10 : 16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(radius),
-              border: border,
-            ),
-            child: child,
+        child: Container(
+          // Con alignment el Container se estira al max width (p. ej. en Wrap).
+          alignment: expanded ? Alignment.center : null,
+          height: height,
+          padding: EdgeInsets.symmetric(horizontal: compact ? 12 : 16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(radius),
+            border: border,
           ),
+          child: child,
         ),
       ),
     );
+
+    if (expanded) {
+      return SizedBox(width: double.infinity, height: height, child: button);
+    }
+
+    // Fuerza ancho al contenido; evita que Wrap lo estire a toda la línea.
+    return IntrinsicWidth(child: button);
   }
 }

@@ -3,10 +3,11 @@ import 'package:flutter/foundation.dart';
 import '../../../core/api_helpers.dart';
 import '../../../core/app_toast.dart';
 import '../domain/models/sales.models.dart';
+import '../domain/models/ventas_resumen.models.dart';
 import '../services/sales.service.dart';
 
-/// Estado de creación de ventas (checkout / emitir documento)
-/// y descarga de PDF de venta.
+/// Estado de creación de ventas (checkout / emitir documento),
+/// descarga de PDF y resumen de ventas (GET /ventas/resumen).
 class SalesStore extends ChangeNotifier {
   SalesStore({SalesService? service}) : _service = service ?? SalesService();
 
@@ -23,6 +24,12 @@ class SalesStore extends ChangeNotifier {
   String? pdfError;
   String? lastPdfDocumentNumber;
   Uint8List? lastPdfBytes;
+
+  /// Estado de GET /ventas/resumen.
+  bool isLoadingResumen = false;
+  String? resumenError;
+  VentasResumenQuery? lastResumenQuery;
+  VentasResumen resumen = VentasResumen.empty;
 
   Future<CreateSaleResult?> createSale(
     CreateSaleRequest request, {
@@ -88,6 +95,42 @@ class SalesStore extends ChangeNotifier {
     }
   }
 
+  /// GET /ventas/resumen — params: fecha_inicio, fecha_fin, id_sucursal.
+  Future<VentasResumen?> loadVentasResumen(VentasResumenQuery query) async {
+    final start = query.startDate.trim();
+    final end = query.endDate.trim();
+    final branchId = query.branchId.trim();
+
+    if (start.isEmpty || end.isEmpty || branchId.isEmpty) {
+      resumenError = 'fecha_inicio, fecha_fin e id_sucursal son obligatorios';
+      resumen = VentasResumen.empty;
+      notifyListeners();
+      return null;
+    }
+
+    isLoadingResumen = true;
+    resumenError = null;
+    lastResumenQuery = VentasResumenQuery(
+      startDate: start,
+      endDate: end,
+      branchId: branchId,
+    );
+    notifyListeners();
+
+    try {
+      resumen = await _service.getVentasResumen(lastResumenQuery!);
+      isLoadingResumen = false;
+      notifyListeners();
+      return resumen;
+    } catch (e) {
+      resumenError = cleanErrorMessage(e);
+      resumen = VentasResumen.empty;
+      isLoadingResumen = false;
+      notifyListeners();
+      return null;
+    }
+  }
+
   void clearError() {
     error = null;
     notifyListeners();
@@ -101,11 +144,20 @@ class SalesStore extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearResumen() {
+    isLoadingResumen = false;
+    resumenError = null;
+    lastResumenQuery = null;
+    resumen = VentasResumen.empty;
+    notifyListeners();
+  }
+
   void clear() {
     isLoading = false;
     error = null;
     lastRequest = null;
     lastResult = null;
     clearPdf();
+    clearResumen();
   }
 }

@@ -138,13 +138,6 @@ class _SeleccionClientePageState extends State<SeleccionClientePage> {
                         controller: _searchCtrl,
                         hint: 'Buscar por razón social, NIT o contacto…',
                         onChanged: _onSearchChanged,
-                        onScan: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Escáner de documento (simulado)'),
-                            ),
-                          );
-                        },
                       ),
                     ),
                     const SizedBox(height: 12),

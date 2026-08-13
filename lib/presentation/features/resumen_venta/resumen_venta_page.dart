@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/pos_controller.dart';
 import '../../../modules/taxes/domain/checkout_tax_calculator.dart';
 import '../../../modules/taxes/domain/models/taxes.models.dart';
 import '../../../modules/taxes/store/taxes.store.dart';
-import '../../atoms/app_button.dart';
 import '../../molecules/cuerpo_error_reintentar.dart';
+import '../../molecules/panel_retenciones.dart';
 import '../medios_pago/medios_pago_page.dart';
 import '../medios_pago/widgets/sheet_retefuente.dart';
-import 'widgets/tarjeta_resumen_venta.dart';
+import 'widgets/bloque_desglose_montos.dart';
+import 'widgets/encabezado_contexto_venta.dart';
+import 'widgets/pie_total_pagar.dart';
 
 /// Ventana: Resumen de venta (retenciones → medios de pago).
 class ResumenVentaPage extends StatefulWidget {
@@ -71,13 +74,13 @@ class _ResumenVentaPageState extends State<ResumenVentaPage> {
     );
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text('Resumen de la compra', style: AppTextStyles.h2),
+        title: Text('Resumen', style: AppTextStyles.h2),
       ),
       body: _buildBody(
         taxesStore: taxesStore,
         pos: pos,
-        amountDue: amountDue,
         reteIvaOptions: reteIvaOptions,
         reteIcaOptions: reteIcaOptions,
         selectedReteIva: selectedReteIva,
@@ -88,26 +91,10 @@ class _ResumenVentaPageState extends State<ResumenVentaPage> {
             CheckoutTaxCalculator.reteIcaAmount(pos, selectedReteIca),
         reteFuenteAmount: reteFuenteAmount,
       ),
-      bottomNavigationBar: SafeArea(
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            border: const Border(top: BorderSide(color: AppColors.border)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.06),
-                blurRadius: 16,
-                offset: const Offset(0, -4),
-              ),
-            ],
-          ),
-          child: AppButton(
-            label: 'Continuar a formas de pago',
-            icon: Icons.arrow_forward_rounded,
-            onPressed: pos.itemCount > 0 ? _continueToPayments : null,
-          ),
-        ),
+      bottomNavigationBar: PieTotalPagar(
+        payableTotal: amountDue,
+        canContinue: pos.itemCount > 0,
+        onContinue: _continueToPayments,
       ),
     );
   }
@@ -115,7 +102,6 @@ class _ResumenVentaPageState extends State<ResumenVentaPage> {
   Widget _buildBody({
     required TaxesStore taxesStore,
     required PosController pos,
-    required double amountDue,
     required List<TaxRetention> reteIvaOptions,
     required List<TaxRetention> reteIcaOptions,
     required TaxRetention? selectedReteIva,
@@ -137,14 +123,29 @@ class _ResumenVentaPageState extends State<ResumenVentaPage> {
       );
     }
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-      child: SizedBox.expand(
-        child:         TarjetaResumenVenta(
+    final customer = pos.activeCustomer;
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.md,
+        AppSpacing.lg,
+        AppSpacing.lg,
+      ),
+      children: [
+        EncabezadoContextoVenta(
+          customerName: customer?.name ?? '',
+          itemCount: pos.itemCount,
+          freeZone: pos.freeZone,
+        ),
+        const SizedBox(height: AppSpacing.md),
+        BloqueDesgloseMontos(
           subtotal: pos.subtotal,
           taxBreakdown: pos.taxBreakdown,
           total: pos.total,
-          payableTotal: amountDue,
+        ),
+        const SizedBox(height: AppSpacing.md),
+        PanelRetenciones(
           reteIvaOptions: reteIvaOptions,
           reteIcaOptions: reteIcaOptions,
           selectedReteIva: selectedReteIva,
@@ -152,7 +153,6 @@ class _ResumenVentaPageState extends State<ResumenVentaPage> {
           reteIvaAmount: reteIvaAmount,
           reteIcaAmount: reteIcaAmount,
           reteFuenteAmount: reteFuenteAmount,
-          fillHeight: true,
           onReteIvaChanged: (value) => setState(() {
             _selectedReteIvaId = value?.id;
           }),
@@ -161,7 +161,7 @@ class _ResumenVentaPageState extends State<ResumenVentaPage> {
           }),
           onOpenReteFuente: () => SheetReteFuente.show(context),
         ),
-      ),
+      ],
     );
   }
 }

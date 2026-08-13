@@ -1,66 +1,119 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radius.dart';
+import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../modules/taxes/domain/checkout_tax_calculator.dart';
 import '../../../modules/taxes/domain/models/taxes.models.dart';
 import '../atoms/money_text.dart';
 import '../atoms/pct_retention_dropdown.dart';
 
-/// Fila de retención (nombre + % + monto).
+/// Fila unificada de retención: nombre · control · monto.
 class FilaRetencion extends StatelessWidget {
   const FilaRetencion({
     super.key,
     required this.name,
-    required this.options,
-    required this.selected,
     required this.amount,
-    required this.onChanged,
+    this.options = const [],
+    this.selected,
+    this.onChanged,
+    this.onEdit,
+    this.editLabel = 'Editar',
   });
 
   final String name;
+  final double amount;
   final List<TaxRetention> options;
   final TaxRetention? selected;
-  final double amount;
   final ValueChanged<TaxRetention?>? onChanged;
+
+  /// Si se define, muestra botón de acción en lugar del dropdown (ReteFuente).
+  final VoidCallback? onEdit;
+  final String editLabel;
 
   @override
   Widget build(BuildContext context) {
     final pct = selected?.percentageValue ?? 0;
-    final label = '$name (${CheckoutTaxCalculator.formatPct(pct)}%)';
+    final showPct = onEdit == null;
+    final label = showPct
+        ? '$name (${CheckoutTaxCalculator.formatPct(pct)}%)'
+        : name;
 
-    return Row(
-      children: [
-        Expanded(
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: AppTextStyles.body.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ),
+          if (onEdit != null)
+            _EditChip(label: editLabel, onTap: onEdit!)
+          else
+            PctRetentionDropdown(
+              selected: selected,
+              options: options,
+              onChanged: onChanged,
+            ),
+          const SizedBox(width: AppSpacing.md),
+          SizedBox(
+            width: 110,
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: amount > 0
+                  ? MoneyText(
+                      -amount,
+                      style: AppTextStyles.money.copyWith(fontSize: 16),
+                      color: AppColors.danger,
+                    )
+                  : Text(
+                      '—',
+                      style: AppTextStyles.money.copyWith(
+                        fontSize: 16,
+                        color: AppColors.textMuted,
+                      ),
+                    ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _EditChip extends StatelessWidget {
+  const _EditChip({required this.label, required this.onTap});
+
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: AppColors.primaryLight,
+      borderRadius: AppRadius.smAll,
+      child: InkWell(
+        borderRadius: AppRadius.smAll,
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.sm,
+          ),
           child: Text(
             label,
-            style: AppTextStyles.h3.copyWith(
-              color: AppColors.textSecondary,
-              fontWeight: FontWeight.w500,
+            style: AppTextStyles.label.copyWith(
+              color: AppColors.primaryDark,
+              fontSize: 12,
             ),
           ),
         ),
-        SizedBox(
-          width: 80,
-          child: PctRetentionDropdown(
-            selected: selected,
-            options: options,
-            onChanged: onChanged,
-          ),
-        ),
-        const SizedBox(width: 12),
-        SizedBox(
-          width: 120,
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: MoneyText(
-              amount > 0 ? -amount : 0,
-              style: AppTextStyles.moneyLg.copyWith(fontSize: 18),
-              color: amount > 0 ? AppColors.danger : AppColors.textMuted,
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }
@@ -94,104 +147,66 @@ class PanelRetenciones extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const Divider(height: 1, color: AppColors.border),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            const Icon(
-              Icons.percent_rounded,
-              size: 18,
-              color: AppColors.primary,
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text.rich(
-                TextSpan(
-                  children: [
-                    TextSpan(
-                      text: 'Retenciones',
-                      style: AppTextStyles.label.copyWith(
-                        color: AppColors.primaryDark,
-                        fontSize: 14,
-                      ),
-                    ),
-                    TextSpan(
-                      text: ' (aplicables)',
-                      style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.primary,
-                      ),
-                    ),
-                  ],
-                ),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: AppRadius.mdAll,
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.percent_rounded,
+                size: 18,
+                color: AppColors.primary,
               ),
-            ),
-            Icon(
-              Icons.info_outline_rounded,
-              size: 18,
-              color: AppColors.primary.withValues(alpha: 0.75),
-            ),
-          ],
-        ),
-        const SizedBox(height: 14),
-        FilaRetencion(
-          name: 'ReteIVA',
-          options: reteIvaOptions,
-          selected: selectedReteIva,
-          amount: reteIvaAmount,
-          onChanged: onReteIvaChanged,
-        ),
-        const SizedBox(height: 12),
-        FilaRetencion(
-          name: 'ReteICA',
-          options: reteIcaOptions,
-          selected: selectedReteIca,
-          amount: reteIcaAmount,
-          onChanged: onReteIcaChanged,
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Material(
-              color: AppColors.primary,
-              borderRadius: BorderRadius.circular(10),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(10),
-                onTap: onOpenReteFuente,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 10,
-                  ),
-                  child: Text(
-                    'ReteFuente',
-                    style: AppTextStyles.h3.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Text(
+                  'Retenciones',
+                  style: AppTextStyles.label.copyWith(
+                    color: AppColors.primaryDark,
+                    fontSize: 14,
                   ),
                 ),
               ),
-            ),
-            const Spacer(),
-            SizedBox(
-              width: 120,
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: MoneyText(
-                  reteFuenteAmount > 0 ? -reteFuenteAmount : 0,
-                  style: AppTextStyles.moneyLg.copyWith(fontSize: 18),
-                  color: reteFuenteAmount > 0
-                      ? AppColors.danger
-                      : AppColors.textMuted,
+              Tooltip(
+                message: 'Se restan del total bruto al calcular el total a pagar.',
+                child: Icon(
+                  Icons.info_outline_rounded,
+                  size: 18,
+                  color: AppColors.primary.withValues(alpha: 0.75),
                 ),
               ),
-            ),
-          ],
-        ),
-      ],
+            ],
+          ),
+          const SizedBox(height: AppSpacing.md),
+          FilaRetencion(
+            name: 'ReteIVA',
+            options: reteIvaOptions,
+            selected: selectedReteIva,
+            amount: reteIvaAmount,
+            onChanged: onReteIvaChanged,
+          ),
+          FilaRetencion(
+            name: 'ReteICA',
+            options: reteIcaOptions,
+            selected: selectedReteIca,
+            amount: reteIcaAmount,
+            onChanged: onReteIcaChanged,
+          ),
+          FilaRetencion(
+            name: 'ReteFuente',
+            amount: reteFuenteAmount,
+            onEdit: onOpenReteFuente,
+          ),
+        ],
+      ),
     );
   }
 }

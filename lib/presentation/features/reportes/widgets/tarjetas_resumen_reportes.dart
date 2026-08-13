@@ -1,64 +1,87 @@
 import 'package:flutter/material.dart';
+
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
-import '../../../../domain/models/sale_receipt.dart';
+import '../../../../modules/sales/domain/models/ventas_resumen.models.dart';
 import '../../../atoms/money_text.dart';
 
+/// Tarjetas estadísticas del resumen de ventas (inicio / reportes).
 class TarjetasResumenReportes extends StatelessWidget {
-  const TarjetasResumenReportes({super.key, required this.report});
+  const TarjetasResumenReportes({
+    super.key,
+    required this.resumen,
+    this.isLoading = false,
+  });
 
-  final DailyReport report;
+  final VentasResumen resumen;
+  final bool isLoading;
+
+  static const double _cardHeight = 92;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
+    if (isLoading) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 24),
+        child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+      );
+    }
+
+    final cards = <Widget>[
+      _MetricCard(
+        label: 'Total impuestos',
+        icon: Icons.account_balance_rounded,
+        child: MoneyText(
+          resumen.totalizado.totalImpuestos,
+          large: true,
+        ),
+      ),
+      _MetricCard(
+        label: 'Nº de facturas',
+        icon: Icons.receipt_long_rounded,
+        child: Text(
+          '${resumen.cantidadFacturas}',
+          style: AppTextStyles.moneyLg,
+        ),
+      ),
+      _MetricCard(
+        label: 'Cartera generada',
+        icon: Icons.account_balance_wallet_outlined,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Expanded(
-              child: _MetricCard(
-                label: 'Ventas totales',
-                icon: Icons.attach_money_rounded,
-                child: MoneyText(report.totalSales, large: true, color: AppColors.primary),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _MetricCard(
-                label: 'Facturas',
-                icon: Icons.receipt_long_rounded,
-                child: Text('${report.invoiceCount}', style: AppTextStyles.moneyLg),
+            MoneyText(resumen.carteraGenerada, large: true),
+            const SizedBox(height: 2),
+            Text(
+              '${resumen.porcentajeCartera.toStringAsFixed(
+                resumen.porcentajeCartera % 1 == 0 ? 0 : 1,
+              )}% cartera',
+              style: AppTextStyles.caption.copyWith(
+                color: AppColors.textSecondary,
               ),
             ),
           ],
         ),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(
-              child: _MetricCard(
-                label: 'IVA recaudado',
-                icon: Icons.account_balance_rounded,
-                child: MoneyText(report.taxCollected, large: true),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _MetricCard(
-                label: 'Efectivo / Digital',
-                icon: Icons.pie_chart_outline_rounded,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    MoneyText(report.cashAmount),
-                    MoneyText(report.digitalAmount, color: AppColors.textSecondary),
-                  ],
-                ),
-              ),
-            ),
-          ],
+      ),
+      _MetricCard(
+        label: 'Total retenciones',
+        icon: Icons.percent_rounded,
+        child: MoneyText(
+          resumen.totalizado.totalRetenciones,
+          large: true,
         ),
-      ],
+      ),
+    ];
+
+    return GridView.count(
+      crossAxisCount: 2,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      mainAxisSpacing: 10,
+      crossAxisSpacing: 10,
+      mainAxisExtent: _cardHeight,
+      children: cards,
     );
   }
 }
@@ -77,7 +100,9 @@ class _MetricCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      width: double.infinity,
+      height: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(14),
@@ -88,13 +113,18 @@ class _MetricCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(icon, size: 18, color: AppColors.primary),
+              Icon(icon, size: 16, color: AppColors.primary),
               const SizedBox(width: 6),
               Expanded(child: Text(label, style: AppTextStyles.caption)),
             ],
           ),
-          const SizedBox(height: 10),
-          child,
+          const SizedBox(height: 6),
+          Expanded(
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: child,
+            ),
+          ),
         ],
       ),
     );

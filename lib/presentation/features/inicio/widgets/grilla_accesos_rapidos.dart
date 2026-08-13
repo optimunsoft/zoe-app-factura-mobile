@@ -9,15 +9,13 @@ class GrillaAccesosRapidos extends StatelessWidget {
   const GrillaAccesosRapidos({
     super.key,
     required this.onNewSale,
-    required this.onDailySummary,
-    required this.onInventory,
     required this.onReceipts,
+    required this.onReports,
   });
 
   final VoidCallback onNewSale;
-  final VoidCallback onDailySummary;
-  final VoidCallback onInventory;
   final VoidCallback onReceipts;
+  final VoidCallback onReports;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +30,7 @@ class GrillaAccesosRapidos extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           mainAxisSpacing: 12,
           crossAxisSpacing: 12,
-          childAspectRatio: 1.05,
+          childAspectRatio: 1.2,
           children: [
             TarjetaAcceso(
               title: 'Nueva venta',
@@ -41,25 +39,18 @@ class GrillaAccesosRapidos extends StatelessWidget {
               onTap: onNewSale,
             ),
             TarjetaAcceso(
-              title: 'Resumen diario',
-              subtitle: 'Z-Report del día',
-              icon: Icons.summarize_rounded,
-              accent: AppColors.success,
-              onTap: onDailySummary,
-            ),
-            TarjetaAcceso(
-              title: 'Inventario',
-              subtitle: 'Stock en ruta',
-              icon: Icons.inventory_2_rounded,
-              accent: AppColors.warning,
-              onTap: onInventory,
-            ),
-            TarjetaAcceso(
-              title: 'Historial de ventas',
-              subtitle: 'Últimas facturas',
+              title: 'Facturas',
+              subtitle: 'Historial de ventas',
               icon: Icons.receipt_long_rounded,
               accent: AppColors.primaryDark,
               onTap: onReceipts,
+            ),
+            TarjetaAcceso(
+              title: 'Reportes',
+              subtitle: 'Resumen y métricas',
+              icon: Icons.bar_chart_rounded,
+              accent: AppColors.success,
+              onTap: onReports,
             ),
           ],
         ),

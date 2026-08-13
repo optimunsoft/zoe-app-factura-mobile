@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/theme/app_spacing.dart';
-import '../atoms/app_button.dart';
 
 /// Chip activo de filtro.
 class ChipFiltroActivo {
@@ -39,22 +38,43 @@ class BarraFiltrosActivos extends StatelessWidget {
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           ...chips.map(
-            (c) => InputChip(
-              label: Text(c.label, style: AppTextStyles.caption),
-              onDeleted: c.onClear,
-              deleteIconColor: AppColors.primary,
-              backgroundColor: AppColors.primaryLight,
-              side: BorderSide.none,
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            (c) => SizedBox(
+              height: 32,
+              child: InputChip(
+                label: Text(c.label, style: AppTextStyles.caption),
+                onDeleted: c.onClear,
+                deleteIconColor: AppColors.primary,
+                backgroundColor: AppColors.primaryLight,
+                side: BorderSide.none,
+                visualDensity: VisualDensity.compact,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                padding: EdgeInsets.zero,
+                labelPadding: const EdgeInsets.symmetric(horizontal: 8),
+              ),
             ),
           ),
-          AppButton(
-            label: 'Limpiar',
-            expanded: false,
-            height: 28,
-            compact: true,
-            variant: AppButtonVariant.primary,
-            onPressed: onClearAll,
+          SizedBox(
+            height: 32,
+            child: TextButton(
+              onPressed: onClearAll,
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: AppColors.primary,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                minimumSize: const Size(0, 32),
+                maximumSize: const Size(double.infinity, 32),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                visualDensity: VisualDensity.compact,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                textStyle: AppTextStyles.caption.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+              child: const Text('Limpiar'),
+            ),
           ),
         ],
       ),
