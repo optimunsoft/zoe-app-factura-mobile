@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_radius.dart';
+import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
 
 class AppBadge extends StatelessWidget {
@@ -48,12 +50,12 @@ class AppBadge extends StatelessWidget {
     final size = fontSize ?? 11;
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: fontSize != null ? 12 : 8,
-        vertical: fontSize != null ? 6 : 4,
+        horizontal: fontSize != null ? AppSpacing.md : AppSpacing.sm,
+        vertical: fontSize != null ? AppSpacing.sm : AppSpacing.xs,
       ),
       decoration: BoxDecoration(
         color: background,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: AppRadius.smAll,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

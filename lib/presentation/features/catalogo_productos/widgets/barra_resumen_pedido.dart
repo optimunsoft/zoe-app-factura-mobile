@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/app_borders.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_elevation.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../atoms/money_text.dart';
 
@@ -21,25 +25,24 @@ class BarraResumenPedido extends StatelessWidget {
     final enabled = itemCount > 0;
 
     return Container(
-      padding: EdgeInsets.fromLTRB(16, 12, 12, 12 + bottom),
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.md,
+        AppSpacing.md,
+        AppSpacing.md + bottom,
+      ),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        border: const Border(top: BorderSide(color: AppColors.border)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 16,
-            offset: const Offset(0, -4),
-          ),
-        ],
+        border: AppBorders.top,
+        boxShadow: AppShadows.bar,
       ),
       child: SafeArea(
         top: false,
         child: InkWell(
           onTap: enabled ? onReviewPay : null,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppRadius.mdAll,
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+            padding: const EdgeInsets.all(AppSpacing.xs),
             child: Row(
               children: [
                 Text('Total', style: AppTextStyles.h3),

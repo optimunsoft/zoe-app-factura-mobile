@@ -3,6 +3,7 @@ import 'dart:ui' show lerpDouble;
 
 import 'package:flutter/material.dart';
 
+import '../../../atoms/logo_zoe.dart';
 import 'etiqueta_by_optimun.dart';
 import 'recorte_revelacion_circulo.dart';
 import 'formulario_login.dart';
@@ -22,7 +23,7 @@ class FondoAnimacionRipple extends StatelessWidget {
     required this.formSlide,
     required this.stagger,
     this.onLogin,
-    this.logoAsset = 'assets/images/zoe_logo.png',
+    this.logoAsset = kZoeLogoInvertidoAsset,
   });
 
   final Animation<double> logoAppear;

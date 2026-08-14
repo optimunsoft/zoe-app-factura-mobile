@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/currency_format.dart';
 import '../../../../modules/method_payments/domain/models/method_payments.models.dart';
@@ -86,7 +88,7 @@ class _PanelMediosPagoState extends State<PanelMediosPago> {
         Text('Medios de pago', style: AppTextStyles.h3),
         const SizedBox(height: 8),
         _RemainingBanner(remaining: _remaining),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpacing.md),
         ...widget.items.map(
           (item) {
             final locked = widget.lockedIds.contains(item.id);
@@ -123,10 +125,10 @@ class _RemainingBanner extends StatelessWidget {
     final done = remaining <= 0.001;
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: done ? AppColors.successBg : AppColors.warningBg,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.mdAll,
       ),
       child: Row(
         children: [

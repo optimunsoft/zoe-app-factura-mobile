@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'app_navigator.dart';
+import 'theme/app_radius.dart';
+import 'theme/app_spacing.dart';
 
 /// Toasts de la app. Solo para mensajes provenientes del backend.
 abstract final class AppToast {
@@ -17,9 +19,12 @@ abstract final class AppToast {
         gravity: ToastGravity.BOTTOM,
         toastDuration: const Duration(seconds: 3),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.md,
+          ),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.mdAll,
             color: const Color(0xFFDC2626),
           ),
           child: Text(

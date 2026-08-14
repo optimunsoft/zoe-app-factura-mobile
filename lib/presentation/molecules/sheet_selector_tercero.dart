@@ -116,12 +116,12 @@ class _SheetSelectorTerceroState extends State<SheetSelectorTercero> {
                               onTap: () => Navigator.of(context).pop(item),
                               borderRadius: AppRadius.mdAll,
                               child: Padding(
-                                padding: const EdgeInsets.all(14),
+                                padding: const EdgeInsets.all(AppSpacing.md),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(name, style: AppTextStyles.label),
-                                    const SizedBox(height: 2),
+                                    const SizedBox(height: AppSpacing.xxs),
                                     Text(
                                       item.identificationNumber,
                                       style: AppTextStyles.caption,

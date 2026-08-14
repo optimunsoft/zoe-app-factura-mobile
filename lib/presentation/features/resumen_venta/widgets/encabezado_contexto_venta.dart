@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_borders.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -29,8 +30,8 @@ class EncabezadoContextoVenta extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: AppRadius.mdAll,
-        border: Border.all(color: AppColors.border),
+        borderRadius: AppRadius.lgAll,
+        border: AppBorders.subtle,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

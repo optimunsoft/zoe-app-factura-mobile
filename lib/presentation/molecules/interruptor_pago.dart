@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../core/theme/app_borders.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_radius.dart';
+import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../domain/models/payment_method.dart';
 
@@ -16,11 +19,11 @@ class InterruptorPago extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(4),
+      padding: const EdgeInsets.all(AppSpacing.xs),
       decoration: BoxDecoration(
         color: AppColors.surfaceAlt,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
+        borderRadius: AppRadius.mdAll,
+        border: AppBorders.subtle,
       ),
       child: Row(
         children: PaymentMethod.values.map((method) {
@@ -33,12 +36,14 @@ class InterruptorPago extends StatelessWidget {
           return Expanded(
             child: Material(
               color: selected ? AppColors.primary : Colors.transparent,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: AppRadius.smAll,
               child: InkWell(
                 onTap: () => onChanged(method),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: AppRadius.smAll,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: AppSpacing.md,
+                  ),
                   child: Column(
                     children: [
                       Icon(

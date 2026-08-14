@@ -31,7 +31,7 @@ class SeccionFormulario extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.xs),
-          const Divider(height: 20, color: AppColors.border),
+          const Divider(height: AppSpacing.xl),
           ..._withGaps(children, AppSpacing.lg),
         ],
       ),

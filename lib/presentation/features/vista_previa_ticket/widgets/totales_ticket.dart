@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_spacing.dart';
 import '../../../../domain/models/sale_receipt.dart';
 import 'utilidades_ticket.dart';
 
@@ -14,7 +15,7 @@ class TotalesTicket extends StatelessWidget {
     return Column(
       children: [
         const TicketDivisor(),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.sm),
         TicketLineaMonto(label: 'Subtotal', amount: receipt.subtotal),
         if (receipt.taxBreakdown.isEmpty)
           TicketLineaMonto(label: 'Impuestos', amount: receipt.tax)
@@ -24,10 +25,10 @@ class TotalesTicket extends StatelessWidget {
           ),
         if (receipt.discount > 0)
           TicketLineaMonto(label: 'Descuentos', amount: -receipt.discount),
-        const SizedBox(height: 4),
+        const SizedBox(height: AppSpacing.xs),
         TicketLineaMonto(label: 'TOTAL', amount: receipt.total, bold: true),
         if (receipt.cashReceived != null) ...[
-          const SizedBox(height: 6),
+          const SizedBox(height: AppSpacing.sm),
           TicketLineaMonto(label: 'Recibido', amount: receipt.cashReceived!),
           TicketLineaMonto(label: 'Cambio', amount: receipt.changeDue ?? 0),
         ],

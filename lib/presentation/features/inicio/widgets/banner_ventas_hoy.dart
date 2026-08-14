@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../modules/sales/domain/models/ventas_resumen.models.dart';
 import '../../../atoms/money_text.dart';
@@ -24,17 +26,20 @@ class BannerVentasHoy extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: AppRadius.lgAll,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.lgAll,
         child: Ink(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.md,
+          ),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
               colors: [AppColors.primary, AppColors.primaryDark],
             ),
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: AppRadius.lgAll,
           ),
           child: Row(
             children: [
@@ -50,7 +55,7 @@ class BannerVentasHoy extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: AppSpacing.xs),
                     Row(
                       children: [
                         Text(
@@ -60,7 +65,7 @@ class BannerVentasHoy extends StatelessWidget {
                           ),
                         ),
                         if (onTap != null) ...[
-                          const SizedBox(width: 4),
+                          const SizedBox(width: AppSpacing.xs),
                           const Icon(
                             Icons.expand_more_rounded,
                             size: 16,
@@ -69,10 +74,10 @@ class BannerVentasHoy extends StatelessWidget {
                         ],
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: AppSpacing.xs),
                     if (isLoading)
                       const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 6),
+                        padding: EdgeInsets.symmetric(vertical: AppSpacing.xs),
                         child: SizedBox(
                           width: 22,
                           height: 22,

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/theme/app_borders.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../data/pos_controller.dart';
 import '../../../../domain/models/cart_item.dart';
@@ -190,7 +193,7 @@ class _SheetReteFuenteState extends State<SheetReteFuente> {
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
       itemCount: pos.cart.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 10),
+      separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
       itemBuilder: (context, index) {
         final item = pos.cart[index];
         final selected = CheckoutTaxCalculator.findById(
@@ -232,16 +235,12 @@ class TarjetaLineaReteFuente extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pct = selected?.percentageValue ?? 0;
-    final pctLabel =
-        'ReteFuente (${CheckoutTaxCalculator.formatPct(pct)}%)';
-
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        borderRadius: AppRadius.mdAll,
+        border: AppBorders.subtle,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -263,7 +262,7 @@ class TarjetaLineaReteFuente extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  pctLabel,
+                  'ReteFuente',
                   style: AppTextStyles.body.copyWith(
                     color: AppColors.textSecondary,
                   ),

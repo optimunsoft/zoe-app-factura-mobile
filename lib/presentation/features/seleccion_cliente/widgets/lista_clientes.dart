@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../domain/models/customer.dart';
 import 'fila_cliente.dart';
@@ -18,7 +19,7 @@ class ListaClientes extends StatelessWidget {
     if (customers.isEmpty) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(32),
+          padding: const EdgeInsets.all(AppSpacing.xxl),
           child: Text(
             'No se encontraron clientes',
             style: AppTextStyles.bodySmall,
@@ -29,9 +30,14 @@ class ListaClientes extends StatelessWidget {
     }
 
     return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.sm,
+        AppSpacing.lg,
+        AppSpacing.xl,
+      ),
       itemCount: customers.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 10),
+      separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
       itemBuilder: (context, index) {
         final customer = customers[index];
         return FilaCliente(

@@ -4,6 +4,9 @@ import 'package:provider/provider.dart';
 import '../../../../core/api_helpers.dart';
 import '../../../../core/auth/auth_controller.dart';
 import '../../../../core/auth/auth_service.dart';
+import '../../../../core/theme/app_borders.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../../data/pos_controller.dart';
 
 /// Formulario de login con animación escalonada y autenticación.
@@ -63,18 +66,24 @@ class _FormularioLoginState extends State<FormularioLogin> {
       suffixIcon: suffix,
       filled: true,
       fillColor: Colors.white.withValues(alpha: 0.18),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      contentPadding: const EdgeInsets.all(AppSpacing.lg),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.mdAll,
         borderSide: BorderSide.none,
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.12)),
+        borderRadius: AppRadius.mdAll,
+        borderSide: BorderSide(
+          color: Colors.white.withValues(alpha: 0.12),
+          width: AppBorders.thin,
+        ),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: Colors.white70, width: 1.2),
+        borderRadius: AppRadius.mdAll,
+        borderSide: const BorderSide(
+          color: Colors.white70,
+          width: AppBorders.strong,
+        ),
       ),
     );
   }
@@ -138,7 +147,7 @@ class _FormularioLoginState extends State<FormularioLogin> {
             ),
           ),
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: AppSpacing.lg),
         _stagger(
           progress: passT,
           child: TextField(
@@ -163,7 +172,7 @@ class _FormularioLoginState extends State<FormularioLogin> {
           ),
         ),
         if (_error != null) ...[
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSpacing.md),
           Text(
             _error!,
             style: const TextStyle(
@@ -173,7 +182,7 @@ class _FormularioLoginState extends State<FormularioLogin> {
             ),
           ),
         ],
-        const SizedBox(height: 22),
+        const SizedBox(height: AppSpacing.xl),
         _stagger(
           progress: btnT,
           child: SizedBox(
@@ -187,7 +196,7 @@ class _FormularioLoginState extends State<FormularioLogin> {
                     const Color(0xFF3D8DFF).withValues(alpha: 0.5),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.mdAll,
                 ),
                 textStyle: const TextStyle(
                   fontWeight: FontWeight.w800,

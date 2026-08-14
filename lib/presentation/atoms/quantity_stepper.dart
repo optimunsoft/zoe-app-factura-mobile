@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../core/theme/app_borders.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_radius.dart';
 import '../../core/theme/app_text_styles.dart';
 
 class QuantityStepper extends StatelessWidget {
@@ -22,8 +24,8 @@ class QuantityStepper extends StatelessWidget {
       height: 40,
       decoration: BoxDecoration(
         color: AppColors.surfaceAlt,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.border),
+        borderRadius: AppRadius.mdAll,
+        border: AppBorders.subtle,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -66,10 +68,10 @@ class _StepBtn extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: emphasize && onTap != null ? AppColors.primary : Colors.transparent,
-      borderRadius: BorderRadius.circular(9),
+      borderRadius: AppRadius.smAll,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(9),
+        borderRadius: AppRadius.smAll,
         child: SizedBox(
           width: 40,
           height: 38,

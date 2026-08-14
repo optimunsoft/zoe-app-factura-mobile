@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/theme/app_borders.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -67,13 +68,13 @@ class CampoBusquedaMunicipio extends StatelessWidget {
           ),
         ],
         if (common.municipalities.isNotEmpty) ...[
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSpacing.md),
           ConstrainedBox(
             constraints: const BoxConstraints(maxHeight: 180),
             child: DecoratedBox(
               decoration: BoxDecoration(
                 borderRadius: AppRadius.mdAll,
-                border: Border.all(color: AppColors.border),
+                border: AppBorders.subtle,
               ),
               child: ClipRRect(
                 borderRadius: AppRadius.mdAll,
@@ -81,7 +82,7 @@ class CampoBusquedaMunicipio extends StatelessWidget {
                   shrinkWrap: true,
                   itemCount: common.municipalities.length,
                   separatorBuilder: (_, _) =>
-                      const Divider(height: 1, color: AppColors.border),
+                      const Divider(),
                   itemBuilder: (context, index) {
                     final item = common.municipalities[index];
                     final isSelected = selected?.id == item.id;

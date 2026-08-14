@@ -68,7 +68,7 @@ class DetailInfoRow extends StatelessWidget {
                             )
                           : AppTextStyles.caption,
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: AppSpacing.xxs),
                     valueWidget ??
                         Text(
                           value,
@@ -84,8 +84,7 @@ class DetailInfoRow extends StatelessWidget {
             ],
           ),
         ),
-        if (showDivider)
-          const Divider(height: 1, thickness: 1, color: AppColors.border),
+        if (showDivider) const Divider(),
       ],
     );
   }

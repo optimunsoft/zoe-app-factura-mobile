@@ -1,5 +1,9 @@
 /// Espaciados centralizados del design system.
+///
+/// Escala única. [xxs] queda reservado para separaciones tipográficas
+/// (título / subtítulo); el resto del layout usa [xs] en adelante.
 abstract final class AppSpacing {
+  static const double xxs = 2;
   static const double xs = 4;
   static const double sm = 8;
   static const double md = 12;

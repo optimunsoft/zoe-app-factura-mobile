@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_text_styles.dart';
+import '../../core/theme/app_radius.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_text_styles.dart';
 
 /// Chip activo de filtro.
 class ChipFiltroActivo {
@@ -60,13 +61,15 @@ class BarraFiltrosActivos extends StatelessWidget {
               style: TextButton.styleFrom(
                 foregroundColor: Colors.white,
                 backgroundColor: AppColors.primary,
-                padding: const EdgeInsets.symmetric(horizontal: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                ),
                 minimumSize: const Size(0, 32),
                 maximumSize: const Size(double.infinity, 32),
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 visualDensity: VisualDensity.compact,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: AppRadius.smAll,
                 ),
                 textStyle: AppTextStyles.caption.copyWith(
                   fontWeight: FontWeight.w600,

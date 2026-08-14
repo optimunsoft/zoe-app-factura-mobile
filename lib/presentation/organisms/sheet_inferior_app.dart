@@ -44,24 +44,29 @@ class SheetInferiorApp extends StatelessWidget {
         constraints: BoxConstraints(maxHeight: maxHeight),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: AppRadius.lgTop,
+          borderRadius: AppRadius.sheetTop,
         ),
         child: Padding(
           padding: EdgeInsets.only(bottom: bottom),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const SizedBox(height: AppSpacing.sm + 2),
+              const SizedBox(height: AppSpacing.sm),
               Container(
                 width: 40,
                 height: 4,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: AppColors.border,
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.all(Radius.circular(2)),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(AppSpacing.sm, 4, AppSpacing.sm, 0),
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.sm,
+                  AppSpacing.xs,
+                  AppSpacing.sm,
+                  0,
+                ),
                 child: Row(
                   children: [
                     const Spacer(),

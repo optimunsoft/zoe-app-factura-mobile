@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_borders.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_radius.dart';
 import '../../core/theme/app_spacing.dart';
@@ -25,14 +26,12 @@ class BannerMontoPendiente extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.lg,
-        vertical: 14,
+        vertical: AppSpacing.md,
       ),
       decoration: BoxDecoration(
         color: emphasized ? AppColors.primaryLight : AppColors.surfaceAlt,
         borderRadius: AppRadius.mdAll,
-        border: Border.all(
-          color: emphasized ? AppColors.primary.withValues(alpha: 0.35) : AppColors.border,
-        ),
+        border: AppBorders.selectable(selected: emphasized),
       ),
       child: Row(
         children: [

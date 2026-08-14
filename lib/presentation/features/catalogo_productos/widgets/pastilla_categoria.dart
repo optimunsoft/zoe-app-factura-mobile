@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/app_borders.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 
 class PastillaCategoria extends StatelessWidget {
@@ -24,20 +27,21 @@ class PastillaCategoria extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 8),
+      padding: const EdgeInsets.only(right: AppSpacing.sm),
       child: Material(
         color: selected ? AppColors.primary : AppColors.surface,
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: AppRadius.pillAll,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: AppRadius.pillAll,
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.lg,
+              vertical: AppSpacing.sm,
+            ),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(22),
-              border: Border.all(
-                color: selected ? AppColors.primary : AppColors.border,
-              ),
+              borderRadius: AppRadius.pillAll,
+              border: AppBorders.selectable(selected: selected),
             ),
             child: Text(
               _sentenceCase(label),

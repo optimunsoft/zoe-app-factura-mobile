@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
+import '../../../atoms/logo_zoe.dart';
 
 /// Pequeña etiqueta “BY OPTIMUN” bajo el logo ZOE.
 class EtiquetaByOptimun extends StatelessWidget {
@@ -19,13 +20,11 @@ class EtiquetaByOptimun extends StatelessWidget {
       child: Transform.translate(
         offset: Offset(0, 10 * slide),
         child: Text(
-          'by Optimun',
+          kZoeFirmaTexto,
           textAlign: TextAlign.center,
-          style: GoogleFonts.montserrat(
+          style: estiloFirmaZoe(
             color: Colors.white.withValues(alpha: 0.9),
             fontSize: 11,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 3.2,
           ),
         ),
       ),

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/app_borders.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_elevation.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../atoms/app_button.dart';
 import '../../../atoms/money_text.dart';
@@ -21,17 +24,16 @@ class BarraPagarVenta extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Container(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          AppSpacing.md,
+          AppSpacing.lg,
+          AppSpacing.lg,
+        ),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          border: const Border(top: BorderSide(color: AppColors.border)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 16,
-              offset: const Offset(0, -4),
-            ),
-          ],
+          border: AppBorders.top,
+          boxShadow: AppShadows.bar,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,

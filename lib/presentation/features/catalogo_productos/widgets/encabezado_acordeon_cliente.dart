@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/nit_verification_digit.dart';
 import '../../../../domain/models/customer.dart';
@@ -80,9 +82,9 @@ class _EncabezadoAcordeonClienteState extends State<EncabezadoAcordeonCliente> {
       children: [
         InkWell(
           onTap: _toggle,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: AppRadius.smAll,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+            padding: const EdgeInsets.all(AppSpacing.xs),
             child: Row(
               children: [
                 Container(
@@ -90,7 +92,7 @@ class _EncabezadoAcordeonClienteState extends State<EncabezadoAcordeonCliente> {
                   height: 28,
                   decoration: BoxDecoration(
                     color: AppColors.primaryLight,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: AppRadius.smAll,
                   ),
                   child: const Icon(
                     Icons.person_rounded,
@@ -135,11 +137,11 @@ class _EncabezadoAcordeonClienteState extends State<EncabezadoAcordeonCliente> {
           firstChild: const SizedBox(width: double.infinity),
           secondChild: Container(
             width: double.infinity,
-            margin: const EdgeInsets.only(top: 4),
-            padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+            margin: const EdgeInsets.only(top: AppSpacing.xs),
+            padding: const EdgeInsets.all(AppSpacing.sm),
             decoration: BoxDecoration(
               color: AppColors.surfaceAlt,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: AppRadius.mdAll,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

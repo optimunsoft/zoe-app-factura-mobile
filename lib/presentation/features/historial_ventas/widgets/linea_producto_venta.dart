@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_borders.dart';
+import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/currency_format.dart';
@@ -27,10 +28,10 @@ class LineaProductoVenta extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.border),
+          borderRadius: AppRadius.mdAll,
+          border: AppBorders.subtle,
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,7 +47,7 @@ class LineaProductoVenta extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(detail.name, style: AppTextStyles.label),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: AppSpacing.sm),
                   Text(qtyPrice, style: AppTextStyles.bodySmall),
                   if (taxesLabel != null) ...[
                     const SizedBox(height: 4),

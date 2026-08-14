@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/theme/app_borders.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -143,7 +144,7 @@ class _SheetFiltrosHistorialVentasState
                     ),
                     onChanged: (v) => _filters.documentNumber = v,
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: AppSpacing.lg),
                   Text('Rango de fechas', style: AppTextStyles.label),
                   const SizedBox(height: AppSpacing.sm),
                   FilaRangoFechas(
@@ -164,7 +165,7 @@ class _SheetFiltrosHistorialVentasState
                         ? null
                         : () => setState(() => _filters.endDate = null),
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: AppSpacing.lg),
                   Text('Tercero', style: AppTextStyles.label),
                   const SizedBox(height: AppSpacing.sm),
                   Material(
@@ -174,13 +175,10 @@ class _SheetFiltrosHistorialVentasState
                       onTap: _pickThirdParty,
                       borderRadius: AppRadius.mdAll,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 14,
-                        ),
+                        padding: const EdgeInsets.all(AppSpacing.md),
                         decoration: BoxDecoration(
                           borderRadius: AppRadius.mdAll,
-                          border: Border.all(color: AppColors.border),
+                          border: AppBorders.subtle,
                         ),
                         child: Row(
                           children: [

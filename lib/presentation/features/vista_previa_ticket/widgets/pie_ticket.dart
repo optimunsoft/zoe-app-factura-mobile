@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import 'utilidades_ticket.dart';
 
@@ -14,9 +15,9 @@ class PieTicket extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 14),
+        const SizedBox(height: AppSpacing.lg),
         const TicketDivisor(),
-        const SizedBox(height: 14),
+        const SizedBox(height: AppSpacing.lg),
         Container(
           height: 48,
           width: double.infinity,
@@ -29,7 +30,7 @@ class PieTicket extends StatelessWidget {
             style: AppTextStyles.receipt.copyWith(letterSpacing: 1.2),
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.sm),
         Container(
           width: 72,
           height: 72,
@@ -39,7 +40,7 @@ class PieTicket extends StatelessWidget {
           alignment: Alignment.center,
           child: const Icon(Icons.qr_code_2, size: 56),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpacing.md),
         Text(
           '¡Gracias por su compra!',
           style: AppTextStyles.receipt.copyWith(fontWeight: FontWeight.w700),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../atoms/status_dot.dart';
 
@@ -27,23 +29,26 @@ class InsigniaEstadoImpresora extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: connected ? AppColors.successBg : AppColors.dangerBg,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: AppRadius.pillAll,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.pillAll,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.sm,
+            vertical: AppSpacing.xs,
+          ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               StatusDot(active: connected),
-              const SizedBox(width: 6),
+              const SizedBox(width: AppSpacing.xs),
               Icon(
                 Icons.print_rounded,
                 size: 14,
                 color: connected ? AppColors.success : AppColors.danger,
               ),
-              const SizedBox(width: 4),
+              const SizedBox(width: AppSpacing.xs),
               Text(
                 connected ? _shortMode(mode) : 'Off',
                 style: AppTextStyles.caption.copyWith(

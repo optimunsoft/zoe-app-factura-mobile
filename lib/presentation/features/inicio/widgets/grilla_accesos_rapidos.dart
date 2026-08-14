@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import 'tarjeta_acceso.dart';
 
@@ -23,13 +24,13 @@ class GrillaAccesosRapidos extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text('Accesos rápidos', style: AppTextStyles.h3),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.md),
         GridView.count(
           crossAxisCount: 2,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
+          mainAxisSpacing: AppSpacing.md,
+          crossAxisSpacing: AppSpacing.md,
           childAspectRatio: 1.2,
           children: [
             TarjetaAcceso(

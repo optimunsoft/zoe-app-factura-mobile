@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../core/theme/app_borders.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_radius.dart';
+import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
 
 enum AppButtonVariant { primary, secondary, ghost, danger }
@@ -42,8 +45,14 @@ class AppButton extends StatelessWidget {
       AppButtonVariant.danger => Colors.white,
     };
     final border = switch (variant) {
-      AppButtonVariant.secondary => Border.all(color: AppColors.borderStrong),
-      AppButtonVariant.ghost => Border.all(color: AppColors.primary),
+      AppButtonVariant.secondary => Border.all(
+          color: AppColors.borderStrong,
+          width: AppBorders.thin,
+        ),
+      AppButtonVariant.ghost => Border.all(
+          color: AppColors.primary,
+          width: AppBorders.thin,
+        ),
       _ => null,
     };
 
@@ -66,28 +75,30 @@ class AppButton extends StatelessWidget {
             size: compact ? 16 : 20,
             color: enabled ? fg : AppColors.textMuted,
           ),
-          SizedBox(width: compact ? 6 : 8),
+          const SizedBox(width: AppSpacing.sm),
         ],
         // Flexible solo con expanded: si no, Wrap lo estira a todo el ancho.
         if (expanded) Flexible(child: labelWidget) else labelWidget,
       ],
     );
 
-    final radius = compact ? 8.0 : 12.0;
+    final radius = compact ? AppRadius.smAll : AppRadius.mdAll;
 
     final button = Material(
       color: enabled ? bg : AppColors.surfaceAlt,
-      borderRadius: BorderRadius.circular(radius),
+      borderRadius: radius,
       child: InkWell(
         onTap: onPressed,
-        borderRadius: BorderRadius.circular(radius),
+        borderRadius: radius,
         child: Container(
           // Con alignment el Container se estira al max width (p. ej. en Wrap).
           alignment: expanded ? Alignment.center : null,
           height: height,
-          padding: EdgeInsets.symmetric(horizontal: compact ? 12 : 16),
+          padding: EdgeInsets.symmetric(
+            horizontal: compact ? AppSpacing.md : AppSpacing.lg,
+          ),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(radius),
+            borderRadius: radius,
             border: border,
           ),
           child: child,

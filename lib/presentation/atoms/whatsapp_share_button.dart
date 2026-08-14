@@ -3,6 +3,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 import '../../core/services/whatsapp_share_service.dart';
+import '../../core/theme/app_radius.dart';
+import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
 
 /// Color característico de WhatsApp.
@@ -96,12 +98,12 @@ class _BotonWhatsAppShareState extends State<BotonWhatsAppShare> {
       height: widget.height,
       child: Material(
         color: enabled ? kWhatsAppGreen : kWhatsAppGreen.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.mdAll,
         child: InkWell(
           onTap: enabled ? _onPressed : null,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppRadius.mdAll,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize:
@@ -118,7 +120,7 @@ class _BotonWhatsAppShareState extends State<BotonWhatsAppShare> {
                   )
                 else
                   const Icon(Icons.chat, size: 20, color: Colors.white),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.sm),
                 Flexible(
                   child: Text(
                     _loading ? 'Preparando…' : widget.label,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/theme/app_borders.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -113,7 +114,7 @@ class _SheetFiltroPeriodoResumenState extends State<SheetFiltroPeriodoResumen> {
             children: [
               for (final p in const [
                 PeriodoResumenVentas.hoy,
-                PeriodoResumenVentas.ultimoMes,
+                PeriodoResumenVentas.mesActual,
                 PeriodoResumenVentas.anioActual,
                 PeriodoResumenVentas.personalizado,
               ])
@@ -127,12 +128,12 @@ class _SheetFiltroPeriodoResumenState extends State<SheetFiltroPeriodoResumen> {
                         ? AppColors.primaryDark
                         : AppColors.textSecondary,
                   ),
-                  side: BorderSide(
-                    color: _filtro.periodo == p
-                        ? AppColors.primary
-                        : AppColors.border,
+                  side: AppBorders.selectableSide(
+                    selected: _filtro.periodo == p,
                   ),
-                  shape: RoundedRectangleBorder(borderRadius: AppRadius.smAll),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: AppRadius.pillAll,
+                  ),
                   showCheckmark: false,
                 ),
             ],

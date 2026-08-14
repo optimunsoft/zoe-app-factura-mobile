@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_borders.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../modules/sales/domain/models/ventas_resumen.models.dart';
 import '../../../atoms/money_text.dart';
@@ -22,7 +25,7 @@ class TarjetasResumenReportes extends StatelessWidget {
   Widget build(BuildContext context) {
     if (isLoading) {
       return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 24),
+        padding: EdgeInsets.symmetric(vertical: AppSpacing.xl),
         child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
       );
     }
@@ -52,7 +55,7 @@ class TarjetasResumenReportes extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             MoneyText(resumen.carteraGenerada, large: true),
-            const SizedBox(height: 2),
+            const SizedBox(height: AppSpacing.xs),
             Text(
               '${resumen.porcentajeCartera.toStringAsFixed(
                 resumen.porcentajeCartera % 1 == 0 ? 0 : 1,
@@ -78,8 +81,8 @@ class TarjetasResumenReportes extends StatelessWidget {
       crossAxisCount: 2,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      mainAxisSpacing: 10,
-      crossAxisSpacing: 10,
+      mainAxisSpacing: AppSpacing.md,
+      crossAxisSpacing: AppSpacing.md,
       mainAxisExtent: _cardHeight,
       children: cards,
     );
@@ -102,11 +105,14 @@ class _MetricCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
+        borderRadius: AppRadius.lgAll,
+        border: AppBorders.subtle,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,11 +120,11 @@ class _MetricCard extends StatelessWidget {
           Row(
             children: [
               Icon(icon, size: 16, color: AppColors.primary),
-              const SizedBox(width: 6),
+              const SizedBox(width: AppSpacing.sm),
               Expanded(child: Text(label, style: AppTextStyles.caption)),
             ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: AppSpacing.sm),
           Expanded(
             child: Align(
               alignment: Alignment.topLeft,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_borders.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -91,7 +92,7 @@ class SeccionInfoVenta extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Nro de Documento:', style: AppTextStyles.h3),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: AppSpacing.sm),
                   AppBadge(
                     label: sale.documentNumber.isNotEmpty
                         ? sale.documentNumber
@@ -111,7 +112,7 @@ class SeccionInfoVenta extends StatelessWidget {
               ),
           ],
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: AppSpacing.lg),
         Text('Tercero:', style: AppTextStyles.h3),
         const SizedBox(height: 4),
         Text(
@@ -122,10 +123,10 @@ class SeccionInfoVenta extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.lg),
         Container(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(AppSpacing.md),
           decoration: BoxDecoration(
             color: AppColors.surfaceAlt,
-            borderRadius: AppRadius.mdAll,
+            borderRadius: AppRadius.lgAll,
           ),
           child: Row(
             children: [
@@ -146,8 +147,8 @@ class SeccionInfoVenta extends StatelessWidget {
           ),
           decoration: BoxDecoration(
             color: AppColors.surface,
-            borderRadius: AppRadius.mdAll,
-            border: Border.all(color: AppColors.border),
+            borderRadius: AppRadius.lgAll,
+            border: AppBorders.subtle,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,

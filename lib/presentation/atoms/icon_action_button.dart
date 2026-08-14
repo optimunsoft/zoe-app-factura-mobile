@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_radius.dart';
 
 class IconActionButton extends StatelessWidget {
   const IconActionButton({
@@ -23,10 +24,10 @@ class IconActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final button = Material(
       color: backgroundColor ?? Colors.transparent,
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: AppRadius.smAll,
       child: InkWell(
         onTap: onPressed,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: AppRadius.smAll,
         child: SizedBox(
           width: size,
           height: size,

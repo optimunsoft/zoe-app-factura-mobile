@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:pdfrx/pdfrx.dart';
 
+import '../../../../core/theme/app_borders.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -27,7 +28,7 @@ class VisorPdfDocumento extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surfaceAlt,
         borderRadius: AppRadius.mdAll,
-        border: Border.all(color: AppColors.border),
+        border: AppBorders.subtle,
       ),
       child: ClipRRect(
         borderRadius: AppRadius.mdAll,

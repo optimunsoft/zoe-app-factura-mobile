@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_borders.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/currency_format.dart';
 import '../../../atoms/money_text.dart';
@@ -41,20 +44,20 @@ class TarjetaOpcionPago extends StatelessWidget {
       curve: Curves.easeOut,
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: expanded || locked ? AppColors.primary : AppColors.border,
-          width: expanded || locked ? 1.5 : 1,
-        ),
+        borderRadius: AppRadius.lgAll,
+        border: AppBorders.selectable(selected: expanded || locked),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           InkWell(
             onTap: onSelect,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.lgAll,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.sm,
+              ),
               child: Row(
                 children: [
                   Container(
@@ -64,7 +67,7 @@ class TarjetaOpcionPago extends StatelessWidget {
                       color: locked || expanded
                           ? AppColors.primaryLight
                           : AppColors.surfaceAlt,
-                      borderRadius: BorderRadius.circular(9),
+                      borderRadius: AppRadius.smAll,
                     ),
                     child: Icon(
                       icon,
@@ -74,7 +77,7 @@ class TarjetaOpcionPago extends StatelessWidget {
                           : AppColors.textSecondary,
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Text(
                       label,
@@ -88,7 +91,7 @@ class TarjetaOpcionPago extends StatelessWidget {
                       confirmedAmount!,
                       color: AppColors.primary,
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: AppSpacing.sm),
                     const Icon(
                       Icons.check_circle_rounded,
                       size: 20,
@@ -107,9 +110,14 @@ class TarjetaOpcionPago extends StatelessWidget {
             ),
           ),
           if (expanded) ...[
-            const Divider(height: 1, color: AppColors.border),
+            const Divider(),
             Padding(
-              padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.md,
+                AppSpacing.sm,
+                AppSpacing.md,
+                AppSpacing.md,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -141,7 +149,7 @@ class TarjetaOpcionPago extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppSpacing.sm),
                   ],
                   Row(
                     children: [
@@ -169,32 +177,27 @@ class TarjetaOpcionPago extends StatelessWidget {
                             fillColor: locked
                                 ? AppColors.surfaceAlt.withValues(alpha: 0.7)
                                 : AppColors.surfaceAlt,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 12,
-                            ),
+                            contentPadding: const EdgeInsets.all(AppSpacing.md),
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: AppRadius.mdAll,
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide:
-                                  const BorderSide(color: AppColors.border),
+                              borderRadius: AppRadius.mdAll,
+                              borderSide: AppBorders.side,
                             ),
                             disabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide:
-                                  const BorderSide(color: AppColors.border),
+                              borderRadius: AppRadius.mdAll,
+                              borderSide: AppBorders.side,
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: AppRadius.mdAll,
                               borderSide:
                                   const BorderSide(color: AppColors.primary),
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: AppSpacing.sm),
                       SizedBox(
                         height: 46,
                         child: ElevatedButton(
@@ -206,10 +209,12 @@ class TarjetaOpcionPago extends StatelessWidget {
                             foregroundColor: locked
                                 ? AppColors.primary
                                 : Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 14),
-                            elevation: locked ? 0 : 2,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.lg,
+                            ),
+                            elevation: 0,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: AppRadius.mdAll,
                               side: locked
                                   ? const BorderSide(color: AppColors.primary)
                                   : BorderSide.none,

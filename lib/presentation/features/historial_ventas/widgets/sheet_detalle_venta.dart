@@ -8,6 +8,7 @@ import '../../../../modules/sales/store/sales_history.store.dart';
 import '../../../molecules/cuerpo_error_reintentar.dart';
 import '../../../organisms/sheet_inferior_app.dart';
 import 'linea_producto_venta.dart';
+import 'boton_descargar_pdf_venta.dart';
 import 'seccion_medios_pago_venta.dart';
 import 'seccion_info_venta.dart';
 
@@ -95,15 +96,19 @@ class CuerpoDetalleVenta extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SeccionInfoVenta(sale: sale, isRefreshing: isRefreshing),
-        const SizedBox(height: 18),
+        const SizedBox(height: AppSpacing.lg),
         SeccionMediosPagoVenta(sale: sale),
-        const SizedBox(height: 18),
+        const SizedBox(height: AppSpacing.lg),
         Text('Productos', style: AppTextStyles.h3),
         const SizedBox(height: AppSpacing.sm),
         if (sale.details.isEmpty)
           Text('Sin productos', style: AppTextStyles.bodySmall)
         else
           ...sale.details.map((d) => LineaProductoVenta(detail: d)),
+        if (sale.documentNumber.trim().isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.lg),
+          BotonDescargarPdfVenta(nroDocumento: sale.documentNumber),
+        ],
       ],
     );
   }

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../../../core/theme/app_borders.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radius.dart';
+import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../atoms/app_button.dart';
 
@@ -38,24 +41,32 @@ class _ReportesPageState extends State<ReportesPage> {
         title: Text('Reportes', style: AppTextStyles.h2),
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          AppSpacing.sm,
+          AppSpacing.lg,
+          AppSpacing.xl,
+        ),
         children: [
           Material(
             color: AppColors.surface,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.mdAll,
             child: InkWell(
               onTap: _pickDate,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.mdAll,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                padding: const EdgeInsets.all(AppSpacing.md),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.border),
+                  borderRadius: AppRadius.mdAll,
+                  border: AppBorders.subtle,
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.calendar_today_rounded, color: AppColors.primary),
-                    const SizedBox(width: 12),
+                    const Icon(
+                      Icons.calendar_today_rounded,
+                      color: AppColors.primary,
+                    ),
+                    const SizedBox(width: AppSpacing.md),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,13 +85,13 @@ class _ReportesPageState extends State<ReportesPage> {
               ),
             ),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: AppSpacing.lg),
           AppButton(
             label: 'Imprimir resumen Z-Report',
             icon: Icons.print_rounded,
             onPressed: () => _snack('Imprimiendo Z-Report del día…'),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSpacing.md),
           AppButton(
             label: 'Imprimir stock en mano',
             icon: Icons.inventory_2_rounded,

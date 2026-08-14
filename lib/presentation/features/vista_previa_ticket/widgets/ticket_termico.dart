@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/theme/app_borders.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_elevation.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../../domain/models/sale_receipt.dart';
 import 'encabezado_ticket.dart';
 import 'lineas_ticket.dart';
@@ -26,18 +29,18 @@ class TicketTermico extends StatelessWidget {
     return Center(
       child: Container(
         width: ticketWidth,
-        padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          AppSpacing.xl,
+          AppSpacing.lg,
+          AppSpacing.xl,
+        ),
         decoration: BoxDecoration(
           color: AppColors.receiptBg,
+          // Radio propio del papel térmico: casi recto a propósito.
           borderRadius: BorderRadius.circular(4),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.12),
-              blurRadius: 18,
-              offset: const Offset(0, 8),
-            ),
-          ],
-          border: Border.all(color: AppColors.border),
+          boxShadow: AppShadows.floating,
+          border: AppBorders.subtle,
         ),
         child: Column(
           children: [

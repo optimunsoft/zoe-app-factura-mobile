@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/theme/app_borders.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
-import '../../../modules/taxes/domain/checkout_tax_calculator.dart';
 import '../../../modules/taxes/domain/models/taxes.models.dart';
 import '../atoms/money_text.dart';
 import '../atoms/pct_retention_dropdown.dart';
@@ -34,19 +34,13 @@ class FilaRetencion extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pct = selected?.percentageValue ?? 0;
-    final showPct = onEdit == null;
-    final label = showPct
-        ? '$name (${CheckoutTaxCalculator.formatPct(pct)}%)'
-        : name;
-
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
       child: Row(
         children: [
           Expanded(
             child: Text(
-              label,
+              name,
               style: AppTextStyles.body.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -152,8 +146,8 @@ class PanelRetenciones extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: AppRadius.mdAll,
-        border: Border.all(color: AppColors.border),
+        borderRadius: AppRadius.lgAll,
+        border: AppBorders.subtle,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

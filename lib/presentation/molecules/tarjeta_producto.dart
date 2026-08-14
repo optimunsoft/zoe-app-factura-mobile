@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_borders.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_elevation.dart';
+import '../../core/theme/app_radius.dart';
+import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../domain/models/product.dart';
 import '../atoms/money_text.dart';
@@ -83,124 +87,117 @@ class TarjetaProducto extends StatelessWidget {
     final disabled = !product.inStock;
     final maxQty = maxQuantity ?? product.stock;
 
-    return Material(
-      color: AppColors.surface,
-      elevation: 1.5,
-      shadowColor: Colors.black.withValues(alpha: 0.08),
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border),
-        ),
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            GestureDetector(
-              onTap: onTap,
-              behavior: HitTestBehavior.opaque,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const AspectRatio(
-                    aspectRatio: imageAspectRatio,
-                    child: ProductImagePlaceholder(),
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: AppRadius.lgAll,
+        border: AppBorders.subtle,
+        boxShadow: AppShadows.card,
+      ),
+      padding: const EdgeInsets.all(AppSpacing.md),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          GestureDetector(
+            onTap: onTap,
+            behavior: HitTestBehavior.opaque,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const AspectRatio(
+                  aspectRatio: imageAspectRatio,
+                  child: ProductImagePlaceholder(),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                SizedBox(
+                  height: _nameBlockHeight,
+                  width: double.infinity,
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      return Text(
+                        _twoLineName(product.name, constraints.maxWidth),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: _nameStyle,
+                      );
+                    },
                   ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    height: _nameBlockHeight,
-                    width: double.infinity,
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        return Text(
-                          _twoLineName(product.name, constraints.maxWidth),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: _nameStyle,
-                        );
-                      },
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.sm,
+                      vertical: AppSpacing.xs,
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _stockBg,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: _stockFg.withValues(alpha: 0.25),
-                        ),
-                      ),
-                      child: Text(
-                        product.stock <= 0
-                            ? 'Agotado'
-                            : 'Cantidad: ${product.stock}',
-                        style: AppTextStyles.label.copyWith(
-                          color: _stockFg,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                        ),
+                    decoration: BoxDecoration(
+                      color: _stockBg,
+                      borderRadius: AppRadius.smAll,
+                    ),
+                    child: Text(
+                      product.stock <= 0
+                          ? 'Agotado'
+                          : 'Cantidad: ${product.stock}',
+                      style: AppTextStyles.label.copyWith(
+                        color: _stockFg,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: MoneyText(
-                      product.price,
-                      color: AppColors.textPrimary,
-                      hideZeroDecimals: true,
-                      style: AppTextStyles.money.copyWith(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                      ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: MoneyText(
+                    product.price,
+                    color: AppColors.textPrimary,
+                    hideZeroDecimals: true,
+                    style: AppTextStyles.money.copyWith(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 42,
-              child: quantity == 0
-                  ? ElevatedButton(
-                      onPressed: disabled ? null : onAdd,
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        backgroundColor: AppColors.primary,
-                        disabledBackgroundColor: AppColors.surfaceAlt,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 0,
+          ),
+          const SizedBox(height: AppSpacing.md),
+          SizedBox(
+            height: 42,
+            child: quantity == 0
+                ? ElevatedButton(
+                    onPressed: disabled ? null : onAdd,
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      backgroundColor: AppColors.primary,
+                      disabledBackgroundColor: AppColors.surfaceAlt,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: AppRadius.mdAll,
                       ),
-                      child: Text(
-                        '+ Agregar',
-                        style: AppTextStyles.button.copyWith(
-                          color: disabled ? AppColors.textMuted : Colors.white,
-                          fontSize: 14,
-                        ),
-                      ),
-                    )
-                  : Center(
-                      child: QuantityStepper(
-                        value: quantity,
-                        max: maxQty,
-                        onChanged: onQuantityChanged,
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      '+ Agregar',
+                      style: AppTextStyles.button.copyWith(
+                        color: disabled ? AppColors.textMuted : Colors.white,
+                        fontSize: 14,
                       ),
                     ),
-            ),
-          ],
-        ),
+                  )
+                : Center(
+                    child: QuantityStepper(
+                      value: quantity,
+                      max: maxQty,
+                      onChanged: onQuantityChanged,
+                    ),
+                  ),
+          ),
+        ],
       ),
     );
   }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_borders.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../modules/sales/domain/models/list_sales.models.dart';
@@ -26,13 +28,10 @@ class SeccionMediosPagoVenta extends StatelessWidget {
             (p) => Padding(
               padding: const EdgeInsets.only(bottom: AppSpacing.sm),
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 12,
-                ),
+                padding: const EdgeInsets.all(AppSpacing.md),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.border),
+                  borderRadius: AppRadius.mdAll,
+                  border: AppBorders.subtle,
                 ),
                 child: Row(
                   children: [
@@ -41,7 +40,7 @@ class SeccionMediosPagoVenta extends StatelessWidget {
                       color: AppColors.primary,
                       size: 20,
                     ),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: AppSpacing.md),
                     Expanded(
                       child: Text(p.name, style: AppTextStyles.label),
                     ),

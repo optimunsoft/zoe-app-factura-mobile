@@ -3,13 +3,15 @@ import 'package:provider/provider.dart';
 
 import '../../../core/auth/auth_controller.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radius.dart';
+import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/pos_controller.dart';
 import '../../../modules/sales/domain/models/filtro_periodo_resumen.dart';
 import '../../../modules/sales/store/sales.store.dart';
+import '../../atoms/logo_zoe.dart';
 import '../../features/inicio/widgets/banner_ventas_hoy.dart';
 import '../../features/inicio/widgets/grilla_accesos_rapidos.dart';
-import '../../features/inicio/widgets/insignia_estado_impresora.dart';
 import '../../features/inicio/widgets/sheet_filtro_periodo_resumen.dart';
 import '../../features/reportes/widgets/tarjetas_resumen_reportes.dart';
 
@@ -62,42 +64,51 @@ class _InicioPageState extends State<InicioPage> {
 
   @override
   Widget build(BuildContext context) {
-    final pos = context.watch<PosController>();
     final user = context.watch<AuthController>().user;
     final salesStore = context.watch<SalesStore>();
 
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 72,
+        leadingWidth: 76,
+        leading: const Padding(
+          padding: EdgeInsets.only(left: AppSpacing.lg),
+          child: Center(child: LogoZoe(height: 34)),
+        ),
+        titleSpacing: AppSpacing.sm,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              (user?.sucursalNombre ?? 'Sin sucursal').toUpperCase(),
+              (user?.empresa.isNotEmpty == true
+                      ? user!.empresa
+                      : 'Sin empresa')
+                  .toUpperCase(),
               style: AppTextStyles.h2.copyWith(
                 color: AppColors.primary,
                 fontWeight: FontWeight.w800,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             Text(
-              user?.fullName ?? '',
+              [
+                if ((user?.sucursalNombre ?? '').isNotEmpty)
+                  user!.sucursalNombre!
+                else
+                  'Sin sucursal',
+                if ((user?.fullName ?? '').isNotEmpty) user!.fullName,
+              ].join(' - '),
               style: AppTextStyles.bodySmall.copyWith(
                 color: AppColors.textSecondary,
                 fontWeight: FontWeight.w500,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 4),
-            child: Center(
-              child: InsigniaEstadoImpresora(
-                connected: pos.printerConnected,
-                mode: pos.printerMode,
-                onTap: pos.togglePrinter,
-              ),
-            ),
-          ),
           IconButton(
             tooltip: 'Cerrar sesión',
             icon: const Icon(Icons.logout_rounded),
@@ -109,11 +120,16 @@ class _InicioPageState extends State<InicioPage> {
         onRefresh: _loadResumen,
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.sm,
+            AppSpacing.lg,
+            AppSpacing.xl,
+          ),
           children: [
             if (user?.sucursalId == null)
               const Padding(
-                padding: EdgeInsets.only(bottom: 12),
+                padding: EdgeInsets.only(bottom: AppSpacing.md),
                 child: Text(
                   'No se encontró la sucursal de la sesión',
                   style: TextStyle(color: AppColors.danger),
@@ -122,15 +138,15 @@ class _InicioPageState extends State<InicioPage> {
             else if (salesStore.resumenError != null &&
                 !salesStore.isLoadingResumen)
               Padding(
-                padding: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.only(bottom: AppSpacing.md),
                 child: Material(
                   color: AppColors.dangerBg,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.mdAll,
                   child: InkWell(
                     onTap: _loadResumen,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadius.mdAll,
                     child: Padding(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(AppSpacing.md),
                       child: Row(
                         children: [
                           const Icon(
@@ -138,7 +154,7 @@ class _InicioPageState extends State<InicioPage> {
                             color: AppColors.danger,
                             size: 20,
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: AppSpacing.sm),
                           Expanded(
                             child: Text(
                               salesStore.resumenError!,
@@ -165,12 +181,12 @@ class _InicioPageState extends State<InicioPage> {
               periodLabel: _filtro.displayLabel,
               onTap: user?.sucursalId == null ? null : _openPeriodFilter,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.lg),
             TarjetasResumenReportes(
               resumen: salesStore.resumen,
               isLoading: salesStore.isLoadingResumen,
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: AppSpacing.lg),
             GrillaAccesosRapidos(
               onNewSale: widget.onNewSale,
               onReceipts: widget.onReceipts,

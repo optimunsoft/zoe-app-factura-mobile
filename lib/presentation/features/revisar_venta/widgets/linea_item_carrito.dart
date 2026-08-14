@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/app_borders.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../domain/models/cart_item.dart';
 import '../../../atoms/icon_action_button.dart';
@@ -24,12 +27,12 @@ class LineaItemCarrito extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        borderRadius: AppRadius.mdAll,
+        border: AppBorders.subtle,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -52,7 +55,7 @@ class LineaItemCarrito extends StatelessWidget {
                       style: AppTextStyles.label,
                       softWrap: true,
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: AppSpacing.xxs),
                     MoneyText(
                       item.product.price,
                       color: AppColors.textSecondary,

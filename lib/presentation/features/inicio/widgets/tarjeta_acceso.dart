@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/app_borders.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 
 class TarjetaAcceso extends StatelessWidget {
@@ -22,15 +25,15 @@ class TarjetaAcceso extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: AppColors.surface,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: AppRadius.lgAll,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.lgAll,
         child: Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.lg),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.border),
+            borderRadius: AppRadius.lgAll,
+            border: AppBorders.subtle,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -41,13 +44,13 @@ class TarjetaAcceso extends StatelessWidget {
                 height: 40,
                 decoration: BoxDecoration(
                   color: accent.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.smAll,
                 ),
                 child: Icon(icon, color: accent, size: 22),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: AppSpacing.md),
               Text(title, style: AppTextStyles.h3),
-              const SizedBox(height: 2),
+              const SizedBox(height: AppSpacing.xs),
               Text(subtitle, style: AppTextStyles.bodySmall),
             ],
           ),

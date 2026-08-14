@@ -5,7 +5,7 @@ import 'ventas_resumen.models.dart';
 /// Periodos predefinidos del resumen de ventas (inicio).
 enum PeriodoResumenVentas {
   hoy,
-  ultimoMes,
+  mesActual,
   anioActual,
   personalizado,
 }
@@ -15,8 +15,8 @@ extension PeriodoResumenVentasX on PeriodoResumenVentas {
     switch (this) {
       case PeriodoResumenVentas.hoy:
         return 'Hoy';
-      case PeriodoResumenVentas.ultimoMes:
-        return 'Último mes';
+      case PeriodoResumenVentas.mesActual:
+        return 'Mes';
       case PeriodoResumenVentas.anioActual:
         return 'Año actual';
       case PeriodoResumenVentas.personalizado:
@@ -66,11 +66,10 @@ class FiltroPeriodoResumen {
     switch (periodo) {
       case PeriodoResumenVentas.hoy:
         return (start: today, end: today);
-      case PeriodoResumenVentas.ultimoMes:
-        final firstThisMonth = DateTime(n.year, n.month, 1);
-        final lastPrev = firstThisMonth.subtract(const Duration(days: 1));
-        final firstPrev = DateTime(lastPrev.year, lastPrev.month, 1);
-        return (start: firstPrev, end: lastPrev);
+      case PeriodoResumenVentas.mesActual:
+        final start = DateTime(n.year, n.month, 1);
+        final end = DateTime(n.year, n.month + 1, 0); // último día del mes
+        return (start: start, end: end);
       case PeriodoResumenVentas.anioActual:
         return (
           start: DateTime(n.year, 1, 1),

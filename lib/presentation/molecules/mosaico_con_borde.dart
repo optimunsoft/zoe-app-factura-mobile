@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_borders.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_radius.dart';
 import '../../core/theme/app_spacing.dart';
@@ -12,7 +13,7 @@ class MosaicoConBorde extends StatelessWidget {
     required this.body,
     this.trailing,
     this.onTap,
-    this.marginBottom = AppSpacing.sm + 2,
+    this.marginBottom = AppSpacing.sm,
   });
 
   final Widget leading;
@@ -32,10 +33,10 @@ class MosaicoConBorde extends StatelessWidget {
           onTap: onTap,
           borderRadius: AppRadius.mdAll,
           child: Container(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(AppSpacing.md),
             decoration: BoxDecoration(
               borderRadius: AppRadius.mdAll,
-              border: Border.all(color: AppColors.border),
+              border: AppBorders.subtle,
             ),
             child: Row(
               children: [

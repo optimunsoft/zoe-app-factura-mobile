@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_borders.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_radius.dart';
+import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../modules/taxes/domain/models/taxes.models.dart';
 
-/// Select compacto de porcentaje de retención (cerrado: `15%` o `-`).
+/// Etiqueta del estado sin retención aplicada.
+const String kSinRetencionLabel = 'No aplica';
+
+/// Select compacto de porcentaje de retención (cerrado: `15%` o `No aplica`).
 class PctRetentionDropdown extends StatelessWidget {
   const PctRetentionDropdown({
     super.key,
@@ -12,7 +18,7 @@ class PctRetentionDropdown extends StatelessWidget {
     required this.options,
     required this.onChanged,
     this.enabled = true,
-    this.width = 80,
+    this.width = 104,
   });
 
   final TaxRetention? selected;
@@ -26,11 +32,6 @@ class PctRetentionDropdown extends StatelessWidget {
     return value.toStringAsFixed(2);
   }
 
-  String _closedLabel(TaxRetention? item) {
-    if (item == null) return '-';
-    return '${_formatPct(item.percentageValue)}%';
-  }
-
   String _menuLabel(TaxRetention item) {
     return '${_formatPct(item.percentageValue)}%';
   }
@@ -40,15 +41,21 @@ class PctRetentionDropdown extends StatelessWidget {
         fontWeight: FontWeight.w600,
       );
 
+  /// Estado sin retención: se lee como marcador de posición, no como valor.
+  TextStyle get _noneStyle => AppTextStyles.label.copyWith(
+        color: AppColors.textMuted,
+        fontSize: 13,
+      );
+
   @override
   Widget build(BuildContext context) {
     final canOpen = enabled && onChanged != null && options.isNotEmpty;
 
     return Material(
       color: AppColors.surface,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: AppRadius.smAll,
       child: InkWell(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: AppRadius.smAll,
         onTap: canOpen
             ? () async {
                 final box = context.findRenderObject() as RenderBox?;
@@ -73,7 +80,7 @@ class PctRetentionDropdown extends StatelessWidget {
                   items: [
                     PopupMenuItem<Object>(
                       value: _noneSentinel,
-                      child: Text('0%', style: _valueStyle),
+                      child: Text(kSinRetencionLabel, style: _noneStyle),
                     ),
                     ...options.map(
                       (item) => PopupMenuItem<Object>(
@@ -95,17 +102,19 @@ class PctRetentionDropdown extends StatelessWidget {
         child: Container(
           width: width,
           height: 36,
-          padding: const EdgeInsets.symmetric(horizontal: 8),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: AppColors.border),
+            borderRadius: AppRadius.smAll,
+            border: AppBorders.subtle,
           ),
           child: Row(
             children: [
               Expanded(
                 child: Text(
-                  _closedLabel(selected),
-                  style: _valueStyle,
+                  selected == null
+                      ? kSinRetencionLabel
+                      : '${_formatPct(selected!.percentageValue)}%',
+                  style: selected == null ? _noneStyle : _valueStyle,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),

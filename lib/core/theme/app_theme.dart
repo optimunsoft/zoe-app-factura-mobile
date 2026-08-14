@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'app_borders.dart';
 import 'app_colors.dart';
+import 'app_radius.dart';
+import 'app_spacing.dart';
 
 abstract final class AppTheme {
   static ThemeData get light {
@@ -39,25 +42,31 @@ abstract final class AppTheme {
         color: AppColors.surface,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-          side: const BorderSide(color: AppColors.border),
+          borderRadius: AppRadius.lgAll,
+          side: AppBorders.side,
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.surface,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.md,
+        ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderRadius: AppRadius.mdAll,
+          borderSide: AppBorders.side,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderRadius: AppRadius.mdAll,
+          borderSide: AppBorders.side,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.primary, width: 2),
+          borderRadius: AppRadius.mdAll,
+          borderSide: const BorderSide(
+            color: AppColors.primary,
+            width: AppBorders.strong,
+          ),
         ),
         hintStyle: GoogleFonts.montserrat(
           color: AppColors.textMuted,
@@ -70,7 +79,7 @@ abstract final class AppTheme {
           foregroundColor: Colors.white,
           minimumSize: const Size(48, 52),
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
           textStyle: GoogleFonts.montserrat(
             fontSize: 15,
             fontWeight: FontWeight.w700,
@@ -81,8 +90,11 @@ abstract final class AppTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.textPrimary,
           minimumSize: const Size(48, 52),
-          side: const BorderSide(color: AppColors.borderStrong),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          side: const BorderSide(
+            color: AppColors.borderStrong,
+            width: AppBorders.thin,
+          ),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
           textStyle: GoogleFonts.montserrat(
             fontSize: 14,
             fontWeight: FontWeight.w600,
@@ -91,8 +103,8 @@ abstract final class AppTheme {
       ),
       dividerTheme: const DividerThemeData(
         color: AppColors.border,
-        thickness: 1,
-        space: 1,
+        thickness: AppBorders.thin,
+        space: AppBorders.thin,
       ),
     );
   }

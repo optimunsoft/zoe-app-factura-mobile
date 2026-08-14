@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_text_styles.dart';
 
 /// Diálogo opcional de observaciones al emitir la venta.
@@ -52,7 +53,7 @@ class _DialogoNotasVentaState extends State<DialogoNotasVenta> {
           filled: true,
           fillColor: AppColors.surfaceAlt,
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: AppRadius.mdAll,
           ),
         ),
       ),

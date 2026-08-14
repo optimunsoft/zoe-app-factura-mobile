@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_borders.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_elevation.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../modules/products/domain/models/products.models.dart';
 import '../../../atoms/app_badge.dart';
@@ -150,7 +153,7 @@ class _SheetDetalleProductoState extends State<SheetDetalleProducto> {
                         size: 16,
                         color: AppColors.primary,
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: AppSpacing.md),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -183,16 +186,8 @@ class _SheetDetalleProductoState extends State<SheetDetalleProducto> {
             padding: EdgeInsets.fromLTRB(20, 12, 20, 12 + bottom),
             decoration: BoxDecoration(
               color: AppColors.surface,
-              border: Border(
-                top: BorderSide(color: AppColors.border.withValues(alpha: 0.8)),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.06),
-                  blurRadius: 12,
-                  offset: const Offset(0, -4),
-                ),
-              ],
+              border: AppBorders.top,
+              boxShadow: AppShadows.bar,
             ),
             child: SizedBox(
               height: 48,
