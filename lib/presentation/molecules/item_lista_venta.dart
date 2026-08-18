@@ -30,7 +30,7 @@ class ItemListaVenta extends StatelessWidget {
           color: AppColors.primaryLight,
           borderRadius: AppRadius.smAll,
         ),
-        child: const Icon(Icons.receipt_rounded, color: AppColors.primary),
+        child: Icon(Icons.receipt_rounded, color: AppColors.primary),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

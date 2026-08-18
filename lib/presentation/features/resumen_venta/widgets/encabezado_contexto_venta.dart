@@ -30,7 +30,7 @@ class EncabezadoContextoVenta extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: AppRadius.lgAll,
+        borderRadius: AppRadius.mdAll,
         border: AppBorders.subtle,
       ),
       child: Column(

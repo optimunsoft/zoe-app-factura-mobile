@@ -148,7 +148,7 @@ class _SheetDetalleProductoState extends State<SheetDetalleProducto> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.inventory_2_outlined,
                         size: 16,
                         color: AppColors.primary,

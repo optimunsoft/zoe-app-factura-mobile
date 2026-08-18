@@ -146,7 +146,7 @@ class PanelRetenciones extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: AppRadius.lgAll,
+        borderRadius: AppRadius.mdAll,
         border: AppBorders.subtle,
       ),
       child: Column(
@@ -154,7 +154,7 @@ class PanelRetenciones extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.percent_rounded,
                 size: 18,
                 color: AppColors.primary,

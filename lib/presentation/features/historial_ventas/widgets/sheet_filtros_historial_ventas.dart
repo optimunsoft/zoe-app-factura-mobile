@@ -182,7 +182,7 @@ class _SheetFiltrosHistorialVentasState
                         ),
                         child: Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.person_search_outlined,
                               color: AppColors.primary,
                             ),
@@ -210,7 +210,7 @@ class _SheetFiltrosHistorialVentasState
                                 color: AppColors.textSecondary,
                               )
                             else
-                              const Icon(
+                              Icon(
                                 Icons.chevron_right_rounded,
                                 color: AppColors.textMuted,
                               ),

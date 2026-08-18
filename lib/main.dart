@@ -11,6 +11,8 @@ import 'core/app_navigator.dart';
 import 'core/auth/auth_controller.dart';
 import 'core/config/app_env.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/host_tema_app.dart';
+import 'core/theme/tema_app_store.dart';
 import 'data/pos_controller.dart';
 import 'modules/categories/store/categories.store.dart';
 import 'modules/method_payments/store/method_payments.store.dart';
@@ -29,16 +31,22 @@ Future<void> main() async {
 
   await initializeDateFormatting('es');
 
-  runApp(const TiendaATiendaApp());
+  final temaApp = TemaAppStore();
+  await temaApp.cargar();
+
+  runApp(TiendaATiendaApp(temaApp: temaApp));
 }
 
 class TiendaATiendaApp extends StatelessWidget {
-  const TiendaATiendaApp({super.key});
+  const TiendaATiendaApp({super.key, required this.temaApp});
+
+  final TemaAppStore temaApp;
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider.value(value: temaApp),
         ChangeNotifierProvider(create: (_) => AuthController()),
         ChangeNotifierProvider(create: (_) => PosController()),
         ChangeNotifierProvider(create: (_) => ThirdPartyStore()),
@@ -50,24 +58,35 @@ class TiendaATiendaApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => SalesHistoryStore()),
         ChangeNotifierProvider(create: (_) => TaxesStore()),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Tienda a Tienda POS',
-        theme: AppTheme.light,
-        navigatorKey: appNavigatorKey,
-        builder: FToastBuilder(),
-        locale: const Locale('es', 'MX'),
-        supportedLocales: const [
-          Locale('es', 'MX'),
-          Locale('es'),
-          Locale('en'),
-        ],
-        localizationsDelegates: const [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        home: const _AuthGate(),
+      child: Consumer<TemaAppStore>(
+        builder: (context, tema, _) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Tienda a Tienda POS',
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            themeMode: tema.oscuro ? ThemeMode.dark : ThemeMode.light,
+            themeAnimationDuration: Duration.zero,
+            navigatorKey: appNavigatorKey,
+            builder: (context, child) {
+              return HostTemaApp(
+                child: FToastBuilder()(context, child),
+              );
+            },
+            locale: const Locale('es', 'MX'),
+            supportedLocales: const [
+              Locale('es', 'MX'),
+              Locale('es'),
+              Locale('en'),
+            ],
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            home: const _AuthGate(),
+          );
+        },
       ),
     );
   }

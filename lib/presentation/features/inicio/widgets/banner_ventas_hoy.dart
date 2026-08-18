@@ -36,8 +36,13 @@ class BannerVentasHoy extends StatelessWidget {
             vertical: AppSpacing.md,
           ),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [AppColors.primary, AppColors.primaryDark],
+            gradient: LinearGradient(
+              colors: [
+                AppColors.primary,
+                AppColors.oscuro
+                    ? AppColors.background
+                    : AppColors.primaryDark,
+              ],
             ),
             borderRadius: AppRadius.lgAll,
           ),
@@ -48,20 +53,21 @@ class BannerVentasHoy extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      'Total ventas',
-                      style: AppTextStyles.h3.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.xs),
                     Row(
                       children: [
+                        Text(
+                          'Total ventas',
+                          style: AppTextStyles.h3.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.md),
                         Text(
                           periodLabel,
                           style: AppTextStyles.caption.copyWith(
                             color: Colors.white70,
+                            fontSize: 16,
                           ),
                         ),
                         if (onTap != null) ...[

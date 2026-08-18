@@ -5,6 +5,9 @@ import '../../../domain/models/sale_receipt.dart';
 import '../../features/historial_ventas/historial_ventas_page.dart';
 import '../../features/revisar_venta/revisar_venta_page.dart';
 import '../../features/vista_previa_ticket/vista_previa_ticket_page.dart';
+import '../../organisms/control_drawer_app.dart';
+import '../../organisms/dialogo_cerrar_sesion.dart';
+import '../../organisms/drawer_navegacion.dart';
 import '../../organisms/nav_inferior_app.dart';
 import '../inicio/inicio_page.dart';
 import '../reportes/reportes_page.dart';
@@ -18,6 +21,7 @@ class NavegacionPrincipal extends StatefulWidget {
 }
 
 class _NavegacionPrincipalState extends State<NavegacionPrincipal> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   int _tab = 0;
 
   void _goTab(int i) => setState(() => _tab = i);
@@ -54,8 +58,7 @@ class _NavegacionPrincipalState extends State<NavegacionPrincipal> {
     if (i == _tab) return;
 
     final pos = context.read<PosController>();
-    final hasSaleInProgress =
-        pos.itemCount > 0 || pos.activeCustomer != null;
+    final hasSaleInProgress = pos.itemCount > 0 || pos.activeCustomer != null;
 
     // Saliendo de Venta (Inicio / Facturas / Reportes) con proceso en curso.
     if (_tab == 1 && i != 1 && hasSaleInProgress) {
@@ -87,7 +90,10 @@ class _NavegacionPrincipalState extends State<NavegacionPrincipal> {
     );
   }
 
-  Future<void> _openReceipt(SaleReceipt receipt, {bool fromCheckout = false}) async {
+  Future<void> _openReceipt(
+    SaleReceipt receipt, {
+    bool fromCheckout = false,
+  }) async {
     await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => VistaPreviaTicketPage(
@@ -118,19 +124,26 @@ class _NavegacionPrincipalState extends State<NavegacionPrincipal> {
       const ReportesPage(),
     ];
 
-    return Scaffold(
-      body: IndexedStack(index: _tab, children: pages),
-      bottomNavigationBar: NavInferiorApp(
-        index: _tab,
-        onChanged: _onTabChanged,
+    return ControlDrawerApp(
+      openDrawer: () => _scaffoldKey.currentState?.openDrawer(),
+      child: Scaffold(
+        key: _scaffoldKey,
+        drawer: DrawerNavegacion(
+          onLogout: () => confirmarCerrarSesion(context),
+        ),
+        body: IndexedStack(index: _tab, children: pages),
+        bottomNavigationBar: NavInferiorApp(
+          index: _tab,
+          onChanged: _onTabChanged,
+        ),
+        floatingActionButton: _tab == 0
+            ? FloatingActionButton.extended(
+                onPressed: _startSaleFlow,
+                icon: const Icon(Icons.point_of_sale_rounded),
+                label: const Text('Vender'),
+              )
+            : null,
       ),
-      floatingActionButton: _tab == 0
-          ? FloatingActionButton.extended(
-              onPressed: _startSaleFlow,
-              icon: const Icon(Icons.point_of_sale_rounded),
-              label: const Text('Vender'),
-            )
-          : null,
     );
   }
 }

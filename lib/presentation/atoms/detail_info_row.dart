@@ -35,7 +35,7 @@ class DetailInfoRow extends StatelessWidget {
             width: 32,
             height: 32,
             alignment: Alignment.center,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: AppColors.primaryLight,
               shape: BoxShape.circle,
             ),

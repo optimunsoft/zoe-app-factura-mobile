@@ -42,7 +42,7 @@ class BotonIconoCarrito extends StatelessWidget {
               tooltip: 'Carrito',
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
-              icon: const Icon(
+              icon: Icon(
                 Icons.shopping_cart_rounded,
                 size: 26,
                 color: AppColors.primary,

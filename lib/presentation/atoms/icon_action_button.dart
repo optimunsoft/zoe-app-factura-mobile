@@ -7,7 +7,7 @@ class IconActionButton extends StatelessWidget {
     super.key,
     required this.icon,
     required this.onPressed,
-    this.color = AppColors.textSecondary,
+    this.color,
     this.backgroundColor,
     this.tooltip,
     this.size = 40,
@@ -15,7 +15,7 @@ class IconActionButton extends StatelessWidget {
 
   final IconData icon;
   final VoidCallback? onPressed;
-  final Color color;
+  final Color? color;
   final Color? backgroundColor;
   final String? tooltip;
   final double size;
@@ -34,7 +34,9 @@ class IconActionButton extends StatelessWidget {
           child: Icon(
             icon,
             size: 20,
-            color: onPressed == null ? AppColors.textMuted : color,
+            color: onPressed == null
+                ? AppColors.textMuted
+                : (color ?? AppColors.textSecondary),
           ),
         ),
       ),

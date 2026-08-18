@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../../core/api_helpers.dart';
 import '../../../core/auth/api_client.dart';
+import '../domain/models/ingresos_medios_pago.models.dart';
 import '../domain/models/list_sales.models.dart';
 import '../domain/models/sales.models.dart';
 import '../domain/models/ventas_resumen.models.dart';
@@ -139,6 +140,55 @@ class SalesService {
     }
   }
 
+  /// GET /ventas/reportes/ingresos-medios-pago
+  ///
+  /// Params requeridos: `id_sucursal`, `fecha_inicio`, `fecha_fin` (YYYY-MM-DD).
+  Future<List<IngresoMedioPagoItem>> getIngresosMediosPago(
+    IngresosMediosPagoQuery query,
+  ) async {
+    try {
+      final response = await _dio.get(
+        '/ventas/reportes/ingresos-medios-pago',
+        queryParameters: query.toQueryMap(),
+      );
+
+      final data = response.data as Map<String, dynamic>;
+      checkApiStatus(data);
+
+      return IngresoMedioPagoItem.listFromResponse(data['response']);
+    } on DioException catch (e) {
+      throwFromDio(e);
+    }
+  }
+
+  /// GET /ventas/reportes/ingresos-medios-pago/pdf
+  ///
+  /// Params requeridos: `id_sucursal`, `fecha_inicio`, `fecha_fin` (YYYY-MM-DD).
+  /// Devuelve los bytes del PDF del reporte.
+  Future<Uint8List> downloadIngresosMediosPagoPdf(
+    IngresosMediosPagoQuery query,
+  ) async {
+    try {
+      final response = await _dio.get<List<int>>(
+        '/ventas/reportes/ingresos-medios-pago/pdf',
+        queryParameters: query.toQueryMap(),
+        options: Options(
+          responseType: ResponseType.bytes,
+          headers: const {'Accept': 'application/pdf'},
+        ),
+      );
+
+      final raw = response.data;
+      if (raw == null || raw.isEmpty) {
+        throw StateError('El servidor no devolvió el PDF del reporte');
+      }
+
+      return Uint8List.fromList(raw);
+    } on DioException catch (e) {
+      throwFromDio(e);
+    }
+  }
+
   /// GET /ventas/descargar-pdf/{nroDocumento}
   ///
   /// Descarga el PDF de la venta. Devuelve los bytes del archivo.
@@ -151,9 +201,7 @@ class SalesService {
         path,
         options: Options(
           responseType: ResponseType.bytes,
-          headers: const {
-            'Accept': 'application/pdf',
-          },
+          headers: const {'Accept': 'application/pdf'},
         ),
       );
 

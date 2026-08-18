@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_borders.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_elevation.dart';
 import '../../core/theme/app_radius.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
@@ -92,7 +91,6 @@ class TarjetaProducto extends StatelessWidget {
         color: AppColors.surface,
         borderRadius: AppRadius.lgAll,
         border: AppBorders.subtle,
-        boxShadow: AppShadows.card,
       ),
       padding: const EdgeInsets.all(AppSpacing.md),
       child: Column(

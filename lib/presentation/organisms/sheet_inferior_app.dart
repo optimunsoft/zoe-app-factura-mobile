@@ -55,9 +55,9 @@ class SheetInferiorApp extends StatelessWidget {
               Container(
                 width: 40,
                 height: 4,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   color: AppColors.border,
-                  borderRadius: BorderRadius.all(Radius.circular(2)),
+                  borderRadius: const BorderRadius.all(Radius.circular(2)),
                 ),
               ),
               Padding(

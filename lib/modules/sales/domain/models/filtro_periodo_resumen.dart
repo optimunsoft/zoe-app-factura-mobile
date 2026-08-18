@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
 
+import 'ingresos_medios_pago.models.dart';
 import 'ventas_resumen.models.dart';
 
 /// Periodos predefinidos del resumen de ventas (inicio).
@@ -98,6 +99,17 @@ class FiltroPeriodoResumen {
       startDate: _apiFmt.format(range.start),
       endDate: _apiFmt.format(range.end),
       branchId: branchId,
+    );
+  }
+
+  IngresosMediosPagoQuery toIngresosMediosPagoQuery({
+    required String branchId,
+  }) {
+    final q = toQuery(branchId: branchId);
+    return IngresosMediosPagoQuery(
+      startDate: q.startDate,
+      endDate: q.endDate,
+      branchId: q.branchId,
     );
   }
 }

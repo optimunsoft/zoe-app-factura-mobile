@@ -35,7 +35,7 @@ class SeccionMediosPagoVenta extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.account_balance_wallet_outlined,
                       color: AppColors.primary,
                       size: 20,

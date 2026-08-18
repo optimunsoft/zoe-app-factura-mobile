@@ -12,27 +12,28 @@ class TarjetaAcceso extends StatelessWidget {
     required this.subtitle,
     required this.icon,
     required this.onTap,
-    this.accent = AppColors.primary,
+    this.accent,
   });
 
   final String title;
   final String subtitle;
   final IconData icon;
   final VoidCallback onTap;
-  final Color accent;
+  final Color? accent;
 
   @override
   Widget build(BuildContext context) {
+    final acento = accent ?? AppColors.primary;
     return Material(
       color: AppColors.surface,
-      borderRadius: AppRadius.lgAll,
+      borderRadius: AppRadius.mdAll,
       child: InkWell(
         onTap: onTap,
-        borderRadius: AppRadius.lgAll,
+        borderRadius: AppRadius.mdAll,
         child: Container(
           padding: const EdgeInsets.all(AppSpacing.lg),
           decoration: BoxDecoration(
-            borderRadius: AppRadius.lgAll,
+            borderRadius: AppRadius.mdAll,
             border: AppBorders.subtle,
           ),
           child: Column(
@@ -43,10 +44,10 @@ class TarjetaAcceso extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: accent.withValues(alpha: 0.12),
+                  color: AppColors.primaryLight,
                   borderRadius: AppRadius.smAll,
                 ),
-                child: Icon(icon, color: accent, size: 22),
+                child: Icon(icon, color: acento, size: 22),
               ),
               const SizedBox(height: AppSpacing.md),
               Text(title, style: AppTextStyles.h3),

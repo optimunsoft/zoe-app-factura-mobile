@@ -4,6 +4,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_elevation.dart';
 import '../../core/theme/app_radius.dart';
 import '../../core/theme/app_spacing.dart';
+import 'destinos_navegacion.dart';
 
 class NavInferiorApp extends StatelessWidget {
   const NavInferiorApp({
@@ -23,40 +24,22 @@ class NavInferiorApp extends StatelessWidget {
         selectedIndex: index,
         onDestinationSelected: onChanged,
         backgroundColor: AppColors.surface,
-        indicatorColor: AppColors.primaryLight,
+        indicatorColor: AppColors.oscuro
+            ? AppColors.primary.withValues(alpha: 0.35)
+            : AppColors.primaryLight,
         elevation: 0,
         height: 68,
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home_rounded, color: AppColors.primary),
-            label: 'Inicio',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.point_of_sale_outlined),
-            selectedIcon: Icon(
-              Icons.point_of_sale_rounded,
-              color: AppColors.primary,
+        destinations: [
+          for (final destino in DestinosNavegacionPrincipal.todos)
+            NavigationDestination(
+              icon: Icon(destino.icon),
+              selectedIcon: Icon(
+                destino.selectedIcon,
+                color: AppColors.primary,
+              ),
+              label: destino.label,
             ),
-            label: 'Venta',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.receipt_long_outlined),
-            selectedIcon: Icon(
-              Icons.receipt_long_rounded,
-              color: AppColors.primary,
-            ),
-            label: 'Facturas',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.analytics_outlined),
-            selectedIcon: Icon(
-              Icons.analytics_rounded,
-              color: AppColors.primary,
-            ),
-            label: 'Reportes',
-          ),
         ],
       ),
     );

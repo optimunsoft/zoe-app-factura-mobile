@@ -23,7 +23,7 @@ class BarraBusquedaEscaner extends StatelessWidget {
       style: AppTextStyles.body,
       decoration: InputDecoration(
         hintText: hint,
-        prefixIcon: const Icon(Icons.search_rounded, color: AppColors.textMuted),
+        prefixIcon: Icon(Icons.search_rounded, color: AppColors.textMuted),
       ),
     );
   }

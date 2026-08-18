@@ -2,12 +2,13 @@ import 'package:flutter/foundation.dart';
 
 import '../../../core/api_helpers.dart';
 import '../../../core/app_toast.dart';
+import '../domain/models/ingresos_medios_pago.models.dart';
 import '../domain/models/sales.models.dart';
 import '../domain/models/ventas_resumen.models.dart';
 import '../services/sales.service.dart';
 
 /// Estado de creación de ventas (checkout / emitir documento),
-/// descarga de PDF y resumen de ventas (GET /ventas/resumen).
+/// descarga de PDF, resumen y reportes de ventas.
 class SalesStore extends ChangeNotifier {
   SalesStore({SalesService? service}) : _service = service ?? SalesService();
 
@@ -30,6 +31,17 @@ class SalesStore extends ChangeNotifier {
   String? resumenError;
   VentasResumenQuery? lastResumenQuery;
   VentasResumen resumen = VentasResumen.empty;
+
+  /// Estado de GET /ventas/reportes/ingresos-medios-pago.
+  bool isLoadingIngresosMediosPago = false;
+  String? ingresosMediosPagoError;
+  IngresosMediosPagoQuery? lastIngresosMediosPagoQuery;
+  List<IngresoMedioPagoItem> ingresosMediosPago = const [];
+
+  /// Estado de GET /ventas/reportes/ingresos-medios-pago/pdf.
+  bool isDownloadingIngresosMediosPagoPdf = false;
+  String? ingresosMediosPagoPdfError;
+  Uint8List? lastIngresosMediosPagoPdfBytes;
 
   Future<CreateSaleResult?> createSale(
     CreateSaleRequest request, {
@@ -131,6 +143,91 @@ class SalesStore extends ChangeNotifier {
     }
   }
 
+  /// GET /ventas/reportes/ingresos-medios-pago
+  /// — params: id_sucursal, fecha_inicio, fecha_fin.
+  Future<List<IngresoMedioPagoItem>?> loadIngresosMediosPago(
+    IngresosMediosPagoQuery query,
+  ) async {
+    final start = query.startDate.trim();
+    final end = query.endDate.trim();
+    final branchId = query.branchId.trim();
+
+    if (start.isEmpty || end.isEmpty || branchId.isEmpty) {
+      ingresosMediosPagoError =
+          'fecha_inicio, fecha_fin e id_sucursal son obligatorios';
+      ingresosMediosPago = const [];
+      notifyListeners();
+      return null;
+    }
+
+    isLoadingIngresosMediosPago = true;
+    ingresosMediosPagoError = null;
+    lastIngresosMediosPagoQuery = IngresosMediosPagoQuery(
+      startDate: start,
+      endDate: end,
+      branchId: branchId,
+    );
+    notifyListeners();
+
+    try {
+      ingresosMediosPago = await _service.getIngresosMediosPago(
+        lastIngresosMediosPagoQuery!,
+      );
+      isLoadingIngresosMediosPago = false;
+      notifyListeners();
+      return ingresosMediosPago;
+    } catch (e) {
+      ingresosMediosPagoError = cleanErrorMessage(e);
+      ingresosMediosPago = const [];
+      isLoadingIngresosMediosPago = false;
+      notifyListeners();
+      return null;
+    }
+  }
+
+  /// GET /ventas/reportes/ingresos-medios-pago/pdf
+  /// — params: id_sucursal, fecha_inicio, fecha_fin.
+  Future<Uint8List?> downloadIngresosMediosPagoPdf(
+    IngresosMediosPagoQuery query,
+  ) async {
+    final start = query.startDate.trim();
+    final end = query.endDate.trim();
+    final branchId = query.branchId.trim();
+
+    if (start.isEmpty || end.isEmpty || branchId.isEmpty) {
+      ingresosMediosPagoPdfError =
+          'fecha_inicio, fecha_fin e id_sucursal son obligatorios';
+      lastIngresosMediosPagoPdfBytes = null;
+      notifyListeners();
+      return null;
+    }
+
+    isDownloadingIngresosMediosPagoPdf = true;
+    ingresosMediosPagoPdfError = null;
+    lastIngresosMediosPagoPdfBytes = null;
+    notifyListeners();
+
+    try {
+      lastIngresosMediosPagoPdfBytes =
+          await _service.downloadIngresosMediosPagoPdf(
+        IngresosMediosPagoQuery(
+          startDate: start,
+          endDate: end,
+          branchId: branchId,
+        ),
+      );
+      isDownloadingIngresosMediosPagoPdf = false;
+      notifyListeners();
+      return lastIngresosMediosPagoPdfBytes;
+    } catch (e) {
+      ingresosMediosPagoPdfError = cleanErrorMessage(e);
+      lastIngresosMediosPagoPdfBytes = null;
+      isDownloadingIngresosMediosPagoPdf = false;
+      notifyListeners();
+      return null;
+    }
+  }
+
   void clearError() {
     error = null;
     notifyListeners();
@@ -152,6 +249,17 @@ class SalesStore extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearIngresosMediosPago() {
+    isLoadingIngresosMediosPago = false;
+    ingresosMediosPagoError = null;
+    lastIngresosMediosPagoQuery = null;
+    ingresosMediosPago = const [];
+    isDownloadingIngresosMediosPagoPdf = false;
+    ingresosMediosPagoPdfError = null;
+    lastIngresosMediosPagoPdfBytes = null;
+    notifyListeners();
+  }
+
   void clear() {
     isLoading = false;
     error = null;
@@ -159,5 +267,6 @@ class SalesStore extends ChangeNotifier {
     lastResult = null;
     clearPdf();
     clearResumen();
+    clearIngresosMediosPago();
   }
 }

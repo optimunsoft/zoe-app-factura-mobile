@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
+
 import '../../../../core/theme/app_borders.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
-import '../../../../domain/models/customer.dart';
+import '../reportes_catalogo.dart';
 
-class FilaCliente extends StatelessWidget {
-  const FilaCliente({
+/// Tarjeta de un reporte del catálogo: referencia, descripción y acceso.
+class TarjetaReporte extends StatelessWidget {
+  const TarjetaReporte({
     super.key,
-    required this.customer,
+    required this.reporte,
     required this.onTap,
   });
 
-  final Customer customer;
+  final ReporteDisponible reporte;
   final VoidCallback onTap;
 
   @override
@@ -32,32 +34,35 @@ class FilaCliente extends StatelessWidget {
           ),
           child: Row(
             children: [
-              CircleAvatar(
-                backgroundColor: AppColors.primaryLight,
-                child: Text(
-                  customer.name.isNotEmpty ? customer.name[0].toUpperCase() : '?',
-                  style: AppTextStyles.label.copyWith(color: AppColors.primary),
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: AppColors.primaryLight,
+                  borderRadius: AppRadius.smAll,
+                ),
+                child: Icon(
+                  reporte.icono,
+                  color: AppColors.primary,
+                  size: 22,
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(customer.name, style: AppTextStyles.label),
+                    Text(reporte.nombre, style: AppTextStyles.h3),
                     const SizedBox(height: AppSpacing.xxs),
-                    Text(
-                      customer.documentType,
-                      style: AppTextStyles.bodySmall,
-                    ),
-                    Text(
-                      customer.documentNumber,
-                      style: AppTextStyles.caption,
-                    ),
+                    Text(reporte.descripcion, style: AppTextStyles.bodySmall),
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right_rounded, color: AppColors.textMuted),
+              const SizedBox(width: AppSpacing.sm),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: AppColors.textMuted,
+              ),
             ],
           ),
         ),
@@ -65,6 +70,3 @@ class FilaCliente extends StatelessWidget {
     );
   }
 }
-
-/// Alias legacy — usar [FilaCliente].
-typedef CustomerListTile = FilaCliente;

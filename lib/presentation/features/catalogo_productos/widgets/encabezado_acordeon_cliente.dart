@@ -94,7 +94,7 @@ class _EncabezadoAcordeonClienteState extends State<EncabezadoAcordeonCliente> {
                     color: AppColors.primaryLight,
                     borderRadius: AppRadius.smAll,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.person_rounded,
                     size: 16,
                     color: AppColors.primary,
@@ -123,7 +123,7 @@ class _EncabezadoAcordeonClienteState extends State<EncabezadoAcordeonCliente> {
                 AnimatedRotation(
                   turns: _expanded ? 0.5 : 0,
                   duration: const Duration(milliseconds: 200),
-                  child: const Icon(
+                  child: Icon(
                     Icons.expand_more_rounded,
                     size: 22,
                     color: AppColors.textSecondary,

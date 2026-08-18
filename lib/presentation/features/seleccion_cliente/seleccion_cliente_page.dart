@@ -8,6 +8,7 @@ import '../../../domain/models/customer.dart';
 import '../../../modules/third-party/domain/models/third_party_models.dart';
 import '../../../modules/third-party/store/thirdparty.store.dart';
 import '../../atoms/app_button.dart';
+import '../../atoms/boton_menu_drawer.dart';
 import '../../molecules/barra_busqueda_escaner.dart';
 import 'widgets/formulario_crear_cliente.dart';
 import 'widgets/lista_clientes.dart';
@@ -119,8 +120,9 @@ class _SeleccionClientePageState extends State<SeleccionClientePage> {
                 icon: const Icon(Icons.arrow_back_rounded),
                 onPressed: () => setState(() => _creating = false),
               )
-            : null,
-        automaticallyImplyLeading: _creating,
+            : const BotonMenuDrawer(),
+        leadingWidth: _creating ? null : 76,
+        automaticallyImplyLeading: false,
       ),
       body: Stack(
         children: [

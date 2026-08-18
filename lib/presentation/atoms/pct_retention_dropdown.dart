@@ -118,7 +118,7 @@ class PctRetentionDropdown extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const Icon(
+              Icon(
                 Icons.keyboard_arrow_down_rounded,
                 size: 18,
                 color: AppColors.textMuted,

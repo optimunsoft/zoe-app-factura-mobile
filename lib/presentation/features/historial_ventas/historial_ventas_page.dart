@@ -7,6 +7,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../modules/sales/domain/models/sales_history_filters.dart';
 import '../../../modules/sales/store/sales_history.store.dart';
+import '../../atoms/boton_menu_drawer.dart';
 import '../../molecules/barra_filtros_activos.dart';
 import 'widgets/lista_historial_ventas.dart';
 import 'widgets/sheet_filtros_historial_ventas.dart';
@@ -107,6 +108,8 @@ class _HistorialVentasPageState extends State<HistorialVentasPage> {
 
     return Scaffold(
       appBar: AppBar(
+        leadingWidth: 76,
+        leading: const BotonMenuDrawer(),
         title: Text('Historial de ventas', style: AppTextStyles.h2),
         actions: [
           IconButton(

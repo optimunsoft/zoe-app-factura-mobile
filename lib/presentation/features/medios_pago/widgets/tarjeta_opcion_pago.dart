@@ -192,7 +192,7 @@ class TarjetaOpcionPago extends StatelessWidget {
                             focusedBorder: OutlineInputBorder(
                               borderRadius: AppRadius.mdAll,
                               borderSide:
-                                  const BorderSide(color: AppColors.primary),
+                                  BorderSide(color: AppColors.primary),
                             ),
                           ),
                         ),
@@ -216,7 +216,7 @@ class TarjetaOpcionPago extends StatelessWidget {
                             shape: RoundedRectangleBorder(
                               borderRadius: AppRadius.mdAll,
                               side: locked
-                                  ? const BorderSide(color: AppColors.primary)
+                                  ? BorderSide(color: AppColors.primary)
                                   : BorderSide.none,
                             ),
                           ),

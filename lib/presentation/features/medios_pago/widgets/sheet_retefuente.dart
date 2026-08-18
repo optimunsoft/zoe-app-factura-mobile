@@ -114,7 +114,7 @@ class _SheetReteFuenteState extends State<SheetReteFuente> {
         Container(
           width: double.infinity,
           padding: EdgeInsets.fromLTRB(20, 12, 20, 12 + bottom),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             border: Border(top: BorderSide(color: AppColors.border)),
           ),
           child: Column(

@@ -23,10 +23,10 @@ abstract final class AppBorders {
       Border.fromBorderSide(selectableSide(selected: selected));
 
   static BorderSide get side =>
-      const BorderSide(color: AppColors.border, width: thin);
+      BorderSide(color: AppColors.border, width: thin);
 
   /// Línea superior de las barras acopladas al borde inferior.
-  static Border get top => const Border(
+  static Border get top => Border(
         top: BorderSide(color: AppColors.border, width: thin),
       );
 }

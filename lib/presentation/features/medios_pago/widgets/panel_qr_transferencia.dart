@@ -22,7 +22,7 @@ class PanelQrTransferencia extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Icon(Icons.qr_code_2_rounded, size: 96, color: AppColors.primary),
+          Icon(Icons.qr_code_2_rounded, size: 96, color: AppColors.primary),
           const SizedBox(height: AppSpacing.sm),
           Text('Escanea para transferir', style: AppTextStyles.label),
           MoneyText(amount, large: true, color: AppColors.primary),

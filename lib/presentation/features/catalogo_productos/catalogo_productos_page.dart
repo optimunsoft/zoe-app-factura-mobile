@@ -12,6 +12,7 @@ import '../../../modules/categories/domain/models/categories_models.dart';
 import '../../../modules/categories/store/categories.store.dart';
 import '../../../modules/products/domain/models/products.models.dart';
 import '../../../modules/products/store/products.store.dart';
+import '../../atoms/boton_menu_drawer.dart';
 import '../../molecules/barra_busqueda_escaner.dart';
 import '../../organisms/grilla_productos.dart';
 import 'widgets/boton_icono_carrito.dart';
@@ -113,18 +114,11 @@ class _CatalogoProductosPageState extends State<CatalogoProductosPage> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  if (customer != null)
-                    EncabezadoAcordeonCliente(
-                      customer: customer,
-                      onChangeCustomer: widget.onChangeCustomer,
-                      onExpandedChanged: (expanded) {
-                        setState(() => _customerExpanded = expanded);
-                      },
-                    ),
                   SizedBox(
                     height: kToolbarHeight - 8,
                     child: Row(
                       children: [
+                        const BotonMenuDrawer(compacto: true),
                         Expanded(
                           child: Text(
                             'Catálogo de productos',
@@ -142,6 +136,14 @@ class _CatalogoProductosPageState extends State<CatalogoProductosPage> {
                       ],
                     ),
                   ),
+                  if (customer != null)
+                    EncabezadoAcordeonCliente(
+                      customer: customer,
+                      onChangeCustomer: widget.onChangeCustomer,
+                      onExpandedChanged: (expanded) {
+                        setState(() => _customerExpanded = expanded);
+                      },
+                    ),
                 ],
               ),
             ),

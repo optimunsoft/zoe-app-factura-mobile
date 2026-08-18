@@ -102,8 +102,8 @@ class _DateTile extends StatelessWidget {
                   color: AppColors.textSecondary,
                 )
               else
-                const Padding(
-                  padding: EdgeInsets.only(right: 8),
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
                   child: Icon(
                     Icons.calendar_today_rounded,
                     size: 18,

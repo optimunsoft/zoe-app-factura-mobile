@@ -19,7 +19,7 @@ class TarjetasResumenReportes extends StatelessWidget {
   final VentasResumen resumen;
   final bool isLoading;
 
-  static const double _cardHeight = 92;
+  static const double _cardHeight = 100;
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +111,7 @@ class _MetricCard extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: AppRadius.lgAll,
+        borderRadius: AppRadius.mdAll,
         border: AppBorders.subtle,
       ),
       child: Column(
@@ -119,7 +119,15 @@ class _MetricCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(icon, size: 16, color: AppColors.primary),
+              Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  color: AppColors.primaryLight,
+                  borderRadius: AppRadius.smAll,
+                ),
+                child: Icon(icon, size: 16, color: AppColors.primary),
+              ),
               const SizedBox(width: AppSpacing.sm),
               Expanded(child: Text(label, style: AppTextStyles.caption)),
             ],

@@ -1,104 +1,48 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import '../../../core/theme/app_borders.dart';
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_radius.dart';
+
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
-import '../../atoms/app_button.dart';
+import '../../atoms/boton_menu_drawer.dart';
+import '../../features/reportes/reporte_medios_pago_page.dart';
+import '../../features/reportes/reportes_catalogo.dart';
+import '../../features/reportes/widgets/tarjeta_reporte.dart';
 
-class ReportesPage extends StatefulWidget {
+class ReportesPage extends StatelessWidget {
   const ReportesPage({super.key});
 
-  @override
-  State<ReportesPage> createState() => _ReportesPageState();
-}
-
-class _ReportesPageState extends State<ReportesPage> {
-  DateTime _date = DateTime.now();
-
-  Future<void> _pickDate() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _date,
-      firstDate: DateTime.now().subtract(const Duration(days: 365)),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null) setState(() => _date = picked);
-  }
-
-  void _snack(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  void _abrirReporte(BuildContext context, ReporteDisponible reporte) {
+    if (reporte.id == kReporteIngresosMediosPago.id) {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const ReporteMediosPagoPage()),
+      );
+      return;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final dateLabel = DateFormat('EEE d MMM yyyy', 'es').format(_date);
-    final isToday = DateUtils.isSameDay(_date, DateTime.now());
-
     return Scaffold(
       appBar: AppBar(
+        leadingWidth: 76,
+        leading: const BotonMenuDrawer(),
         title: Text('Reportes', style: AppTextStyles.h2),
       ),
-      body: ListView(
+      body: ListView.separated(
         padding: const EdgeInsets.fromLTRB(
           AppSpacing.lg,
-          AppSpacing.sm,
+          AppSpacing.lg,
           AppSpacing.lg,
           AppSpacing.xl,
         ),
-        children: [
-          Material(
-            color: AppColors.surface,
-            borderRadius: AppRadius.mdAll,
-            child: InkWell(
-              onTap: _pickDate,
-              borderRadius: AppRadius.mdAll,
-              child: Container(
-                padding: const EdgeInsets.all(AppSpacing.md),
-                decoration: BoxDecoration(
-                  borderRadius: AppRadius.mdAll,
-                  border: AppBorders.subtle,
-                ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.calendar_today_rounded,
-                      color: AppColors.primary,
-                    ),
-                    const SizedBox(width: AppSpacing.md),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Filtro de fecha', style: AppTextStyles.caption),
-                          Text(
-                            isToday ? 'Hoy · $dateLabel' : dateLabel,
-                            style: AppTextStyles.label,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Icon(Icons.expand_more_rounded),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          AppButton(
-            label: 'Imprimir resumen Z-Report',
-            icon: Icons.print_rounded,
-            onPressed: () => _snack('Imprimiendo Z-Report del día…'),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          AppButton(
-            label: 'Imprimir stock en mano',
-            icon: Icons.inventory_2_rounded,
-            variant: AppButtonVariant.secondary,
-            onPressed: () => _snack('Imprimiendo reporte de inventario…'),
-          ),
-        ],
+        itemCount: kReportesDisponibles.length,
+        separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
+        itemBuilder: (context, index) {
+          final reporte = kReportesDisponibles[index];
+          return TarjetaReporte(
+            reporte: reporte,
+            onTap: () => _abrirReporte(context, reporte),
+          );
+        },
       ),
     );
   }

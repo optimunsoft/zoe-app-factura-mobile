@@ -6,10 +6,9 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
-import '../../../data/pos_controller.dart';
 import '../../../modules/sales/domain/models/filtro_periodo_resumen.dart';
 import '../../../modules/sales/store/sales.store.dart';
-import '../../atoms/logo_zoe.dart';
+import '../../atoms/boton_menu_drawer.dart';
 import '../../features/inicio/widgets/banner_ventas_hoy.dart';
 import '../../features/inicio/widgets/grilla_accesos_rapidos.dart';
 import '../../features/inicio/widgets/sheet_filtro_periodo_resumen.dart';
@@ -71,10 +70,7 @@ class _InicioPageState extends State<InicioPage> {
       appBar: AppBar(
         toolbarHeight: 72,
         leadingWidth: 76,
-        leading: const Padding(
-          padding: EdgeInsets.only(left: AppSpacing.lg),
-          child: Center(child: LogoZoe(height: 34)),
-        ),
+        leading: const BotonMenuDrawer(),
         titleSpacing: AppSpacing.sm,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,13 +104,6 @@ class _InicioPageState extends State<InicioPage> {
             ),
           ],
         ),
-        actions: [
-          IconButton(
-            tooltip: 'Cerrar sesión',
-            icon: const Icon(Icons.logout_rounded),
-            onPressed: () => _confirmLogout(context),
-          ),
-        ],
       ),
       body: RefreshIndicator(
         onRefresh: _loadResumen,
@@ -198,34 +187,6 @@ class _InicioPageState extends State<InicioPage> {
     );
   }
 
-  Future<void> _confirmLogout(BuildContext context) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Cerrar sesión'),
-        content: const Text('¿Seguro que quieres salir de la aplicación?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancelar'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(
-              'Salir',
-              style: AppTextStyles.label.copyWith(color: AppColors.danger),
-            ),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed != true || !context.mounted) return;
-
-    context.read<SalesStore>().clearResumen();
-    context.read<PosController>().startNewSale();
-    await context.read<AuthController>().logout();
-  }
 }
 
 /// Alias legacy — usar [InicioPage].

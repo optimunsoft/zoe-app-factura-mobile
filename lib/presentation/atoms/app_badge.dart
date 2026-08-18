@@ -8,15 +8,15 @@ class AppBadge extends StatelessWidget {
   const AppBadge({
     super.key,
     required this.label,
-    this.background = AppColors.primaryLight,
-    this.foreground = AppColors.primaryDark,
+    this.background,
+    this.foreground,
     this.icon,
     this.fontSize,
   });
 
   final String label;
-  final Color background;
-  final Color foreground;
+  final Color? background;
+  final Color? foreground;
   final IconData? icon;
   final double? fontSize;
 
@@ -48,26 +48,28 @@ class AppBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = fontSize ?? 11;
+    final bg = background ?? AppColors.primaryLight;
+    final fg = foreground ?? AppColors.textoSeleccionado;
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: fontSize != null ? AppSpacing.md : AppSpacing.sm,
         vertical: fontSize != null ? AppSpacing.sm : AppSpacing.xs,
       ),
       decoration: BoxDecoration(
-        color: background,
+        color: bg,
         borderRadius: AppRadius.smAll,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (icon != null) ...[
-            Icon(icon, size: size + 1, color: foreground),
+            Icon(icon, size: size + 1, color: fg),
             const SizedBox(width: 4),
           ],
           Text(
             label,
             style: AppTextStyles.caption.copyWith(
-              color: foreground,
+              color: fg,
               fontWeight: FontWeight.w700,
               fontSize: size,
             ),
