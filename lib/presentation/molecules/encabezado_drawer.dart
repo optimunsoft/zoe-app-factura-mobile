@@ -12,15 +12,6 @@ class EncabezadoDrawer extends StatelessWidget {
 
   final AuthUser? user;
 
-  String get _iniciales {
-    final nombre = user?.nombre.trim() ?? '';
-    final apellido = user?.apellido.trim() ?? '';
-    if (nombre.isEmpty && apellido.isEmpty) return '?';
-    if (apellido.isEmpty) return nombre[0].toUpperCase();
-    if (nombre.isEmpty) return apellido[0].toUpperCase();
-    return '${nombre[0]}${apellido[0]}'.toUpperCase();
-  }
-
   String get _lineaSucursal {
     final empresa = (user?.empresa.isNotEmpty == true)
         ? user!.empresa
@@ -53,42 +44,13 @@ class EncabezadoDrawer extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            LogoZoe(height: 40, invertido: oscuro),
-                            const SizedBox(height: AppSpacing.xxs),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 3),
-                              child: Text(
-                                kZoeFirmaTexto,
-                                style: estiloFirmaZoe(
-                                  color: oscuro
-                                      ? Colors.white.withValues(alpha: 0.9)
-                                      : AppColors.primaryDark,
-                                  fontSize: 10,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      CircleAvatar(
-                        radius: 22,
-                        backgroundColor: AppColors.primary,
-                        child: Text(
-                          _iniciales,
-                          style: AppTextStyles.label.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ],
+                  LogoZoeConFirma(
+                    logoHeight: 40,
+                    firmaSize: 10,
+                    invertido: oscuro,
+                    firmaColor: oscuro
+                        ? Colors.white.withValues(alpha: 0.9)
+                        : AppColors.primaryDark,
                   ),
                   const SizedBox(height: AppSpacing.md),
                   if (nombre != null && nombre.isNotEmpty)

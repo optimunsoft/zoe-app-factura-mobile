@@ -3,13 +3,17 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/auth/auth_controller.dart';
-import '../../../core/theme/app_spacing.dart';
+import '../../../core/layout/ancho_vista.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../modules/sales/domain/models/sales_history_filters.dart';
 import '../../../modules/sales/store/sales_history.store.dart';
 import '../../atoms/boton_menu_drawer.dart';
 import '../../molecules/barra_filtros_activos.dart';
+import '../../molecules/contenido_ancho_maximo.dart';
+import '../../organisms/plantilla_adaptativa.dart';
 import 'widgets/lista_historial_ventas.dart';
+import 'widgets/sheet_detalle_venta.dart';
 import 'widgets/sheet_filtros_historial_ventas.dart';
 
 /// Pantalla principal del historial de ventas.
@@ -22,6 +26,7 @@ class HistorialVentasPage extends StatefulWidget {
 
 class _HistorialVentasPageState extends State<HistorialVentasPage> {
   static final _dateFmt = DateFormat('dd/MM/yyyy');
+  int? _ventaSeleccionadaId;
 
   @override
   void initState() {
@@ -105,10 +110,34 @@ class _HistorialVentasPageState extends State<HistorialVentasPage> {
   Widget build(BuildContext context) {
     final store = context.watch<SalesHistoryStore>();
     final chips = _activeChips(store.filters);
+    final padding = AnchoVista.paddingPagina(context);
+    final dosColumnas = AnchoVista.usaDosColumnas(context);
+
+    final lista = RefreshIndicator(
+      onRefresh: () => _load(),
+      child: ContenidoAnchoMaximo(
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: padding,
+          children: [
+            BarraFiltrosActivos(
+              chips: chips,
+              onClearAll: _clearFilters,
+            ),
+            ListaHistorialVentas(
+              selectedId: dosColumnas ? _ventaSeleccionadaId : null,
+              onSeleccionar: dosColumnas
+                  ? (item) => setState(() => _ventaSeleccionadaId = item.id)
+                  : null,
+            ),
+          ],
+        ),
+      ),
+    );
 
     return Scaffold(
       appBar: AppBar(
-        leadingWidth: 76,
+        leadingWidth: BotonMenuDrawer.anchoLeading,
         leading: const BotonMenuDrawer(),
         title: Text('Historial de ventas', style: AppTextStyles.h2),
         actions: [
@@ -123,19 +152,21 @@ class _HistorialVentasPageState extends State<HistorialVentasPage> {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () => _load(),
-        child: ListView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.sm, AppSpacing.lg, AppSpacing.lg),
-          children: [
-            BarraFiltrosActivos(
-              chips: chips,
-              onClearAll: _clearFilters,
-            ),
-            const ListaHistorialVentas(),
-          ],
-        ),
+      body: PlantillaDosColumnas(
+        principal: lista,
+        detalle: _ventaSeleccionadaId == null
+            ? Center(
+                child: Text(
+                  'Selecciona una venta',
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.textMuted,
+                  ),
+                ),
+              )
+            : SheetDetalleVenta(
+                key: ValueKey(_ventaSeleccionadaId),
+                saleId: _ventaSeleccionadaId!,
+              ),
       ),
     );
   }

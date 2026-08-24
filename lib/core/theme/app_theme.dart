@@ -35,6 +35,7 @@ abstract final class AppTheme {
 
     return base.copyWith(
       applyElevationOverlayColor: false,
+      visualDensity: VisualDensity.compact,
       scaffoldBackgroundColor: paleta.background,
       textTheme: GoogleFonts.montserratTextTheme(base.textTheme).apply(
         bodyColor: paleta.textPrimary,
@@ -44,6 +45,7 @@ abstract final class AppTheme {
         backgroundColor: paleta.surface,
         foregroundColor: paleta.textPrimary,
         elevation: 0,
+        toolbarHeight: 72,
         scrolledUnderElevation: 1,
         centerTitle: false,
         systemOverlayStyle:
@@ -138,6 +140,24 @@ abstract final class AppTheme {
             ? paleta.primary.withValues(alpha: 0.35)
             : paleta.primaryLight,
         surfaceTintColor: Colors.transparent,
+      ),
+      navigationRailTheme: NavigationRailThemeData(
+        backgroundColor: paleta.surface,
+        indicatorColor: oscuro
+            ? paleta.primary.withValues(alpha: 0.35)
+            : paleta.primaryLight,
+        selectedIconTheme: IconThemeData(color: paleta.primary),
+        unselectedIconTheme: IconThemeData(color: paleta.textSecondary),
+        selectedLabelTextStyle: GoogleFonts.montserrat(
+          fontSize: 13,
+          fontWeight: FontWeight.w700,
+          color: paleta.primary,
+        ),
+        unselectedLabelTextStyle: GoogleFonts.montserrat(
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+          color: paleta.textSecondary,
+        ),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: paleta.primary,

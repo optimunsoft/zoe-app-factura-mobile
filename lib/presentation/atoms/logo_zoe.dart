@@ -21,6 +21,42 @@ TextStyle estiloFirmaZoe({required Color color, required double fontSize}) {
   );
 }
 
+/// Logotipo + firma compacta para AppBar y drawer.
+class LogoZoeConFirma extends StatelessWidget {
+  const LogoZoeConFirma({
+    super.key,
+    this.logoHeight = 28,
+    this.firmaSize = 7,
+    this.invertido = false,
+    required this.firmaColor,
+  });
+
+  final double logoHeight;
+  final double firmaSize;
+  final bool invertido;
+  final Color firmaColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        LogoZoe(height: logoHeight, invertido: invertido),
+        const SizedBox(height: 2),
+        Text(
+          kZoeFirmaTexto,
+          maxLines: 1,
+          overflow: TextOverflow.visible,
+          softWrap: false,
+          style: estiloFirmaZoe(color: firmaColor, fontSize: firmaSize)
+              .copyWith(height: 1.15),
+        ),
+      ],
+    );
+  }
+}
+
 /// Logotipo ZOE con alto fijo; el ancho se ajusta a la proporción original.
 class LogoZoe extends StatelessWidget {
   const LogoZoe({super.key, this.height = 24, this.invertido = false});

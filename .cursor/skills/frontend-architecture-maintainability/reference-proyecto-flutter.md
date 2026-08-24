@@ -76,6 +76,9 @@ Sheets reutilizables: `SheetInferiorApp.show()` (no duplicar handle/cerrar).
 - `lib/core/theme/app_spacing.dart`
 - `lib/core/theme/app_radius.dart`
 - `lib/core/theme/app_colors.dart`, `app_text_styles.dart`
+- `lib/core/theme/app_breakpoints.dart` (`movil` 600 / `tablet` 840 / `escritorio` 1200)
+- `lib/core/layout/ancho_vista.dart` — clase de ancho, padding, columnas
+- `lib/presentation/organisms/plantilla_adaptativa.dart` — `PlantillaAdaptativa`, `PlantillaDosColumnas`
 
 No usar números mágicos de padding/radius si existe token.
 

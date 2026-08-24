@@ -12,6 +12,7 @@ class MoneyText extends StatelessWidget {
     this.large = false,
     this.xl = false,
     this.hideZeroDecimals = false,
+    this.uniformDecimals = false,
   });
 
   final num value;
@@ -20,6 +21,9 @@ class MoneyText extends StatelessWidget {
   final bool large;
   final bool xl;
   final bool hideZeroDecimals;
+
+  /// Decimales con el mismo tamaño y color que la parte entera.
+  final bool uniformDecimals;
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +41,10 @@ class MoneyText extends StatelessWidget {
         CurrencyFormat.money(value, hideZeroDecimals: true),
         style: enteroStyle,
       );
+    }
+
+    if (uniformDecimals) {
+      return Text(CurrencyFormat.money(value), style: enteroStyle);
     }
 
     final parts = CurrencyFormat.moneyParts(value);

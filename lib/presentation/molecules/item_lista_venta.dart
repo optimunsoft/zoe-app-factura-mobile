@@ -14,15 +14,18 @@ class ItemListaVenta extends StatelessWidget {
     super.key,
     required this.item,
     required this.onTap,
+    this.selected = false,
   });
 
   final SaleHistoryItem item;
   final VoidCallback onTap;
+  final bool selected;
 
   @override
   Widget build(BuildContext context) {
     return MosaicoConBorde(
       onTap: onTap,
+      selected: selected,
       leading: Container(
         width: 42,
         height: 42,

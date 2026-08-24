@@ -14,6 +14,7 @@ class MosaicoConBorde extends StatelessWidget {
     this.trailing,
     this.onTap,
     this.marginBottom = AppSpacing.sm,
+    this.selected = false,
   });
 
   final Widget leading;
@@ -21,13 +22,14 @@ class MosaicoConBorde extends StatelessWidget {
   final Widget? trailing;
   final VoidCallback? onTap;
   final double marginBottom;
+  final bool selected;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(bottom: marginBottom),
       child: Material(
-        color: AppColors.surface,
+        color: selected ? AppColors.primaryLight : AppColors.surface,
         borderRadius: AppRadius.mdAll,
         child: InkWell(
           onTap: onTap,
@@ -36,7 +38,7 @@ class MosaicoConBorde extends StatelessWidget {
             padding: const EdgeInsets.all(AppSpacing.md),
             decoration: BoxDecoration(
               borderRadius: AppRadius.mdAll,
-              border: AppBorders.subtle,
+              border: AppBorders.selectable(selected: selected),
             ),
             child: Row(
               children: [

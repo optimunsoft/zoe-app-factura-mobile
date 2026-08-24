@@ -43,7 +43,7 @@ class BannerMontoPendiente extends StatelessWidget {
               ),
             ),
           ),
-          MoneyText(amount, large: emphasized),
+          MoneyText(amount, large: emphasized, uniformDecimals: true),
         ],
       ),
     );

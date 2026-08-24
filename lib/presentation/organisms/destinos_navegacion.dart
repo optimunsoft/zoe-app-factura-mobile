@@ -15,7 +15,7 @@ class DestinoNavegacion {
   final IconData selectedIcon;
 }
 
-/// Catálogo de pestañas del módulo Venta (barra inferior).
+/// Catálogo de pestañas del módulo Venta (barra inferior o rail).
 abstract final class DestinosNavegacionPrincipal {
   static const inicio = DestinoNavegacion(
     index: 0,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../core/layout/ancho_vista.dart';
 import '../../../data/pos_controller.dart';
 import '../../../domain/models/sale_receipt.dart';
 import '../../features/historial_ventas/historial_ventas_page.dart';
@@ -9,6 +10,7 @@ import '../../organisms/control_drawer_app.dart';
 import '../../organisms/dialogo_cerrar_sesion.dart';
 import '../../organisms/drawer_navegacion.dart';
 import '../../organisms/nav_inferior_app.dart';
+import '../../organisms/nav_lateral_app.dart';
 import '../inicio/inicio_page.dart';
 import '../reportes/reportes_page.dart';
 import '../venta/venta_page.dart';
@@ -124,6 +126,8 @@ class _NavegacionPrincipalState extends State<NavegacionPrincipal> {
       const ReportesPage(),
     ];
 
+    final usaRail = AnchoVista.usaRail(context);
+
     return ControlDrawerApp(
       openDrawer: () => _scaffoldKey.currentState?.openDrawer(),
       child: Scaffold(
@@ -131,11 +135,27 @@ class _NavegacionPrincipalState extends State<NavegacionPrincipal> {
         drawer: DrawerNavegacion(
           onLogout: () => confirmarCerrarSesion(context),
         ),
-        body: IndexedStack(index: _tab, children: pages),
-        bottomNavigationBar: NavInferiorApp(
-          index: _tab,
-          onChanged: _onTabChanged,
+        body: Row(
+          children: [
+            if (usaRail) ...[
+              NavLateralApp(
+                index: _tab,
+                onChanged: _onTabChanged,
+                extended: AnchoVista.railExtendido(context),
+              ),
+              const VerticalDivider(width: 1),
+            ],
+            Expanded(
+              child: IndexedStack(index: _tab, children: pages),
+            ),
+          ],
         ),
+        bottomNavigationBar: usaRail
+            ? null
+            : NavInferiorApp(
+                index: _tab,
+                onChanged: _onTabChanged,
+              ),
         floatingActionButton: _tab == 0
             ? FloatingActionButton.extended(
                 onPressed: _startSaleFlow,

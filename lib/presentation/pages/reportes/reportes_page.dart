@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/layout/ancho_vista.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../atoms/boton_menu_drawer.dart';
 import '../../features/reportes/reporte_medios_pago_page.dart';
 import '../../features/reportes/reportes_catalogo.dart';
 import '../../features/reportes/widgets/tarjeta_reporte.dart';
+import '../../molecules/contenido_ancho_maximo.dart';
 
 class ReportesPage extends StatelessWidget {
   const ReportesPage({super.key});
@@ -23,17 +25,17 @@ class ReportesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leadingWidth: 76,
+        leadingWidth: BotonMenuDrawer.anchoLeading,
         leading: const BotonMenuDrawer(),
         title: Text('Reportes', style: AppTextStyles.h2),
       ),
-      body: ListView.separated(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.lg,
-          AppSpacing.lg,
-          AppSpacing.lg,
-          AppSpacing.xl,
-        ),
+      body: ContenidoAnchoMaximo(
+        child: ListView.separated(
+          padding: AnchoVista.paddingPagina(
+            context,
+            top: AppSpacing.lg,
+            bottom: AppSpacing.xl,
+          ),
         itemCount: kReportesDisponibles.length,
         separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
         itemBuilder: (context, index) {
@@ -43,6 +45,7 @@ class ReportesPage extends StatelessWidget {
             onTap: () => _abrirReporte(context, reporte),
           );
         },
+        ),
       ),
     );
   }

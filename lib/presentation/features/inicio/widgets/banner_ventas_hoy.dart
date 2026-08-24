@@ -101,6 +101,7 @@ class BannerVentasHoy extends StatelessWidget {
                           fontSize: 22,
                         ),
                         color: Colors.white,
+                        uniformDecimals: true,
                       ),
                   ],
                 ),

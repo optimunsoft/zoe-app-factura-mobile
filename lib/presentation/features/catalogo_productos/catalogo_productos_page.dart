@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/auth/auth_controller.dart';
+import '../../../core/layout/ancho_vista.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/pos_controller.dart';
 import '../../../domain/models/customer.dart';
@@ -15,10 +17,12 @@ import '../../../modules/products/store/products.store.dart';
 import '../../atoms/boton_menu_drawer.dart';
 import '../../molecules/barra_busqueda_escaner.dart';
 import '../../organisms/grilla_productos.dart';
+import '../../organisms/plantilla_adaptativa.dart';
 import 'widgets/boton_icono_carrito.dart';
 import 'widgets/pastilla_categoria.dart';
 import 'widgets/encabezado_acordeon_cliente.dart';
 import 'widgets/barra_resumen_pedido.dart';
+import 'widgets/panel_carrito_catalogo.dart';
 
 /// Pantalla principal del catálogo de productos POS.
 class CatalogoProductosPage extends StatefulWidget {
@@ -85,7 +89,7 @@ class _CatalogoProductosPageState extends State<CatalogoProductosPage> {
   }
 
   double _appBarHeight(Customer? customer) {
-    var h = kToolbarHeight;
+    var h = 72.0;
     if (customer != null) {
       h += _customerExpanded ? 300 : 56;
     }
@@ -97,6 +101,8 @@ class _CatalogoProductosPageState extends State<CatalogoProductosPage> {
     final posCtrl = context.watch<PosController>();
     final productsStore = context.watch<ProductsStore>();
     final customer = posCtrl.activeCustomer;
+
+    final conCarrito = AnchoVista.usaPanelCarrito(context);
 
     return Scaffold(
       appBar: PreferredSize(
@@ -115,7 +121,7 @@ class _CatalogoProductosPageState extends State<CatalogoProductosPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SizedBox(
-                    height: kToolbarHeight - 8,
+                    height: 64,
                     child: Row(
                       children: [
                         const BotonMenuDrawer(compacto: true),
@@ -127,12 +133,13 @@ class _CatalogoProductosPageState extends State<CatalogoProductosPage> {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        BotonIconoCarrito(
-                          itemCount: posCtrl.itemCount,
-                          onPressed: posCtrl.itemCount > 0
-                              ? widget.onReviewPay
-                              : null,
-                        ),
+                        if (!conCarrito)
+                          BotonIconoCarrito(
+                            itemCount: posCtrl.itemCount,
+                            onPressed: posCtrl.itemCount > 0
+                                ? widget.onReviewPay
+                                : null,
+                          ),
                       ],
                     ),
                   ),
@@ -150,68 +157,82 @@ class _CatalogoProductosPageState extends State<CatalogoProductosPage> {
           ),
         ),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            child: BarraBusquedaEscaner(
-              controller: _searchCtrl,
-              hint: 'Buscar por nombre o código de barras…',
-              onChanged: _onSearchChanged,
+      body: PlantillaDosColumnas(
+        activo: conCarrito,
+        anchoDetalle: AnchoVista.anchoPanelCarrito(context),
+        principal: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                AnchoVista.paddingHorizontal(context),
+                AppSpacing.sm,
+                AnchoVista.paddingHorizontal(context),
+                0,
+              ),
+              child: BarraBusquedaEscaner(
+                controller: _searchCtrl,
+                hint: 'Buscar por nombre o código de barras…',
+                onChanged: _onSearchChanged,
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
-          Builder(
-            builder: (context) {
-              final store = context.watch<CategoriesStore>();
+            const SizedBox(height: AppSpacing.md),
+            Builder(
+              builder: (context) {
+                final store = context.watch<CategoriesStore>();
 
-              if (store.isLoading) {
-                return const SizedBox(
+                if (store.isLoading) {
+                  return const SizedBox(
+                    height: 42,
+                    child: Center(
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  );
+                }
+
+                return SizedBox(
                   height: 42,
-                  child: Center(
-                    child: CircularProgressIndicator(strokeWidth: 2),
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: AnchoVista.paddingHorizontal(context),
+                    ),
+                    children: [
+                      PastillaCategoria(
+                        label: 'Todos',
+                        selected: _selectedCategory == null,
+                        onTap: () => _selectCategory(null),
+                      ),
+                      ...store.items.map(
+                        (c) => PastillaCategoria(
+                          label: c.name,
+                          selected: _selectedCategory?.id == c.id,
+                          onTap: () => _selectCategory(c),
+                        ),
+                      ),
+                    ],
                   ),
                 );
-              }
-
-              return SizedBox(
-                height: 42,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  children: [
-                    PastillaCategoria(
-                      label: 'Todos',
-                      selected: _selectedCategory == null,
-                      onTap: () => _selectCategory(null),
-                    ),
-                    ...store.items.map(
-                      (c) => PastillaCategoria(
-                        label: c.name,
-                        selected: _selectedCategory?.id == c.id,
-                        onTap: () => _selectCategory(c),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-          const SizedBox(height: 12),
-          Expanded(
-            child: GrillaProductos(
-              posCtrl: posCtrl,
-              store: productsStore,
-              onRetry: _loadProducts,
+              },
             ),
-          ),
-        ],
+            const SizedBox(height: AppSpacing.md),
+            Expanded(
+              child: GrillaProductos(
+                posCtrl: posCtrl,
+                store: productsStore,
+                onRetry: _loadProducts,
+              ),
+            ),
+          ],
+        ),
+        detalle: PanelCarritoCatalogo(onReviewPay: widget.onReviewPay),
       ),
-      bottomNavigationBar: BarraResumenPedido(
-        itemCount: posCtrl.itemCount,
-        total: posCtrl.total,
-        onReviewPay: widget.onReviewPay,
-      ),
+      bottomNavigationBar: conCarrito
+          ? null
+          : BarraResumenPedido(
+              itemCount: posCtrl.itemCount,
+              total: posCtrl.total,
+              onReviewPay: widget.onReviewPay,
+            ),
     );
   }
 }

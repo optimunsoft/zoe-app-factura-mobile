@@ -3,11 +3,12 @@ import 'dart:ui' show lerpDouble;
 
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_breakpoints.dart';
 import '../../../atoms/logo_zoe.dart';
 import 'etiqueta_by_optimun.dart';
-import 'recorte_revelacion_circulo.dart';
 import 'formulario_login.dart';
 import 'pintor_ondas_logo.dart';
+import 'recorte_revelacion_circulo.dart';
 
 /// Fondo animado con ripples, reveal circular y logo ZOE.
 class FondoAnimacionRipple extends StatelessWidget {
@@ -121,7 +122,9 @@ class FondoAnimacionRipple extends StatelessWidget {
                         child: SlideTransition(
                           position: formSlide,
                           child: ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 400),
+                            constraints: const BoxConstraints(
+                              maxWidth: AppBreakpoints.anchoLogin,
+                            ),
                             child: SingleChildScrollView(
                               child: FormularioLogin(
                                 reveal: stagger.value,

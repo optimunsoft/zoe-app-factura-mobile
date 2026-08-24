@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../core/layout/ancho_vista.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../data/pos_controller.dart';
 import '../../modules/products/domain/mappers/pos_product_mapper.dart';
@@ -30,7 +32,7 @@ class GrillaProductos extends StatelessWidget {
     if (store.error != null) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(AppSpacing.xl),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -39,7 +41,7 @@ class GrillaProductos extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: AppTextStyles.label.copyWith(color: AppColors.danger),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.md),
               TextButton(
                 onPressed: onRetry,
                 child: const Text('Reintentar'),
@@ -61,11 +63,12 @@ class GrillaProductos extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        const crossCount = 2;
-        const crossSpacing = 12.0;
-        const horizontalPad = 32.0;
+        final crossCount = AnchoVista.columnasProducto(constraints.maxWidth);
+        const crossSpacing = AppSpacing.md;
+        const horizontalPad = AppSpacing.xxl;
+        final spacingTotal = crossSpacing * (crossCount - 1);
         final cardWidth =
-            (constraints.maxWidth - horizontalPad - crossSpacing) / crossCount;
+            (constraints.maxWidth - horizontalPad - spacingTotal) / crossCount;
 
         final cardHeight =
             (cardWidth / TarjetaProducto.imageAspectRatio) +
@@ -73,10 +76,15 @@ class GrillaProductos extends StatelessWidget {
         final aspectRatio = cardWidth / cardHeight;
 
         return GridView.builder(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            0,
+            AppSpacing.lg,
+            AppSpacing.lg,
+          ),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: crossCount,
-            mainAxisSpacing: 12,
+            mainAxisSpacing: AppSpacing.md,
             crossAxisSpacing: crossSpacing,
             childAspectRatio: aspectRatio,
           ),

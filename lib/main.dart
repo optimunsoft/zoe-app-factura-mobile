@@ -11,6 +11,7 @@ import 'core/app_navigator.dart';
 import 'core/auth/auth_controller.dart';
 import 'core/config/app_env.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/comportamiento_scroll_app.dart';
 import 'core/theme/host_tema_app.dart';
 import 'core/theme/tema_app_store.dart';
 import 'data/pos_controller.dart';
@@ -67,10 +68,20 @@ class TiendaATiendaApp extends StatelessWidget {
             darkTheme: AppTheme.dark,
             themeMode: tema.oscuro ? ThemeMode.dark : ThemeMode.light,
             themeAnimationDuration: Duration.zero,
+            scrollBehavior: const ComportamientoScrollApp(),
             navigatorKey: appNavigatorKey,
             builder: (context, child) {
-              return HostTemaApp(
-                child: FToastBuilder()(context, child),
+              final media = MediaQuery.of(context);
+              return MediaQuery(
+                data: media.copyWith(
+                  textScaler: media.textScaler.clamp(
+                    minScaleFactor: 0.9,
+                    maxScaleFactor: 1.2,
+                  ),
+                ),
+                child: HostTemaApp(
+                  child: FToastBuilder()(context, child),
+                ),
               );
             },
             locale: const Locale('es', 'MX'),

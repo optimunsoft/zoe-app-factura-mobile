@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/layout/ancho_vista.dart';
 import '../../../../core/theme/app_borders.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_radius.dart';
@@ -37,6 +38,7 @@ class TarjetasResumenReportes extends StatelessWidget {
         child: MoneyText(
           resumen.totalizado.totalImpuestos,
           large: true,
+          uniformDecimals: true,
         ),
       ),
       _MetricCard(
@@ -54,7 +56,11 @@ class TarjetasResumenReportes extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            MoneyText(resumen.carteraGenerada, large: true),
+            MoneyText(
+              resumen.carteraGenerada,
+              large: true,
+              uniformDecimals: true,
+            ),
             const SizedBox(height: AppSpacing.xs),
             Text(
               '${resumen.porcentajeCartera.toStringAsFixed(
@@ -73,18 +79,24 @@ class TarjetasResumenReportes extends StatelessWidget {
         child: MoneyText(
           resumen.totalizado.totalRetenciones,
           large: true,
+          uniformDecimals: true,
         ),
       ),
     ];
 
-    return GridView.count(
-      crossAxisCount: 2,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      mainAxisSpacing: AppSpacing.md,
-      crossAxisSpacing: AppSpacing.md,
-      mainAxisExtent: _cardHeight,
-      children: cards,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final crossCount = AnchoVista.columnasResumen(constraints.maxWidth);
+        return GridView.count(
+          crossAxisCount: crossCount,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          mainAxisSpacing: AppSpacing.md,
+          crossAxisSpacing: AppSpacing.md,
+          mainAxisExtent: _cardHeight,
+          children: cards,
+        );
+      },
     );
   }
 }

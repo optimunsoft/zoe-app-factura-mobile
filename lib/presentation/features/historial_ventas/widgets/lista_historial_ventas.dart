@@ -13,7 +13,14 @@ import 'sheet_detalle_venta.dart';
 
 /// Lista paginada del historial de ventas.
 class ListaHistorialVentas extends StatelessWidget {
-  const ListaHistorialVentas({super.key});
+  const ListaHistorialVentas({
+    super.key,
+    this.selectedId,
+    this.onSeleccionar,
+  });
+
+  final int? selectedId;
+  final ValueChanged<SaleHistoryItem>? onSeleccionar;
 
   String? _branchId(BuildContext context) {
     final id = context.read<AuthController>().user?.sucursalId;
@@ -21,6 +28,10 @@ class ListaHistorialVentas extends StatelessWidget {
   }
 
   Future<void> _openDetail(BuildContext context, SaleHistoryItem item) {
+    if (onSeleccionar != null) {
+      onSeleccionar!(item);
+      return Future.value();
+    }
     return SheetDetalleVenta.show(context, saleId: item.id);
   }
 
@@ -75,6 +86,7 @@ class ListaHistorialVentas extends StatelessWidget {
         final item = store.items[index];
         return ItemListaVenta(
           item: item,
+          selected: selectedId == item.id,
           onTap: () => _openDetail(context, item),
         );
       },

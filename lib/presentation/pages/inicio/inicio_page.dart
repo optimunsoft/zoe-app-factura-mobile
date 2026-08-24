@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/auth/auth_controller.dart';
+import '../../../core/layout/ancho_vista.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -13,6 +14,7 @@ import '../../features/inicio/widgets/banner_ventas_hoy.dart';
 import '../../features/inicio/widgets/grilla_accesos_rapidos.dart';
 import '../../features/inicio/widgets/sheet_filtro_periodo_resumen.dart';
 import '../../features/reportes/widgets/tarjetas_resumen_reportes.dart';
+import '../../molecules/contenido_ancho_maximo.dart';
 
 class InicioPage extends StatefulWidget {
   const InicioPage({
@@ -69,7 +71,7 @@ class _InicioPageState extends State<InicioPage> {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 72,
-        leadingWidth: 76,
+        leadingWidth: BotonMenuDrawer.anchoLeading,
         leading: const BotonMenuDrawer(),
         titleSpacing: AppSpacing.sm,
         title: Column(
@@ -107,15 +109,14 @@ class _InicioPageState extends State<InicioPage> {
       ),
       body: RefreshIndicator(
         onRefresh: _loadResumen,
-        child: ListView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.lg,
-            AppSpacing.sm,
-            AppSpacing.lg,
-            AppSpacing.xl,
-          ),
-          children: [
+        child: ContenidoAnchoMaximo(
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: AnchoVista.paddingPagina(
+              context,
+              bottom: AppSpacing.xl,
+            ),
+            children: [
             if (user?.sucursalId == null)
               const Padding(
                 padding: EdgeInsets.only(bottom: AppSpacing.md),
@@ -182,6 +183,7 @@ class _InicioPageState extends State<InicioPage> {
               onReports: widget.onReports,
             ),
           ],
+          ),
         ),
       ),
     );

@@ -121,7 +121,7 @@ class _SeleccionClientePageState extends State<SeleccionClientePage> {
                 onPressed: () => setState(() => _creating = false),
               )
             : const BotonMenuDrawer(),
-        leadingWidth: _creating ? null : 76,
+        leadingWidth: _creating ? null : BotonMenuDrawer.anchoLeading,
         automaticallyImplyLeading: false,
       ),
       body: Stack(
