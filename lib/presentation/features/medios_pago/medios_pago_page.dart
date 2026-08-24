@@ -18,9 +18,10 @@ import '../../../modules/taxes/domain/models/taxes.models.dart';
 import '../../../modules/taxes/store/taxes.store.dart';
 import '../../molecules/banner_monto_pendiente.dart';
 import '../../molecules/cuerpo_error_reintentar.dart';
+import 'widgets/dialogo_medios_completos.dart';
+import 'widgets/dialogo_notas_venta.dart';
 import 'widgets/panel_medios_pago.dart';
 import 'widgets/pie_resumen_pago.dart';
-import 'widgets/dialogo_notas_venta.dart';
 
 /// Ventana: Medios de pago (retenciones ya definidas en el resumen).
 class MediosPagoPage extends StatefulWidget {
@@ -146,7 +147,30 @@ class _MediosPagoPageState extends State<MediosPagoPage> {
       _confirmedAmounts[method.id] = CurrencyFormat.roundMoney(amount);
       _lockedIds.add(method.id);
     });
+
+    final methods = context.read<MethodPaymentsStore>().items;
+    if (_mediosCompletosConFaltante(items: methods, amountDue: amountDue)) {
+      mostrarAlertaMediosCompletos(
+        context,
+        faltante: _montoFaltante(amountDue),
+      );
+    }
     return true;
+  }
+
+  double _montoFaltante(double amountDue) {
+    final left = CurrencyFormat.roundMoney(amountDue - _paid);
+    return left < 0 ? 0 : left;
+  }
+
+  bool _mediosCompletosConFaltante({
+    required List<MethodPayment> items,
+    required double amountDue,
+  }) {
+    if (items.isEmpty) return false;
+    final todosConMonto = items.every((m) => _lockedIds.contains(m.id));
+    if (!todosConMonto) return false;
+    return CurrencyFormat.toCents(_paid) < CurrencyFormat.toCents(amountDue);
   }
 
   void _onEdit(MethodPayment method) {
@@ -164,6 +188,14 @@ class _MediosPagoPageState extends State<MediosPagoPage> {
     if (pos.itemCount == 0 || _confirmedAmounts.isEmpty) return;
 
     if (CurrencyFormat.toCents(_paid) < CurrencyFormat.toCents(amountDue)) {
+      final methods = context.read<MethodPaymentsStore>().items;
+      if (_mediosCompletosConFaltante(items: methods, amountDue: amountDue)) {
+        await mostrarAlertaMediosCompletos(
+          context,
+          faltante: _montoFaltante(amountDue),
+        );
+        return;
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('El monto pagado es insuficiente')),
       );

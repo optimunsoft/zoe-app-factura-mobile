@@ -21,16 +21,26 @@ abstract final class CurrencyFormat {
 
   static String money(num value, {bool hideZeroDecimals = false}) {
     final d = roundMoney(value);
-    if (hideZeroDecimals) {
-      if (d == d.roundToDouble()) {
-        return NumberFormat.currency(
-          locale: 'es_MX',
-          symbol: '\$',
-          decimalDigits: 0,
-        ).format(d);
-      }
+    if (hideZeroDecimals && d == d.roundToDouble()) {
+      return NumberFormat.currency(
+        locale: 'es_MX',
+        symbol: '\$',
+        decimalDigits: 0,
+      ).format(d);
     }
     return _fmt.format(d);
+  }
+
+  /// Parte entera con símbolo y centavos (`00`–`99`) para pintar los decimales aparte.
+  static ({String entero, String centavos}) moneyParts(num value) {
+    final d = roundMoney(value);
+    final entero = NumberFormat.currency(
+      locale: 'es_MX',
+      symbol: '\$',
+      decimalDigits: 0,
+    ).format(d.truncateToDouble());
+    final centavos = (toCents(d).abs() % 100).toString().padLeft(2, '0');
+    return (entero: entero, centavos: centavos);
   }
 
   static String compact(num value) {

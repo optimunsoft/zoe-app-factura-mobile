@@ -48,9 +48,12 @@ class _SheetDetalleProductoState extends State<SheetDetalleProducto> {
   void initState() {
     super.initState();
     final options = product.sellingPrices.options;
-    _selectedPrice = options.isNotEmpty
-        ? options.first
-        : const SellingPriceOption(key: 'default', label: 'General', price: 0);
+    _selectedPrice = options.firstWhere(
+      (option) => option.seleccionable,
+      orElse: () => options.isNotEmpty
+          ? options.first
+          : const SellingPriceOption(key: 'default', label: 'General', price: 0),
+    );
   }
 
   @override
@@ -105,8 +108,10 @@ class _SheetDetalleProductoState extends State<SheetDetalleProducto> {
                 SelectorPrecioVenta(
                   options: priceOptions,
                   selected: _selectedPrice,
-                  onSelected: (option) =>
-                      setState(() => _selectedPrice = option),
+                  onSelected: (option) {
+                    if (!option.seleccionable) return;
+                    setState(() => _selectedPrice = option);
+                  },
                 ),
                 const SizedBox(height: 12),
                 Text('Información', style: AppTextStyles.h3),
@@ -192,7 +197,7 @@ class _SheetDetalleProductoState extends State<SheetDetalleProducto> {
             child: SizedBox(
               height: 48,
               child: ElevatedButton(
-                onPressed: product.inStock
+                onPressed: product.inStock && _selectedPrice.seleccionable
                     ? () {
                         widget.onAdd!(_selectedPrice);
                         Navigator.of(context).pop();

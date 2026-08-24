@@ -27,41 +27,53 @@ class SelectorPrecioVenta extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: options.map((option) {
         final isSelected = option.key == selected.key;
+        final enabled = option.seleccionable;
+        final Color fg;
+        if (!enabled) {
+          fg = AppColors.textMuted;
+        } else if (isSelected) {
+          fg = AppColors.primary;
+        } else {
+          fg = AppColors.textPrimary;
+        }
+
         return Padding(
           padding: const EdgeInsets.only(bottom: AppSpacing.sm),
           child: Material(
-            color: isSelected ? AppColors.primaryLight : AppColors.surface,
+            color: isSelected && enabled
+                ? AppColors.primaryLight
+                : AppColors.surface,
             borderRadius: AppRadius.mdAll,
             child: InkWell(
-              onTap: () => onSelected(option),
+              onTap: enabled ? () => onSelected(option) : null,
               borderRadius: AppRadius.mdAll,
               child: Container(
                 padding: const EdgeInsets.all(AppSpacing.md),
                 decoration: BoxDecoration(
                   borderRadius: AppRadius.mdAll,
-                  border: AppBorders.selectable(selected: isSelected),
+                  border: AppBorders.selectable(
+                    selected: isSelected && enabled,
+                  ),
                 ),
                 child: Row(
                   children: [
                     Icon(
-                      isSelected
+                      isSelected && enabled
                           ? Icons.radio_button_checked
                           : Icons.radio_button_off,
-                      color: isSelected
-                          ? AppColors.primary
+                      color: enabled
+                          ? (isSelected ? AppColors.primary : AppColors.textMuted)
                           : AppColors.textMuted,
                       size: 22,
                     ),
                     const SizedBox(width: AppSpacing.sm),
                     Expanded(
-                      child: Text(option.label, style: AppTextStyles.label),
+                      child: Text(
+                        option.label,
+                        style: AppTextStyles.label.copyWith(color: fg),
+                      ),
                     ),
-                    MoneyText(
-                      option.price,
-                      color: isSelected
-                          ? AppColors.primary
-                          : AppColors.textPrimary,
-                    ),
+                    MoneyText(option.price, color: fg),
                   ],
                 ),
               ),

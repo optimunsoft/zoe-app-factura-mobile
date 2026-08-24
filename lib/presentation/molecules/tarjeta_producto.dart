@@ -35,7 +35,7 @@ class TarjetaProducto extends StatelessWidget {
   static const imageAspectRatio = 1.15;
 
   /// Altura fija del contenido bajo la imagen (padding + textos + precio + CTA).
-  static const fixedBelowImageHeight = 178.0;
+  static const fixedBelowImageHeight = 196.0;
 
   static final TextStyle _nameStyle = AppTextStyles.label.copyWith(
     fontSize: 14,
@@ -123,6 +123,19 @@ class TarjetaProducto extends StatelessWidget {
                     },
                   ),
                 ),
+                if (product.code.isNotEmpty) ...[
+                  const SizedBox(height: AppSpacing.xxs),
+                  Text(
+                    'Código: ${product.code}',
+                    style: AppTextStyles.caption.copyWith(
+                      color: AppColors.textMuted,
+                      fontSize: 12,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    
+                  ),
+                ],
                 const SizedBox(height: AppSpacing.sm),
                 Align(
                   alignment: Alignment.centerLeft,

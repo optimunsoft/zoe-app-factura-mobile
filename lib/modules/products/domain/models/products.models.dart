@@ -115,6 +115,9 @@ class SellingPriceOption {
   final String key;
   final String label;
   final double price;
+
+  /// El precio General siempre se puede usar. Las demás listas, solo si > 0.
+  bool get seleccionable => key == 'default' || price > 0;
 }
 
 class ProductTax {
@@ -194,6 +197,14 @@ class Product {
   double get sellingPrice => sellingPrices.defaultPrice;
   int get stock => quantity;
   bool get inStock => quantity > 0;
+
+  /// Código para mostrar en catálogo: barras, si no referencia, si no el id.
+  String get displayCode {
+    if (barcode.trim().isNotEmpty) return barcode.trim();
+    final ref = reference?.trim() ?? '';
+    if (ref.isNotEmpty) return ref;
+    return id.toString();
+  }
 
   factory Product.fromJson(Map<String, dynamic> json) {
     final branchRaw = json['branch'];

@@ -87,7 +87,11 @@ class _PanelMediosPagoState extends State<PanelMediosPago> {
       children: [
         Text('Medios de pago', style: AppTextStyles.h3),
         const SizedBox(height: 8),
-        _RemainingBanner(remaining: _remaining),
+        _RemainingBanner(
+          remaining: _remaining,
+          todosLosMediosConMonto: widget.items.isNotEmpty &&
+              widget.items.every((i) => widget.lockedIds.contains(i.id)),
+        ),
         const SizedBox(height: AppSpacing.md),
         ...widget.items.map(
           (item) {
@@ -116,13 +120,20 @@ class _PanelMediosPagoState extends State<PanelMediosPago> {
 }
 
 class _RemainingBanner extends StatelessWidget {
-  const _RemainingBanner({required this.remaining});
+  const _RemainingBanner({
+    required this.remaining,
+    required this.todosLosMediosConMonto,
+  });
 
   final double remaining;
+  final bool todosLosMediosConMonto;
 
   @override
   Widget build(BuildContext context) {
     final done = remaining <= 0.001;
+    final bloqueadoConFaltante = !done && todosLosMediosConMonto;
+    final accent = done ? AppColors.success : AppColors.warning;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(AppSpacing.md),
@@ -130,23 +141,39 @@ class _RemainingBanner extends StatelessWidget {
         color: done ? AppColors.successBg : AppColors.warningBg,
         borderRadius: AppRadius.mdAll,
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Text(
-              done ? 'Saldo cubierto' : 'Por pagar',
-              style: AppTextStyles.label.copyWith(
-                color: done ? AppColors.success : AppColors.warning,
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  done
+                      ? 'Saldo cubierto'
+                      : bloqueadoConFaltante
+                          ? 'Medios de pago completos'
+                          : 'Por pagar',
+                  style: AppTextStyles.label.copyWith(color: accent),
+                ),
               ),
-            ),
+              Text(
+                CurrencyFormat.money(remaining),
+                style: AppTextStyles.moneyLg.copyWith(
+                  color: accent,
+                  fontSize: 18,
+                ),
+              ),
+            ],
           ),
-          Text(
-            CurrencyFormat.money(remaining),
-            style: AppTextStyles.moneyLg.copyWith(
-              color: done ? AppColors.success : AppColors.warning,
-              fontSize: 18,
+          if (bloqueadoConFaltante) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              'Ya se llenaron todos los medios de pago y todavía falta '
+              '${CurrencyFormat.money(remaining)} por agregar. '
+              'Modifica alguno para cubrir el resto.',
+              style: AppTextStyles.bodySmall.copyWith(color: accent),
             ),
-          ),
+          ],
         ],
       ),
     );

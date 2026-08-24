@@ -43,7 +43,11 @@ class ItemDrawerNavegacion extends StatelessWidget {
         vertical: AppSpacing.xxs,
       ),
       child: Material(
-        color: selected ? AppColors.primaryLight : Colors.transparent,
+        color: selected
+            ? AppColors.primary.withValues(
+                alpha: AppColors.oscuro ? 0.22 : 0.1,
+              )
+            : Colors.transparent,
         borderRadius: AppRadius.mdAll,
         child: InkWell(
           onTap: onTap,

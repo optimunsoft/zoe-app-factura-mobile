@@ -12,12 +12,27 @@ class EncabezadoDrawer extends StatelessWidget {
 
   final AuthUser? user;
 
-  @override
-  Widget build(BuildContext context) {
+  String get _iniciales {
+    final nombre = user?.nombre.trim() ?? '';
+    final apellido = user?.apellido.trim() ?? '';
+    if (nombre.isEmpty && apellido.isEmpty) return '?';
+    if (apellido.isEmpty) return nombre[0].toUpperCase();
+    if (nombre.isEmpty) return apellido[0].toUpperCase();
+    return '${nombre[0]}${apellido[0]}'.toUpperCase();
+  }
+
+  String get _lineaSucursal {
     final empresa = (user?.empresa.isNotEmpty == true)
         ? user!.empresa
         : 'ZOE';
     final sucursal = user?.sucursalNombre?.trim();
+    if (sucursal == null || sucursal.isEmpty) return empresa.toUpperCase();
+    return '${empresa.toUpperCase()} · ${sucursal.toUpperCase()}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final oscuro = Theme.of(context).brightness == Brightness.dark;
     final nombre = user?.fullName.trim();
     final correo = user?.correo.trim();
 
@@ -25,61 +40,93 @@ class EncabezadoDrawer extends StatelessWidget {
       color: AppColors.primaryLight,
       child: SafeArea(
         bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.lg,
-            AppSpacing.lg,
-            AppSpacing.lg,
-            AppSpacing.xl,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              LogoZoe(
-                height: 36,
-                invertido: Theme.of(context).brightness == Brightness.dark,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.md,
               ),
-              const SizedBox(height: AppSpacing.md),
-              Text(
-                empresa.toUpperCase(),
-                style: AppTextStyles.h3.copyWith(
-                  color: AppColors.textoSeleccionado,
-                  fontWeight: FontWeight.w800,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            LogoZoe(height: 40, invertido: oscuro),
+                            const SizedBox(height: AppSpacing.xxs),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 3),
+                              child: Text(
+                                kZoeFirmaTexto,
+                                style: estiloFirmaZoe(
+                                  color: oscuro
+                                      ? Colors.white.withValues(alpha: 0.9)
+                                      : AppColors.primaryDark,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      CircleAvatar(
+                        radius: 22,
+                        backgroundColor: AppColors.primary,
+                        child: Text(
+                          _iniciales,
+                          style: AppTextStyles.label.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  if (nombre != null && nombre.isNotEmpty)
+                    Text(
+                      nombre.toUpperCase(),
+                      style: AppTextStyles.label.copyWith(
+                        color: AppColors.textoSeleccionado,
+                        fontWeight: FontWeight.w800,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  const SizedBox(height: AppSpacing.xxs),
+                  Text(
+                    _lineaSucursal,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (correo != null && correo.isNotEmpty) ...[
+                    const SizedBox(height: AppSpacing.xxs),
+                    Text(
+                      correo,
+                      style: AppTextStyles.caption.copyWith(
+                        color: AppColors.textMuted,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ],
               ),
-              if (sucursal != null && sucursal.isNotEmpty) ...[
-                const SizedBox(height: AppSpacing.xxs),
-                Text(
-                  sucursal,
-                  style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-              if (nombre != null && nombre.isNotEmpty) ...[
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  nombre,
-                  style: AppTextStyles.label.copyWith(
-                    color: AppColors.textPrimary,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-              if (correo != null && correo.isNotEmpty)
-                Text(
-                  correo,
-                  style: AppTextStyles.caption,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-            ],
-          ),
+            ),
+            Divider(height: 1, thickness: 1, color: AppColors.border),
+          ],
         ),
       ),
     );

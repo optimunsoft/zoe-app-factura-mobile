@@ -28,6 +28,7 @@ class PosProductMapper {
           : product.id.toString(),
       baseId: product.id.toString(),
       name: useCustomPrice ? '${product.name} (${option.label})' : product.name,
+      code: product.displayCode,
       price: option.price,
       stock: product.quantity,
       taxes: product.taxes

@@ -78,12 +78,16 @@ class Product {
     required this.stock,
     this.taxes = const [],
     this.baseId,
+    this.code = '',
   });
 
   final String id;
 
   /// ID del producto base (sin sufijo de precio). Comparte stock entre variantes.
   final String? baseId;
+
+  /// Código visible (barras o referencia).
+  final String code;
 
   final String name;
   final double price;
