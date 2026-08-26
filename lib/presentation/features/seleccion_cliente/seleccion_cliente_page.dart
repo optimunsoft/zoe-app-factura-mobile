@@ -120,8 +120,8 @@ class _SeleccionClientePageState extends State<SeleccionClientePage> {
                 icon: const Icon(Icons.arrow_back_rounded),
                 onPressed: () => setState(() => _creating = false),
               )
-            : const BotonMenuDrawer(),
-        leadingWidth: _creating ? null : BotonMenuDrawer.anchoLeading,
+            : BotonMenuDrawer.leadingDe(context),
+        leadingWidth: _creating ? null : BotonMenuDrawer.leadingWidthDe(context),
         automaticallyImplyLeading: false,
       ),
       body: Stack(

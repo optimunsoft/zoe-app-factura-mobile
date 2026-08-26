@@ -7,7 +7,10 @@ import '../theme/app_spacing.dart';
 abstract final class AnchoVista {
   static double de(BuildContext context) => MediaQuery.sizeOf(context).width;
 
-  static ClaseAncho clase(BuildContext context) => claseDe(de(context));
+  static ClaseAncho clase(BuildContext context) {
+    if (comoMovil(context)) return ClaseAncho.movil;
+    return claseDe(de(context));
+  }
 
   static ClaseAncho claseDe(double width) {
     if (width < AppBreakpoints.movil) return ClaseAncho.movil;
@@ -15,16 +18,20 @@ abstract final class AnchoVista {
     return ClaseAncho.amplia;
   }
 
-  static bool esMovil(BuildContext context) =>
-      de(context) < AppBreakpoints.movil;
-
-  static bool esTablet(BuildContext context) {
-    final w = de(context);
-    return w >= AppBreakpoints.movil && w < AppBreakpoints.tablet;
+  /// Teléfono, o tablet en vertical: mismo layout que el móvil.
+  static bool comoMovil(BuildContext context) {
+    if (esTabletDispositivo(context) && !esHorizontal(context)) return true;
+    return de(context) < AppBreakpoints.movil;
   }
 
+  static bool esMovil(BuildContext context) =>
+      clase(context) == ClaseAncho.movil;
+
+  static bool esTablet(BuildContext context) =>
+      clase(context) == ClaseAncho.tablet;
+
   static bool esAmplia(BuildContext context) =>
-      de(context) >= AppBreakpoints.tablet;
+      clase(context) == ClaseAncho.amplia;
 
   static bool esEscritorio(BuildContext context) =>
       de(context) >= AppBreakpoints.escritorio;
@@ -35,9 +42,15 @@ abstract final class AnchoVista {
   /// Alias: [esEscritorio].
   static bool esAmplio(BuildContext context) => esEscritorio(context);
 
-  /// Sidebar / NavigationRail desde tablet (600 dp).
-  static bool usaRail(BuildContext context) =>
-      de(context) >= AppBreakpoints.movil;
+  /// Tablet física (Material): el lado corto es ≥ 600 dp, da igual la rotación.
+  static bool esTabletDispositivo(BuildContext context) =>
+      MediaQuery.sizeOf(context).shortestSide >= AppBreakpoints.movil;
+
+  static bool esHorizontal(BuildContext context) =>
+      MediaQuery.orientationOf(context) == Orientation.landscape;
+
+  /// Carrito / listas a dos columnas. No aplica en tablet vertical.
+  static bool usaRail(BuildContext context) => !comoMovil(context);
 
   /// Rail compacto (icono + etiqueta), igual en tablet y Windows.
   static bool railExtendido(BuildContext context) => false;
@@ -55,7 +68,7 @@ abstract final class AnchoVista {
   /// Sheets como diálogo centrado (tablet landscape / escritorio).
   static bool usaDialogoSheet(BuildContext context) => esAmplia(context);
 
-  /// Padding de página: el mismo en tablet y Windows.
+  /// Padding de página: móvil (y tablet vertical) vs Windows / tablet horizontal.
   static EdgeInsets paddingPagina(
     BuildContext context, {
     double? top,
@@ -75,24 +88,26 @@ abstract final class AnchoVista {
   }
 
   /// Columnas del catálogo POS según el ancho del [LayoutBuilder].
-  static int columnasProducto(double width) {
+  static int columnasProducto(BuildContext context, double width) {
     const minCard = 168.0;
     const pad = 32.0;
     const spacing = 12.0;
     final available = width - pad;
     if (available <= minCard) return 1;
     final count = ((available + spacing) / (minCard + spacing)).floor();
-    final maxCols = width < AppBreakpoints.movil ? 2 : 4;
+    final maxCols = comoMovil(context) ? 2 : 4;
     final minCols = width < 360 ? 1 : 2;
     return count.clamp(minCols, maxCols);
   }
 
-  static int columnasResumen(double width) {
+  static int columnasResumen(BuildContext context, double width) {
+    if (comoMovil(context)) return 2;
     if (width >= AppBreakpoints.tablet) return 4;
     return 2;
   }
 
-  static int columnasAccesos(double width) {
+  static int columnasAccesos(BuildContext context, double width) {
+    if (comoMovil(context)) return 2;
     return width >= AppBreakpoints.movil ? 3 : 2;
   }
 }

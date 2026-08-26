@@ -25,8 +25,9 @@ class ReportesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leadingWidth: BotonMenuDrawer.anchoLeading,
-        leading: const BotonMenuDrawer(),
+        automaticallyImplyLeading: false,
+        leadingWidth: BotonMenuDrawer.leadingWidthDe(context),
+        leading: BotonMenuDrawer.leadingDe(context),
         title: Text('Reportes', style: AppTextStyles.h2),
       ),
       body: ContenidoAnchoMaximo(

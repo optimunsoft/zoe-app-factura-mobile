@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// Envuelve el contenido de dashboards. El ancho lo define el padding de
-/// [AnchoVista], igual en tablet y Windows (sin columna centrada).
+/// [AnchoVista] (móvil y tablet vertical vs Windows / tablet horizontal).
 class ContenidoAnchoMaximo extends StatelessWidget {
   const ContenidoAnchoMaximo({
     super.key,

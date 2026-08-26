@@ -71,9 +71,12 @@ class _InicioPageState extends State<InicioPage> {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 72,
-        leadingWidth: BotonMenuDrawer.anchoLeading,
-        leading: const BotonMenuDrawer(),
-        titleSpacing: AppSpacing.sm,
+        automaticallyImplyLeading: false,
+        leadingWidth: BotonMenuDrawer.leadingWidthDe(context),
+        leading: BotonMenuDrawer.leadingDe(context),
+        titleSpacing: BotonMenuDrawer.visibleEn(context)
+            ? AppSpacing.sm
+            : AppSpacing.lg,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

@@ -63,7 +63,8 @@ class GrillaProductos extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final crossCount = AnchoVista.columnasProducto(constraints.maxWidth);
+        final crossCount =
+            AnchoVista.columnasProducto(context, constraints.maxWidth);
         const crossSpacing = AppSpacing.md;
         const horizontalPad = AppSpacing.xxl;
         final spacingTotal = crossSpacing * (crossCount - 1);

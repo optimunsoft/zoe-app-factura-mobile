@@ -137,8 +137,9 @@ class _HistorialVentasPageState extends State<HistorialVentasPage> {
 
     return Scaffold(
       appBar: AppBar(
-        leadingWidth: BotonMenuDrawer.anchoLeading,
-        leading: const BotonMenuDrawer(),
+        automaticallyImplyLeading: false,
+        leadingWidth: BotonMenuDrawer.leadingWidthDe(context),
+        leading: BotonMenuDrawer.leadingDe(context),
         title: Text('Historial de ventas', style: AppTextStyles.h2),
         actions: [
           IconButton(

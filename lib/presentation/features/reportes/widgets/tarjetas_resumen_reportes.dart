@@ -86,7 +86,8 @@ class TarjetasResumenReportes extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final crossCount = AnchoVista.columnasResumen(constraints.maxWidth);
+        final crossCount =
+            AnchoVista.columnasResumen(context, constraints.maxWidth);
         return GridView.count(
           crossAxisCount: crossCount,
           shrinkWrap: true,

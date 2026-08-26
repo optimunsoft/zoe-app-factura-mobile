@@ -63,7 +63,7 @@ class TiendaATiendaApp extends StatelessWidget {
         builder: (context, tema, _) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            title: 'Tienda a Tienda POS',
+            title: 'ZOE Mobile',
             theme: AppTheme.light,
             darkTheme: AppTheme.dark,
             themeMode: tema.oscuro ? ThemeMode.dark : ThemeMode.light,

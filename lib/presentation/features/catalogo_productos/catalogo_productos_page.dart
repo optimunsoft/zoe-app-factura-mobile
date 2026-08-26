@@ -124,13 +124,21 @@ class _CatalogoProductosPageState extends State<CatalogoProductosPage> {
                     height: 64,
                     child: Row(
                       children: [
-                        const BotonMenuDrawer(compacto: true),
+                        if (BotonMenuDrawer.visibleEn(context))
+                          const BotonMenuDrawer(compacto: true),
                         Expanded(
-                          child: Text(
-                            'Catálogo de productos',
-                            style: AppTextStyles.h2,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                              left: BotonMenuDrawer.visibleEn(context)
+                                  ? 0
+                                  : AppSpacing.sm,
+                            ),
+                            child: Text(
+                              'Catálogo de productos',
+                              style: AppTextStyles.h2,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                         ),
                         if (!conCarrito)
