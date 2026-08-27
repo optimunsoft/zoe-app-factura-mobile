@@ -61,10 +61,31 @@ class _PanelMediosPagoState extends State<PanelMediosPago> {
     return left < 0 ? 0 : left;
   }
 
+  void _rellenarPendiente(MethodPayment item) {
+    final ctrl = widget.controllers[item.id];
+    if (ctrl == null) return;
+
+    final left = _remainingFor(item);
+    if (left <= 0.001) {
+      ctrl.clear();
+      return;
+    }
+
+    final text = CurrencyFormat.formatInput(left);
+    ctrl.value = TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
+    );
+  }
+
   void _select(MethodPayment item) {
+    final opening = _activeId != item.id;
     setState(() {
-      _activeId = _activeId == item.id ? null : item.id;
+      _activeId = opening ? item.id : null;
     });
+    if (opening && !widget.lockedIds.contains(item.id)) {
+      _rellenarPendiente(item);
+    }
   }
 
   void _handleAdd(MethodPayment item) {
@@ -76,6 +97,7 @@ class _PanelMediosPagoState extends State<PanelMediosPago> {
   void _handleEdit(MethodPayment item) {
     widget.onEdit(item);
     setState(() => _activeId = item.id);
+    _rellenarPendiente(item);
   }
 
   @override

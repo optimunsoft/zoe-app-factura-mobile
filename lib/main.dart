@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'core/app_navigator.dart';
 import 'core/auth/auth_controller.dart';
 import 'core/config/app_env.dart';
+import 'core/layout/area_segura.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/comportamiento_scroll_app.dart';
 import 'core/theme/host_tema_app.dart';
@@ -72,8 +73,10 @@ class TiendaATiendaApp extends StatelessWidget {
             navigatorKey: appNavigatorKey,
             builder: (context, child) {
               final media = MediaQuery.of(context);
+              final padding = AreaSegura.paddingEfectivo(context);
               return MediaQuery(
                 data: media.copyWith(
+                  padding: padding,
                   textScaler: media.textScaler.clamp(
                     minScaleFactor: 0.9,
                     maxScaleFactor: 1.2,

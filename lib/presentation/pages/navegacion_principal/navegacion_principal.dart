@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../core/layout/area_segura.dart';
 import '../../../data/pos_controller.dart';
 import '../../../domain/models/sale_receipt.dart';
 import '../../features/historial_ventas/historial_ventas_page.dart';
@@ -134,20 +135,23 @@ class _NavegacionPrincipalState extends State<NavegacionPrincipal> {
         drawer: DrawerNavegacion(
           onLogout: () => confirmarCerrarSesion(context),
         ),
-        body: Row(
-          children: [
-            if (usaRail) ...[
-              NavLateralWindows(
-                index: _tab,
-                onChanged: _onTabChanged,
-                onSalir: () => confirmarCerrarSesion(context),
+        body: CuerpoAreaSegura(
+          activo: usaRail,
+          child: Row(
+            children: [
+              if (usaRail) ...[
+                NavLateralWindows(
+                  index: _tab,
+                  onChanged: _onTabChanged,
+                  onSalir: () => confirmarCerrarSesion(context),
+                ),
+                const VerticalDivider(width: 1),
+              ],
+              Expanded(
+                child: IndexedStack(index: _tab, children: pages),
               ),
-              const VerticalDivider(width: 1),
             ],
-            Expanded(
-              child: IndexedStack(index: _tab, children: pages),
-            ),
-          ],
+          ),
         ),
         bottomNavigationBar: usaRail
             ? null

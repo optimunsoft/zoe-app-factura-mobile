@@ -30,17 +30,17 @@ class PastillaCategoria extends StatelessWidget {
       padding: const EdgeInsets.only(right: AppSpacing.sm),
       child: Material(
         color: selected ? AppColors.primary : AppColors.surface,
-        borderRadius: AppRadius.pillAll,
+        borderRadius: AppRadius.mdAll,
         child: InkWell(
           onTap: onTap,
-          borderRadius: AppRadius.pillAll,
+          borderRadius: AppRadius.mdAll,
           child: Container(
             padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.lg,
               vertical: AppSpacing.sm,
             ),
             decoration: BoxDecoration(
-              borderRadius: AppRadius.pillAll,
+              borderRadius: AppRadius.mdAll,
               border: AppBorders.selectable(selected: selected),
             ),
             child: Text(

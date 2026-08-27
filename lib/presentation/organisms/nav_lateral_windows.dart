@@ -35,85 +35,123 @@ class NavLateralWindows extends StatelessWidget {
   }
 
   static const double _ancho = 80;
+  static const double _extraAnchoTabletHorizontal = 10;
+  static const double _altoLogo = 36;
+  static const double _tamanoFirma = 7;
+  static const double _tamanoIcono = 24;
+
+  static bool _esTabletHorizontal(BuildContext context) =>
+      !esWindows &&
+      AnchoVista.esTabletDispositivo(context) &&
+      AnchoVista.esHorizontal(context);
+
+  static double _anchoDe(BuildContext context) {
+    if (_esTabletHorizontal(context)) {
+      return _ancho + _extraAnchoTabletHorizontal;
+    }
+    return _ancho;
+  }
 
   @override
   Widget build(BuildContext context) {
     final oscuro = Theme.of(context).brightness == Brightness.dark;
+    final ancho = _anchoDe(context);
+    final escala = ancho / _ancho;
+    final altoLogo = _altoLogo * escala;
+    final tamanoFirma = _tamanoFirma * escala;
+    final tamanoIcono = _tamanoIcono * escala;
+    final temaRail = Theme.of(context).navigationRailTheme;
 
-    return NavigationRail(
-      selectedIndex: index,
-      onDestinationSelected: onChanged,
-      labelType: NavigationRailLabelType.all,
-      groupAlignment: -1,
-      backgroundColor: AppColors.surface,
-      indicatorColor: AppColors.oscuro
-          ? AppColors.primary.withValues(alpha: 0.35)
-          : AppColors.primaryLight,
-      minWidth: _ancho,
-      leading: Padding(
-        padding: const EdgeInsets.only(
-          top: AppSpacing.sm,
-          bottom: AppSpacing.lg,
-        ),
-        child: SizedBox(
-          width: _ancho - AppSpacing.md,
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () => ControlDrawerApp.abrir(context),
-                borderRadius: AppRadius.mdAll,
-                child: LogoZoeConFirma(
-                  logoHeight: 36,
-                  firmaSize: 7,
-                  invertido: oscuro,
-                  firmaColor: oscuro
-                      ? Colors.white.withValues(alpha: 0.78)
-                      : AppColors.textSecondary,
-                ),
-              ),
-            ),
+    return Theme(
+      data: Theme.of(context).copyWith(
+        navigationRailTheme: temaRail.copyWith(
+          selectedIconTheme: (temaRail.selectedIconTheme ?? const IconThemeData())
+              .copyWith(size: tamanoIcono),
+          unselectedIconTheme:
+              (temaRail.unselectedIconTheme ?? const IconThemeData())
+                  .copyWith(size: tamanoIcono),
+          selectedLabelTextStyle: temaRail.selectedLabelTextStyle?.copyWith(
+            fontSize: (temaRail.selectedLabelTextStyle?.fontSize ?? 13) *
+                escala,
+          ),
+          unselectedLabelTextStyle: temaRail.unselectedLabelTextStyle?.copyWith(
+            fontSize: (temaRail.unselectedLabelTextStyle?.fontSize ?? 12) *
+                escala,
           ),
         ),
       ),
-      trailing: Expanded(
-        child: Align(
-          alignment: Alignment.bottomCenter,
-          child: Padding(
-            padding: EdgeInsets.only(
-              bottom: AppSpacing.lg +
-                  (esWindows
-                      ? 0
-                      : 10 + MediaQuery.paddingOf(context).bottom),
-            ),
-            child: Tooltip(
-              message: 'Cerrar sesión',
-              child: IconButton(
-                onPressed: onSalir,
-                style: IconButton.styleFrom(
-                  foregroundColor: AppColors.danger,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: AppRadius.mdAll,
+      child: NavigationRail(
+        selectedIndex: index,
+        onDestinationSelected: onChanged,
+        labelType: NavigationRailLabelType.all,
+        groupAlignment: -1,
+        backgroundColor: AppColors.surface,
+        indicatorColor: AppColors.oscuro
+            ? AppColors.primary.withValues(alpha: 0.35)
+            : AppColors.primaryLight,
+        minWidth: ancho,
+        leading: Padding(
+          padding: const EdgeInsets.only(
+            top: AppSpacing.sm,
+            bottom: AppSpacing.lg,
+          ),
+          child: SizedBox(
+            width: ancho - AppSpacing.md,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => ControlDrawerApp.abrir(context),
+                  borderRadius: AppRadius.mdAll,
+                  child: LogoZoeConFirma(
+                    logoHeight: altoLogo,
+                    firmaSize: tamanoFirma,
+                    invertido: oscuro,
+                    firmaColor: oscuro
+                        ? Colors.white.withValues(alpha: 0.78)
+                        : AppColors.textSecondary,
                   ),
                 ),
-                icon: const Icon(Icons.logout_rounded),
               ),
             ),
           ),
         ),
-      ),
-      destinations: [
-        for (final destino in DestinosNavegacionPrincipal.todos)
-          NavigationRailDestination(
-            icon: Icon(destino.icon),
-            selectedIcon: Icon(
-              destino.selectedIcon,
-              color: AppColors.primary,
+        trailing: Expanded(
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+              child: Tooltip(
+                message: 'Cerrar sesión',
+                child: IconButton(
+                  onPressed: onSalir,
+                  iconSize: tamanoIcono,
+                  style: IconButton.styleFrom(
+                    foregroundColor: AppColors.danger,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: AppRadius.mdAll,
+                    ),
+                  ),
+                  icon: const Icon(Icons.logout_rounded),
+                ),
+              ),
             ),
-            label: Text(destino.label),
           ),
-      ],
+        ),
+        destinations: [
+          for (final destino in DestinosNavegacionPrincipal.todos)
+            NavigationRailDestination(
+              icon: Icon(destino.icon, size: tamanoIcono),
+              selectedIcon: Icon(
+                destino.selectedIcon,
+                size: tamanoIcono,
+                color: AppColors.primary,
+              ),
+              label: Text(destino.label),
+            ),
+        ],
+      ),
     );
   }
 }

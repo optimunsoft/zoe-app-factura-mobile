@@ -37,15 +37,19 @@ class TarjetaProducto extends StatelessWidget {
   /// Altura fija del contenido bajo la imagen (padding + textos + precio + CTA).
   static const fixedBelowImageHeight = 196.0;
 
-  static final TextStyle _nameStyle = AppTextStyles.label.copyWith(
-    fontSize: 14,
-    fontWeight: FontWeight.w700,
-    height: 1.25,
-  );
+  static const double _nameFontSize = 14;
+  static const double _nameLineHeight = 1.25;
+
+  static TextStyle get _nameStyle => AppTextStyles.label.copyWith(
+        fontSize: _nameFontSize,
+        fontWeight: FontWeight.w700,
+        height: _nameLineHeight,
+        color: AppColors.oscuro ? Colors.white : AppColors.textPrimary,
+      );
 
   /// Altura fija de 2 renglones (directriz original).
   static double get _nameBlockHeight =>
-      (_nameStyle.fontSize ?? 14) * (_nameStyle.height ?? 1.25) * 2;
+      _nameFontSize * _nameLineHeight * 2;
 
   /// Si cabe en 1 línea, fuerza 2 renglones; si es largo, wrap natural (máx. 2 + …).
   static String _twoLineName(String name, double maxWidth) {

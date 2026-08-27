@@ -6,6 +6,7 @@ import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/currency_format.dart';
+import '../../../atoms/icon_action_button.dart';
 import '../../../atoms/money_text.dart';
 
 /// Fila compacta de medio de pago; el editor solo se muestra si [expanded].
@@ -121,36 +122,6 @@ class TarjetaOpcionPago extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  if (!locked &&
-                      remainingHint != null &&
-                      remainingHint! > 0.001) ...[
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: TextButton(
-                        onPressed: () {
-                          amountController.text =
-                              CurrencyFormat.formatInput(remainingHint!);
-                          amountController.selection =
-                              TextSelection.collapsed(
-                            offset: amountController.text.length,
-                          );
-                        },
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                          minimumSize: Size.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        child: Text(
-                          'Cubrir resto (${CurrencyFormat.money(remainingHint!)})',
-                          style: AppTextStyles.bodySmall.copyWith(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                  ],
                   Row(
                     children: [
                       Expanded(
@@ -169,7 +140,10 @@ class TarjetaOpcionPago extends StatelessWidget {
                           ),
                           inputFormatters: [CurrencyInputFormatter()],
                           decoration: InputDecoration(
-                            hintText: 'Monto',
+                            hintText: remainingHint != null &&
+                                    remainingHint! > 0.001
+                                ? CurrencyFormat.formatInput(remainingHint!)
+                                : 'Monto',
                             hintStyle: AppTextStyles.bodySmall,
                             prefixText: '\$ ',
                             isDense: true,
@@ -197,6 +171,15 @@ class TarjetaOpcionPago extends StatelessWidget {
                           ),
                         ),
                       ),
+                      if (!locked) ...[
+                        const SizedBox(width: AppSpacing.xs),
+                        IconActionButton(
+                          icon: Icons.backspace_outlined,
+                          tooltip: 'Limpiar',
+                          size: 46,
+                          onPressed: amountController.clear,
+                        ),
+                      ],
                       const SizedBox(width: AppSpacing.sm),
                       SizedBox(
                         height: 46,

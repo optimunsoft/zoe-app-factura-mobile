@@ -19,9 +19,9 @@ import '../../molecules/barra_busqueda_escaner.dart';
 import '../../organisms/grilla_productos.dart';
 import '../../organisms/plantilla_adaptativa.dart';
 import 'widgets/boton_icono_carrito.dart';
-import 'widgets/pastilla_categoria.dart';
 import 'widgets/encabezado_acordeon_cliente.dart';
 import 'widgets/barra_resumen_pedido.dart';
+import 'widgets/lista_filtros_categoria.dart';
 import 'widgets/panel_carrito_catalogo.dart';
 
 /// Pantalla principal del catálogo de productos POS.
@@ -100,13 +100,16 @@ class _CatalogoProductosPageState extends State<CatalogoProductosPage> {
   Widget build(BuildContext context) {
     final posCtrl = context.watch<PosController>();
     final productsStore = context.watch<ProductsStore>();
+    final categoriesStore = context.watch<CategoriesStore>();
     final customer = posCtrl.activeCustomer;
 
     final conCarrito = AnchoVista.usaPanelCarrito(context);
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(_appBarHeight(customer)),
+        preferredSize: Size.fromHeight(
+          _appBarHeight(customer) + MediaQuery.paddingOf(context).top,
+        ),
         child: Material(
           color:
               Theme.of(context).appBarTheme.backgroundColor ??
@@ -184,43 +187,11 @@ class _CatalogoProductosPageState extends State<CatalogoProductosPage> {
               ),
             ),
             const SizedBox(height: AppSpacing.md),
-            Builder(
-              builder: (context) {
-                final store = context.watch<CategoriesStore>();
-
-                if (store.isLoading) {
-                  return const SizedBox(
-                    height: 42,
-                    child: Center(
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                  );
-                }
-
-                return SizedBox(
-                  height: 42,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: AnchoVista.paddingHorizontal(context),
-                    ),
-                    children: [
-                      PastillaCategoria(
-                        label: 'Todos',
-                        selected: _selectedCategory == null,
-                        onTap: () => _selectCategory(null),
-                      ),
-                      ...store.items.map(
-                        (c) => PastillaCategoria(
-                          label: c.name,
-                          selected: _selectedCategory?.id == c.id,
-                          onTap: () => _selectCategory(c),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
+            ListaFiltrosCategoria(
+              categorias: categoriesStore.items,
+              seleccionada: _selectedCategory,
+              onSeleccionar: _selectCategory,
+              cargando: categoriesStore.isLoading,
             ),
             const SizedBox(height: AppSpacing.md),
             Expanded(

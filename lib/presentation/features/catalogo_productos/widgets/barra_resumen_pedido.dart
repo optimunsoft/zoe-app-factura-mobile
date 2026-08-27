@@ -21,57 +21,58 @@ class BarraResumenPedido extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bottom = MediaQuery.paddingOf(context).bottom;
     final enabled = itemCount > 0;
 
-    return Container(
-      padding: EdgeInsets.fromLTRB(
-        AppSpacing.lg,
-        AppSpacing.md,
-        AppSpacing.md,
-        AppSpacing.md + bottom,
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        border: AppBorders.top,
-        boxShadow: AppShadows.bar,
-      ),
+    return ColoredBox(
+      color: AppColors.surface,
       child: SafeArea(
         top: false,
-        child: InkWell(
-          onTap: enabled ? onReviewPay : null,
-          borderRadius: AppRadius.mdAll,
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.xs),
-            child: Row(
-              children: [
-                Text('Total', style: AppTextStyles.h3),
-                const Spacer(),
-                Opacity(
-                  opacity: enabled ? 1 : 0.45,
-                  child: MoneyText(
-                    total,
-                    large: true,
-                    color: AppColors.primary,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.md,
+            AppSpacing.md,
+            AppSpacing.md,
+          ),
+          decoration: BoxDecoration(
+            border: AppBorders.top,
+            boxShadow: AppShadows.bar,
+          ),
+          child: InkWell(
+            onTap: enabled ? onReviewPay : null,
+            borderRadius: AppRadius.mdAll,
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.xs),
+              child: Row(
+                children: [
+                  Text('Total', style: AppTextStyles.h3),
+                  const Spacer(),
+                  Opacity(
+                    opacity: enabled ? 1 : 0.45,
+                    child: MoneyText(
+                      total,
+                      large: true,
+                      color: AppColors.primary,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: enabled
-                        ? AppColors.primary
-                        : AppColors.surfaceAlt,
-                    shape: BoxShape.circle,
+                  const SizedBox(width: 8),
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: enabled
+                          ? AppColors.primary
+                          : AppColors.surfaceAlt,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.arrow_forward_rounded,
+                      size: 22,
+                      color: enabled ? Colors.white : AppColors.textMuted,
+                    ),
                   ),
-                  child: Icon(
-                    Icons.arrow_forward_rounded,
-                    size: 22,
-                    color: enabled ? Colors.white : AppColors.textMuted,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
